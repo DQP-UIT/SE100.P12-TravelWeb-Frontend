@@ -1,10 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.jsx'
+import OveralRoomSetting from './pages/roomprovider/OveralRoomSetting.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <OveralRoomSetting />
   </StrictMode>,
 )
