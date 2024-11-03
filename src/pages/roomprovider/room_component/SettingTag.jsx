@@ -1,26 +1,32 @@
 import React from "react";
+//import { useNavigate } from "react-router-dom";
 
-const SettingTag = () => {
+const SettingTag = ({ name, content, detail, image, route }) => {
+  //const navigator = useNavigate();
   return (
-    <div>
-      <div className="w-[520px] h-[390px] relative">
-        <div className="w-[486px] h-[41px] left-[13px] top-[118px] absolute text-[#2c81d6] text-[32px] font-normal font-['Roboto']">
-          Thiết lập phòng
+    <div
+      className="w-[400px] h-[300px] p-4 bg-[#C9C9C9] rounded-[5px] cursor-pointer hover:scale-110 hover:bg-[#5498F0] group"
+      // onClick={() => {
+      //   navigator(route);
+      // }}
+    >
+      <div className="flex flex-col items-start">
+        <div className="w-[50px] h-[50px] mb-4">
+          <img
+            src={image}
+            alt="Icon"
+            className="w-full h-full object-fill"
+          />
         </div>
-        <div className="w-[472px] h-[22px] left-[13px] top-[166px] absolute text-white text-base font-normal font-['Roboto']">
-          Tạo và thiết lập phòng ngay
+        <div className="text-[#2D81D6] group-hover:text-white text-[24px] font-medium font-sans mb-2">
+          {name}
         </div>
-        <div className="w-[60px] h-[60px] left-[24px] top-[38px] absolute">
-          <div className="w-[26.26px] h-[29.05px] left-[1.47px] top-[27.58px] absolute"></div>
-          <div className="w-[31.57px] h-[23.76px] left-[25.92px] top-[33.18px] absolute"></div>
-          <div className="w-[24.14px] h-[24.31px] left-[4.24px] top-[21.06px] absolute"></div>
-          <div className="w-[29.02px] h-[19.88px] left-[26.71px] top-[25.75px] absolute"></div>
-          <div className="w-[7.06px] h-[6.22px] left-[32.24px] top-[10.18px] absolute"></div>
-          <div className="w-[7.86px] h-[6.94px] left-[44.27px] top-[15.69px] absolute"></div>
+        <div className="text-white text-base font-normal font-['Roboto'] mb-2">
+          {content}
         </div>
-        <div className="w-[495px] h-[0px] left-[13px] top-[195px] absolute border border-white"></div>
-        <div className="w-[484px] h-[71px] left-[14px] top-[215px] absolute text-white text-2xl font-normal font-['Roboto']">
-          Mỗi phòng phải có ít nhất 1 hình ảnh được tải lên
+        <div className="w-full border-t border-white mb-2"></div>
+        <div className="text-white text-lg font-normal font-['Roboto']">
+          {detail}
         </div>
       </div>
     </div>
