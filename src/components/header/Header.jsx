@@ -21,6 +21,15 @@ const Header = ({ avatar }) => {
         <div className="w-[208px] h-[77px] left-[98.84px] top-[3px] absolute">
           <div className="w-fit h-[4.05px] left-[134.18px] top-0 absolute" />
           <img
+<<<<<<< HEAD
+<<<<<<< HEAD
+            className="w-[200px] h-[77px] left-0 top-0 absolute"
+            src="src\assets\Logo.svg"
+            alt="Logo"
+          />
+=======
+=======
+>>>>>>> origin/main
             className="w-[129.90px] h-[77px] left-0 top-0 absolute"
             src="src/assets/Preparing for vacation.svg"
             alt="Logo"
@@ -31,6 +40,10 @@ const Header = ({ avatar }) => {
               ĐI ĐÂU ĐÂY!!!
             </div>
           </div>
+<<<<<<< HEAD
+>>>>>>> origin/main
+=======
+>>>>>>> origin/main
         </div>
         <div className="w-[130px] h-[63px] left-[1565px] top-[5px] absolute hover:backdrop-blur-md">
           <img
