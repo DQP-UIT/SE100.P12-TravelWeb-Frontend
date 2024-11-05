@@ -21,16 +21,10 @@ const Header = ({ avatar }) => {
         <div className="w-[208px] h-[77px] left-[98.84px] top-[3px] absolute">
           <div className="w-fit h-[4.05px] left-[134.18px] top-0 absolute" />
           <img
-            className="w-[129.90px] h-[77px] left-0 top-0 absolute"
-            src="src/assets/Preparing for vacation.svg"
+            className="w-[200px] h-[77px] left-0 top-0 absolute"
+            src="src\assets\Logo.svg"
             alt="Logo"
           />
-          <div className="w-[120.12px] h-[59.02px] left-[88.16px] top-[3.02px] absolute">
-            <div className="w-[95.26px] h-[65px] left-[24.86px] top-0 absolute bg-[#cdd5d5] rounded-tl-lg rounded-tr-[10px] rounded-bl-[10px] rounded-br-[10px]" />
-            <div className="w-[71.71px] h-12 left-[41.63px] top-[6px] absolute text-black text-xl font-bold font-['Inter']">
-              ĐI ĐÂU ĐÂY!!!
-            </div>
-          </div>
         </div>
         <div className="w-[130px] h-[63px] left-[1565px] top-[5px] absolute hover:backdrop-blur-md">
           <img
