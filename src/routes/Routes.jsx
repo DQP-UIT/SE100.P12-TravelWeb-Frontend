@@ -3,6 +3,8 @@ import Default from "../components/default/Default";
 import NotFound from "../pages/notfound/NotFound";
 import Home from "../pages/home/Home";
 import Search from "../pages/search/Search";
+import OveralRoomSetting from "../pages/roomprovider/OveralRoomSetting";
+import RoomSetting from "../pages/roomprovider/RoomSetting";
 
 export const router = createBrowserRouter([
     {
@@ -18,6 +20,14 @@ export const router = createBrowserRouter([
                 path: 'search',
                 element: <Search/>,
             },
+            {
+                path: '/overalset',
+                element: <OveralRoomSetting/>
+            },
+            {
+                path:'/roomset',
+                element: <RoomSetting/>
+            }
         ]
     },
 ])
