@@ -4,11 +4,11 @@ import Footer from '../footer/Footer'
 
 const Default = () => {
   return (
-    <div>
-        <Header/>
-        <Outlet/>
-        <Footer/>
-    </div>
+    <>
+    <Header/>
+    <Outlet/>
+    <Footer/>
+    </>
   )
 }
 
