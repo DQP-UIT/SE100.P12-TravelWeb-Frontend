@@ -4,7 +4,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const RoomBookingTag = ({ booking }) => {
   return (
-    <div className="relative w-full h-[250px] max-h-[280px] min-w-fit max-w-3xl p-6 bg-[#e4f7fd] shadow-md rounded-lg flex">
+    <div className="relative mb-5 w-full h-[250px] max-h-[280px] min-w-fit max-w-3xl p-6 bg-[#e4f7fd] shadow-md rounded-lg flex">
       <div className="w-full h-full flex flex-col sm:flex-row relative">
         {/* Image Carousel */}
         <div className="w-full sm:w-[215px] h-full bg-gray-200 rounded-lg overflow-hidden">

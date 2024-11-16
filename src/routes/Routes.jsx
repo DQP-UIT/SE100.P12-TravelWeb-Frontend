@@ -7,6 +7,13 @@ import OveralRoomSetting from "../pages/roomprovider/OveralRoomSetting";
 import RoomSetting from "../pages/roomprovider/RoomSetting";
 import BookingCalendar from "../pages/roomprovider/RoomCalendar";
 import BookingPage from "../pages/booking/BookingPage";
+import PaymentCart from "../pages/booking/PaymentCart";
+import AdminSet from "../components/default/AdminSet";
+import CustomerMG from "../pages/admin/CustomerMG";
+import CustomerInfo from "../pages/admin/CustomerInfo";
+import ProviderMG from "../pages/admin/ProviderMG";
+import ProviderInfo from "../pages/admin/ProviderInfo";
+import AdminMain from "../pages/admin/AdminMain";
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +44,37 @@ export const router = createBrowserRouter([
       {
         path: "/booking",
         element: <BookingPage />,
+      },
+      {
+        path: "/myorder",
+        element: <PaymentCart />,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminSet />,
+    errorElement: <NotFound />,
+    children: [
+      {
+        path: "/admin/",
+        element: <AdminMain />,
+      },
+      {
+        path: "/admin/customer",
+        element: <CustomerMG />,
+      },
+      {
+        path: "/admin/customerinfo",
+        element: <CustomerInfo />,
+      },
+      {
+        path: "/admin/provider",
+        element: <ProviderMG/>
+      },
+      {
+        path: "/admin/providerinfo",
+        element: <ProviderInfo/>
       },
     ],
   },
