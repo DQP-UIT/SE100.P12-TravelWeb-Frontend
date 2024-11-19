@@ -27,6 +27,7 @@ const SearchDate = ({searchType}) => {
           onChange={(val) => setValue(val)}
           onOpenChange={onOpenChange}
           format={dateFormat}
+          className='h-12'
         />
       </div>
     )
@@ -39,6 +40,7 @@ const SearchDate = ({searchType}) => {
           onChange={(val) => setValue(val)}
           onOpenChange={onOpenChange}
           format={dateFormat}
+          className='h-12'
         />
         <TimePicker/>
       </div>

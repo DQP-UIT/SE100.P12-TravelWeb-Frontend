@@ -1,15 +1,17 @@
 import React from "react";
-import { FixedSizeList } from "react-window";
+import { FixedSizeList } from 'react-window';
 import RoomTag from "./RoomTag";
+import SearchBar from "../searchbar/SearchBar";
 
-const RoomList = () => {
-  const data = [];
-  const Row = ({ index }) => {
-    return <RoomTag room={data[index]} />;
-  };
+const RoomList = ({list}) => {
+  const Row = ({index}) => (
+    <div>
+      <RoomTag room={list[index]}/>
+    </div>
+  )
   return (
     <div>
-      <FixedSizeList height={800} itemCount={10} itemSize={80}>
+      <FixedSizeList height={1000} itemCount={list.length} itemSize={500}>
         {Row}
       </FixedSizeList>
     </div>

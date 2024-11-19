@@ -40,11 +40,11 @@ const HomeSearch = ({suggestSearch}) => {
         <div className='w-full h-[150px] bg-[#F2F9F9] absolute top-10 left-1/2 -translate-x-1/2 border-2 shadow-[#DEEBF0] rounded-3xl'/>
         
         <div className='relative m-3'>
-          <div className='mx-auto mb-2 w-3/5 h-fit bg-white grid grid-cols-3 border rounded shadow-md shadow-gray-300 md:text-nowrap'>
+          <div className='mx-auto mb-2 w-3/5 md:min-w-max h-fit bg-white grid grid-cols-3 border rounded shadow-md shadow-gray-300 md:text-nowrap'>
             {typeSearch.map((item) => (
               <button id={item.id} key={item.id} className='flex p-2 items-center gap-1 justify-center focus:text-[#7FC7D9] focus:shadow-md focus:shadow-blue-500' onClick={e => click(e)}>
-                <span>{item.icon}</span>
-                <span>{item.title}</span>
+                <span onClick={e => click(e)}>{item.icon}</span>
+                <span onClick={e => click(e)}>{item.title}</span>
               </button>
             ))}
           </div>
@@ -60,7 +60,7 @@ const HomeSearch = ({suggestSearch}) => {
           )}
           {type != 'cafe' && (
             <div className='w-full items-center my-10 grid md:grid-cols-2 sm:grid-cols-1 gap-5'>
-              <SearchDate searchType={type}/>
+              <SearchDate searchType={type?type:'hotel'}/>
               <SearchMember/>
             </div>
           )}
