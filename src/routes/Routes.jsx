@@ -15,6 +15,7 @@ import ProviderMG from "../pages/admin/ProviderMG";
 import ProviderInfo from "../pages/admin/ProviderInfo";
 import AdminMain from "../pages/admin/AdminMain";
 import PaymentPage from "../pages/booking/PaymentPage";
+import RevenueReportPage from "../pages/admin/report/RevenueReport";
 
 export const router = createBrowserRouter([
   {
@@ -80,6 +81,10 @@ export const router = createBrowserRouter([
       {
         path: "/admin/providerinfo",
         element: <ProviderInfo />,
+      },
+      {
+        path: "/admin/revenue",
+        element: <RevenueReportPage />,
       },
     ],
   },
