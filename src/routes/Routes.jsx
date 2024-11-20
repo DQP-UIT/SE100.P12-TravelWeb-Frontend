@@ -14,6 +14,8 @@ import CustomerInfo from "../pages/admin/CustomerInfo";
 import ProviderMG from "../pages/admin/ProviderMG";
 import ProviderInfo from "../pages/admin/ProviderInfo";
 import AdminMain from "../pages/admin/AdminMain";
+import PaymentPage from "../pages/booking/PaymentPage";
+import RevenueReportPage from "../pages/admin/report/RevenueReport";
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +51,10 @@ export const router = createBrowserRouter([
         path: "/myorder",
         element: <PaymentCart />,
       },
+      {
+        path: "/payment",
+        element: <PaymentPage />,
+      },
     ],
   },
   {
@@ -70,11 +76,15 @@ export const router = createBrowserRouter([
       },
       {
         path: "/admin/provider",
-        element: <ProviderMG/>
+        element: <ProviderMG />,
       },
       {
         path: "/admin/providerinfo",
-        element: <ProviderInfo/>
+        element: <ProviderInfo />,
+      },
+      {
+        path: "/admin/revenue",
+        element: <RevenueReportPage />,
       },
     ],
   },
