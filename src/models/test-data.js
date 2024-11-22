@@ -105,3 +105,32 @@ export const reviewList = [
         ],
     },
 ]
+
+export const hotelList = [
+    {
+        images: [
+            "/src/assets/DetailHotel.png",
+            "/src/assets/DetailHotel.png",
+            "/src/assets/DetailHotel.png",
+            "/src/assets/DetailHotel.png",
+            "/src/assets/DetailHotel.png",
+            "/src/assets/DetailHotel.png",
+            "/src/assets/DetailHotel.png",
+            "/src/assets/DetailHotel.png",
+            "/src/assets/DetailHotel.png",
+            "/src/assets/DetailHotel.png",
+        ],
+        avatar: "https://via.placeholder.com/40x40",
+        title: "Vinhomes Luxury Residence at Binh Thanh - LUNA Landmark Apartment",
+        location: "Binh Thanh, Ho Chí Minh - cách điểm mốc 1,1 km",
+        general: "Hãy để chuyến đi của quý khách có một khởi đầu tuyệt vời khi ở lại khách sạn này, nơi có Wi-Fi miễn phí trong tất cả các phòng. Nằm ở vị trí chiến lược tại Quận 1, cho phép quý khách lui tới và gần với các điểm thu hút và tham quan địa phương. Đừng rời đi trước khi ghé thăm Bảo tàng Chứng tích chiến tranh nổi tiếng. Chỗ nghỉ 3 sao này được trang bị các tiện nghi ngay trong khuôn viên để nâng cao chất lượng và niềm vui cho kỳ nghỉ của quý khách.",
+        reviews: 124,
+        amenities: [
+            "Free wifi",
+            "Máy chạy bộ",
+            "Cho thuê oto",
+            "Trà chiều",
+            "Free bữa sáng",
+        ],
+    },
+]

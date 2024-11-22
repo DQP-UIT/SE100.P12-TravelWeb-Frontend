@@ -1,12 +1,14 @@
 import React from "react";
 import { FixedSizeList } from 'react-window';
 import RoomTag from "./RoomTag";
-import SearchBar from "../searchbar/SearchBar";
+import { Link } from "react-router-dom";
 
 const RoomList = ({list}) => {
   const Row = ({index}) => (
     <div>
-      <RoomTag room={list[index]}/>
+      <Link to={'/detail'}>
+        <RoomTag room={list[index]}/>
+      </Link>
     </div>
   )
   return (

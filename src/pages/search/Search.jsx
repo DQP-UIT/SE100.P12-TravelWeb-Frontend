@@ -1,7 +1,6 @@
 import { FaLongArrowAltUp } from "react-icons/fa"
 import MenuFilter from "../../components/menufilter/MenuFilter"
 import RoomList from "../../components/roomlist/RoomList"
-import RoomTag from "../../components/roomlist/RoomTag"
 import SearchBar from "../../components/searchbar/SearchBar"
 import { reviewList } from "../../models/test-data"
 
