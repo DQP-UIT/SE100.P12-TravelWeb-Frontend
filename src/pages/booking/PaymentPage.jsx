@@ -61,13 +61,13 @@ const PaymentPage = () => {
 
   return (
     <Container maxWidth="md">
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography variant="h4" component="h1" gutterBottom className="text-center">
         Payment Information
       </Typography>
       <Box display="flex" flexDirection="column" gap={4}>
         {/* User Information Card */}
         <Card>
-          <CardContent>
+          <CardContent className="bg-blue-gray-50">
             <Typography variant="h6" gutterBottom>
               User Information
             </Typography>
@@ -95,7 +95,7 @@ const PaymentPage = () => {
 
         {/* Invoice Card */}
         <Card>
-          <CardContent>
+          <CardContent className="bg-green-50">
             <Typography variant="h6" gutterBottom>
               Invoice
             </Typography>

@@ -4,7 +4,7 @@ import { Box, Typography, Avatar } from '@mui/material';
 const UserTag = ({ user }) => {
   return (
     <Box
-      className="w-full max-w-md p-4 mb-1 bg-white shadow-md rounded-lg flex items-center hover:scale-105 hover:cursor-pointer"
+      className="w-full max-w-md p-4 mb-1 bg-teal-100 shadow-md rounded-lg flex items-center hover:scale-105 hover:cursor-pointer"
       border={1}
       borderColor="grey.300"
     >

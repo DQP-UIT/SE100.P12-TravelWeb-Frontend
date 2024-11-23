@@ -67,7 +67,11 @@ const ProviderInfo = () => {
       </Typography>
       {customer ? (
         <Box
-          className="w-full max-w-md p-4 mb-4 bg-white shadow-md rounded-lg flex flex-col items-center"
+          className={
+            isEditing
+              ? "w-full max-w-md p-4 mb-4 bg-white shadow-md rounded-lg flex flex-col items-center"
+              : "w-full max-w-md p-4 mb-4 bg-teal-50 shadow-md rounded-lg flex flex-col items-center"
+          }
           border={1}
           borderColor="grey.300"
         >

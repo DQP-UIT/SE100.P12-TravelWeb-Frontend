@@ -15,7 +15,7 @@ import { Document, Packer, Paragraph, TextRun, ImageRun } from "docx";
 import html2canvas from "html2canvas";
 
 // Fake data to simulate API call
-const fakeRevenueData = [
+const fakeRevenueData = [ 
   { month: "January", revenue: 1200 },
   { month: "February", revenue: 1900 },
   { month: "March", revenue: 3000 },

@@ -119,6 +119,7 @@ const CustomerMG = () => {
         gap={2}
         maxHeight="600px"
         overflow="auto"
+        className="bg-blue-gray-50"
         p={2}
         border={1}
         borderColor="grey.300"
