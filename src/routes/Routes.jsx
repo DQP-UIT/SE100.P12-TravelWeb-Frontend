@@ -83,27 +83,27 @@ export const router = createBrowserRouter([
             element: <Profile />,
           },
           {
-            path: "user/overalset",
+            path: "overalset",
             element: <OveralRoomSetting />,
           },
           {
-            path: "user/roomset",
+            path: "roomset",
             element: <RoomSetting />,
           },
           {
-            path: "user/roomcalendar",
+            path: "roomcalendar",
             element: <BookingCalendar />,
           },
           {
-            path: "user/booking",
+            path: "booking",
             element: <BookingPage />,
           },
           {
-            path: "user/myorder",
+            path: "myorder",
             element: <PaymentCart />,
           },
           {
-            path: "user/payment",
+            path: "payment",
             element: <PaymentPage />,
           },
         ],

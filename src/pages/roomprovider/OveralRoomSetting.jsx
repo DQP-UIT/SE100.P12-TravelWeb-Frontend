@@ -1,7 +1,11 @@
 import React from "react";
-import Header from "../../components/header/Header";
-import Footer from "../../components/footer/Footer";
 import SettingTag from "./room_component/SettingTag";
+import Bed from "../../../src/assets/OverallBed.svg";
+import Photo from "../../../src/assets/OverallPhoto.svg";
+import Bell from "../../../src/assets/OverallBell.svg";
+import Dollar from "../../../src/assets/OverallDollar.svg";
+import Book from "../../../src/assets/OverallBook.svg";
+import Contract from "../../../src/assets/OverallContract.svg";
 
 const OveralRoomSetting = () => {
   const settings = [
@@ -9,7 +13,7 @@ const OveralRoomSetting = () => {
       name: "Thiết lập phòng",
       content: "Tạo và thiết lập phòng ngay",
       detail: "Mỗi phòng phải có ít nhất 1 hình ảnh được tải lên.",
-      image: "src/assets/OverallBed.svg",
+      image: Bed,
       route: "/setting1",
     },
     {
@@ -17,7 +21,7 @@ const OveralRoomSetting = () => {
       content: "Tải lên hình ảnh cho khách sạn của bạn",
       detail:
         "Khách sạn của bạn cần ít nhất 1 hình ảnh. Hình ảnh chất lượng cao sẽ có nhiều lượt xem hơn.",
-      image: "src/assets/OverallPhoto.svg",
+      image: Photo,
       route: "/setting2",
     },
     {
@@ -25,7 +29,7 @@ const OveralRoomSetting = () => {
       content: "Cài đặt tiện nghi khách sạn",
       detail:
         "Chọn ít nhật 1 tiện nghi. Khách hàng lọc kết quả tìm kiếm dự trên tiện nghi có sẳn nên hãy đảm bảo bạn chọn đầy đủ tiện nghi mà khách sạn đang có.",
-      image: "src/assets/OverallBell.svg",
+      image: Bell,
       route: "/setting3",
     },
     {
@@ -33,7 +37,7 @@ const OveralRoomSetting = () => {
       content: "Tải giá và số phòng cho ít nhất 1 loại phòng trong 90 ngày tới",
       detail:
         "Tải giá phòng tại đây. Bạn có thể quản lý giá phòng mỗi ngày trong mục Quản lý phòng và Quản lý giá.",
-      image: "src/assets/OverallDollar.svg",
+      image: Dollar,
       route: "/setting4",
     },
     {
@@ -41,7 +45,7 @@ const OveralRoomSetting = () => {
       content: "Chính sách hủy phòng của khách sạn",
       detail:
         "Khách hàng có thể lọc tìm kiếm của họ dựa trên chính sách hủy phòng có sẳn nên hãy đảm bảo là bạn đã chọn chính sách tốt nhất mà khách sạn đang có.",
-      image: "src/assets/OverallBook.svg",
+      image: Book,
       route: "/setting5",
     },
     {
@@ -49,7 +53,7 @@ const OveralRoomSetting = () => {
       content: "Trạng thái các hợp đồng của bạn",
       detail:
         "Chúng tôi đang xem xét hồ sơ của bạn. Nếu cần hổ trợ hãy liên hệ chúng tôi.",
-      image: "src/assets/OverallContract.svg",
+      image: Contract,
       route: "/setting6",
     },
   ];
