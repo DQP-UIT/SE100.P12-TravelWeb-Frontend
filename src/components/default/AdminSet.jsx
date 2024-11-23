@@ -9,9 +9,7 @@ const AdminSet = () => {
   };
   return (
     <div>
-      <AdminHeader user={fakeUser} />
       <Outlet />
-      <Footer />
     </div>
   );
 };
