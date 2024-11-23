@@ -3,12 +3,16 @@ import Header from '../header/Header'
 import Footer from '../footer/Footer'
 
 const Default = () => {
+  const fakeUser = {
+    name: "John Doe",
+    avatar: "https://via.placeholder.com/150",
+  };
   return (
-    <>
-    <Header/>
-    <Outlet/>
-    <Footer/>
-    </>
+    <div>
+        <Header user={fakeUser}/>
+        <Outlet/>
+        <Footer/>
+    </div>
   )
 }
 

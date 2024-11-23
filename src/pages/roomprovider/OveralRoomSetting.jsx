@@ -56,7 +56,6 @@ const OveralRoomSetting = () => {
 
   return (
     <div>
-      <Header avatar="src/assets/react.svg" />
       <div className=" flex w-full h-[80px]">
         <div className="absolute mx-8 text-black text-[32px] font-sans font-medium ">
           Hồ sơ của bạn và Kích hoạt khách sạn
@@ -84,7 +83,6 @@ const OveralRoomSetting = () => {
           ))}
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
