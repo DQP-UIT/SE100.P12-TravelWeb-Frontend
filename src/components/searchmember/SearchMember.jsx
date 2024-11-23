@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { BiDownArrow } from 'react-icons/bi'
 import { FaAngleDown } from 'react-icons/fa'
 import { MdPeople } from 'react-icons/md'
 

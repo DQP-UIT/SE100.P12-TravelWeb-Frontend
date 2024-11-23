@@ -124,13 +124,94 @@ export const hotelList = [
         title: "Vinhomes Luxury Residence at Binh Thanh - LUNA Landmark Apartment",
         location: "Binh Thanh, Ho Chí Minh - cách điểm mốc 1,1 km",
         general: "Hãy để chuyến đi của quý khách có một khởi đầu tuyệt vời khi ở lại khách sạn này, nơi có Wi-Fi miễn phí trong tất cả các phòng. Nằm ở vị trí chiến lược tại Quận 1, cho phép quý khách lui tới và gần với các điểm thu hút và tham quan địa phương. Đừng rời đi trước khi ghé thăm Bảo tàng Chứng tích chiến tranh nổi tiếng. Chỗ nghỉ 3 sao này được trang bị các tiện nghi ngay trong khuôn viên để nâng cao chất lượng và niềm vui cho kỳ nghỉ của quý khách.",
-        reviews: 124,
+        room: [
+            {
+                name: 'Deluxe 2 giường (Deluxe Twin)',
+                image: 'src/assets/ImageRoom.png',
+                utilites: [
+                    '2 giường đơn',
+                    'Diện tích phòng: 20m2',
+                    'Không hút thuốc',
+                    'Vòi sen',
+                ],
+                capacities: [
+                    2,
+                    3,
+                ],
+                price: 1658706,
+                discount: 17,
+            },
+            {
+                name: 'Deluxe 2 giường (Deluxe Twin)',
+                image: 'src/assets/ImageRoom.png',
+                utilites: [
+                    '2 giường đơn',
+                    'Diện tích phòng: 20m2',
+                    'Không hút thuốc',
+                    'Vòi sen',
+                ],
+                capacities: [
+                    2,
+                    3,
+                ],
+                price: 1658706,
+                discount: 0,
+            },
+        ],
         amenities: [
             "Free wifi",
             "Máy chạy bộ",
             "Cho thuê oto",
             "Trà chiều",
             "Free bữa sáng",
+        ],
+        numberRate: [
+            {
+                title: 'Tất cả',
+                number: 1000,
+            },
+            {
+                title: '5 sao',
+                number: 200,
+            },
+            {
+                title: '4 sao',
+                number: 200,
+            },
+            {
+                title: '3 sao',
+                number: 200,
+            },
+            {
+                title: '2 sao',
+                number: 200,
+            },
+            {
+                title: '1 sao',
+                number: 200,
+            },
+        ],
+        rate: [
+            {
+                avatar: "https://via.placeholder.com/40x40",
+                name: 'Trần Tuấn Phong',
+                room: 'Deluxe 2 giường (Deluxe Twin)',
+                rate: 4.5,
+                title: 'Nơi ở tuyệt vời cho những ai cần bay sớm, bay gấp, nối chuyến',
+                advantage: "Chỗ ngủ sạch sẽ, nhân viên nhiệt tình, giá phù hợp, có thể đi bộ đến sân bay TSN khoảng 5-7'. Phù hợp với những bạn có chuyến bay vào sáng sớm hôm sau. Có dịp sẽ quay lại.",
+                disadvantage: "Chỗ ngủ sạch sẽ, nhân viên nhiệt tình, giá phù hợp, có thể đi bộ đến sân bay TSN khoảng 5-7'. Phù hợp với những bạn có chuyến bay vào sáng sớm hôm sau. Có dịp sẽ quay lại.",
+                date: '10/06/2024',
+            },
+            {
+                avatar: "https://via.placeholder.com/40x40",
+                name: 'Trần Tuấn Phong',
+                room: 'Deluxe 2 giường (Deluxe Twin)',
+                rate: 4,
+                title: 'Nơi ở tuyệt vời cho những ai cần bay sớm, bay gấp, nối chuyến',
+                advantage: "Chỗ ngủ sạch sẽ, nhân viên nhiệt tình, giá phù hợp, có thể đi bộ đến sân bay TSN khoảng 5-7'. Phù hợp với những bạn có chuyến bay vào sáng sớm hôm sau. Có dịp sẽ quay lại.",
+                disadvantage: "Chỗ ngủ sạch sẽ, nhân viên nhiệt tình, giá phù hợp, có thể đi bộ đến sân bay TSN khoảng 5-7'. Phù hợp với những bạn có chuyến bay vào sáng sớm hôm sau. Có dịp sẽ quay lại.",
+                date: '10/06/2024',
+            },
         ],
     },
 ]

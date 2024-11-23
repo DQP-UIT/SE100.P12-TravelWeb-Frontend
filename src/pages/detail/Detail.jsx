@@ -1,6 +1,30 @@
-import React from 'react'
 import SearchBar from '../../components/searchbar/SearchBar'
 import { hotelList } from '../../models/test-data'
+import { FaCheck, FaStar } from 'react-icons/fa6'
+import RoomBookList from '../../components/roombooklist/RoomBookList'
+import RateList from '../../components/ratelist/RateList'
+
+const starRate = (index) => {
+    const stars = []
+    for (let i = 0; i < index; i++)
+        stars[i] = '*'
+    return (
+        <div className="flex">
+            {stars.map(star => (
+                <FaStar key={star} className="text-yellow-400"/>
+            ))}
+        </div>
+    )
+}
+
+const averageRate = (data) => {
+    let result = 0
+    data.map(item => {
+        result += item.rate
+    })
+    result /= data.length
+    return result
+}
 
 const Detail = ({data, type}) => {
     data = hotelList[0]
@@ -41,15 +65,54 @@ const Detail = ({data, type}) => {
                 <button className='bg-[#1EBBB4] rounded-full p-2 font-bold'>Xem giá</button>
             </div>
         </div>    
-        <fieldset className='my-2 border border-[#359894]'>
+        <fieldset className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
             <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tổng quan</legend>
-            <div className='w-4/5 mx-auto my-3'>
+            <div className='w-5/6 mx-auto my-3'>
                 <p className='font-bold text-xl'>{data.title}</p>
                 <p>{data.location} </p>
-                <hr></hr>
+                <hr className='border border-black'></hr>
                 <p className='text-xs'>{data.general} </p>
             </div>
-        </fieldset>    
+        </fieldset>
+        <fieldset className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tiện nghi</legend>
+            <div className='w-5/6 mx-auto my-3 grid grid-cols-3'>
+                {data.amenities.map(amenity => {
+                    return (
+                        <div key={amenity} className='flex gap-1 items-center'>
+                            <FaCheck className='fill-blue-500'/>
+                            <p className=''>{amenity}</p>
+                        </div>
+                    )
+                })}
+            </div>
+        </fieldset>
+        <fieldset className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Phòng nghỉ</legend>
+            <div className='w-5/6 mx-auto my-3'>
+                <RoomBookList data={data.room}/>
+            </div>
+        </fieldset>
+        <fieldset className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Đánh giá</legend>
+            <div className='w-5/6 mx-auto my-3 items-center'>
+                <div className='flex border border-black rounded-2xl p-2 bg-[#BDFFFC]'>
+                    <div className='flex flex-col w-1/5 justify-center items-center'>
+                        <p className='font-semibold text-xl'> {averageRate(data.rate)} trên 5</p>
+                        {starRate(5)}
+                    </div>
+                    <div className='grid grid-cols-3 w-4/5 gap-1'>
+                        {data.numberRate.map(item => (
+                            <div key={item} className='w-4/5 mx-auto my-1 flex gap-1 font-semibold bg-[#90EFEB] justify-center py-1 rounded-lg cursor-pointer'>
+                                <p>{item.title}</p>
+                                <p>({item.number})</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <RateList data={data.rate}/>
+            </div>
+        </fieldset>
       </div>
     </div>
   )
