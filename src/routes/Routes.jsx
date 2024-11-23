@@ -117,26 +117,26 @@ export const router = createBrowserRouter([
             path: "/admin/",
             element: <AdminMain />,
           },
-          {
-            path: "/admin/customer",
-            element: <CustomerMG />,
-          },
-          {
-            path: "/admin/customerinfo",
-            element: <CustomerInfo />,
-          },
-          {
-            path: "/admin/provider",
-            element: <ProviderMG />,
-          },
-          {
-            path: "/admin/providerinfo",
-            element: <ProviderInfo />,
-          },
-          {
-            path: "/admin/revenue",
-            element: <RevenueReportPage />,
-          },
+          // {
+          //   path: "/admin/customer",
+          //   element: <CustomerMG />,
+          // },
+          // {
+          //   path: "/admin/customerinfo",
+          //   element: <CustomerInfo />,
+          // },
+          // {
+          //   path: "/admin/provider",
+          //   element: <ProviderMG />,
+          // },
+          // {
+          //   path: "/admin/providerinfo",
+          //   element: <ProviderInfo />,
+          // },
+          // {
+          //   path: "/admin/revenue",
+          //   element: <RevenueReportPage />,
+          // },
         ],
       },
     ],
