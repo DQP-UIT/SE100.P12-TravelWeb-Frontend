@@ -1,9 +1,7 @@
 import React from "react";
 import { FixedSizeList } from 'react-window';
 import RoomTag from "./RoomTag";
-import { Link } from "react-router-dom";
-
-const RoomList = ({ rooms }) => {
+const RoomList = ({ rooms=[] }) => {
   // Render từng RoomTag dựa trên chỉ số trong mảng
   const Row = ({ index, style }) => {
     return (
