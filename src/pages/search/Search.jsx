@@ -33,7 +33,7 @@ const Search = (type) => {
             </ul>
           </div>
           <div className="my-2">
-            <RoomList list={reviewList}/>
+            <RoomList rooms={reviewList}/>
           </div>
         </div>
       </div>
