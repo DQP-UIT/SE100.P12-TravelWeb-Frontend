@@ -13,10 +13,11 @@ const RoomList = ({ rooms=[] }) => {
   return (
     <div className="w-full h-[1500px]">
       <FixedSizeList
-        height={760}
+        height={800}
         width={800}
+        gap={4}
         itemCount={rooms.length}
-        itemSize={280}
+        itemSize={300}
         style={{
           overflowX: "hidden", 
           scrollbarWidth: "none", 
