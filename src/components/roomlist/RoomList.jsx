@@ -1,10 +1,11 @@
 import React from "react";
-import { FixedSizeList } from 'react-window';
+import { FixedSizeList } from "react-window";
 import RoomTag from "./RoomTag";
-const RoomList = ({ rooms=[] }) => {
+
+const RoomList = ({ rooms = [] }) => {
   const Row = ({ index, style }) => {
     return (
-      <div style={style}>
+      <div style={{ ...style, padding: "10px" }}>
         <RoomTag room={rooms[index]} />
       </div>
     );
@@ -14,13 +15,12 @@ const RoomList = ({ rooms=[] }) => {
     <div className="w-full h-[1500px]">
       <FixedSizeList
         height={800}
-        width={800}
-        gap={4}
+        width={840}
         itemCount={rooms.length}
-        itemSize={300}
+        itemSize={280}
         style={{
-          overflowX: "hidden", 
-          scrollbarWidth: "none", 
+          overflowX: "hidden",
+          scrollbarWidth: "none",
         }}
       >
         {Row}
