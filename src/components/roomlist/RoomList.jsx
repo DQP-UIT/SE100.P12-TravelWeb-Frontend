@@ -2,7 +2,6 @@ import React from "react";
 import { FixedSizeList } from 'react-window';
 import RoomTag from "./RoomTag";
 const RoomList = ({ rooms=[] }) => {
-  // Render từng RoomTag dựa trên chỉ số trong mảng
   const Row = ({ index, style }) => {
     return (
       <div style={style}>
@@ -19,8 +18,8 @@ const RoomList = ({ rooms=[] }) => {
         itemCount={rooms.length}
         itemSize={280}
         style={{
-          overflowX: "hidden", // Ẩn thanh cuộn ngang
-          scrollbarWidth: "none", // Ẩn thanh cuộn trên Firefox
+          overflowX: "hidden", 
+          scrollbarWidth: "none", 
         }}
       >
         {Row}
