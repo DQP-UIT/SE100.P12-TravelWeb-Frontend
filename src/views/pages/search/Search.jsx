@@ -2,7 +2,7 @@ import { FaLongArrowAltUp } from "react-icons/fa"
 import MenuFilter from "../../components/menufilter/MenuFilter"
 import RoomList from "../../components/roomlist/RoomList"
 import SearchBar from "../../components/searchbar/SearchBar"
-import { reviewList } from "../../models/test-data"
+import { reviewList } from "../../../models/test-data"
 
 const Search = (type) => {
   

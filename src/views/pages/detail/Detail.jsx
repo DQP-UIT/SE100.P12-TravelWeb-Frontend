@@ -1,5 +1,5 @@
 import SearchBar from '../../components/searchbar/SearchBar'
-import { hotelList } from '../../models/test-data'
+import { hotelList } from '../../../models/test-data'
 import { FaCheck, FaStar } from 'react-icons/fa6'
 import RoomBookList from '../../components/roombooklist/RoomBookList'
 import RateList from '../../components/ratelist/RateList'
