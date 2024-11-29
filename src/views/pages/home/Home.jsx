@@ -1,6 +1,6 @@
 import HomeSearch from "../../components/homesearch/HomeSearch"
 import ReviewList from "../../components/reviewlist/ReviewList"
-import { suggestLocation } from "../../models/test-data"
+import { suggestLocation } from "../../../models/test-data"
 
 const Home = () => {
   return (

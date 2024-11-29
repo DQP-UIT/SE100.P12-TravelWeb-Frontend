@@ -1,6 +1,6 @@
 import React from "react";
-import logo from "../../assets/Logo.svg";
-import cart from "../../assets/Cart.svg";
+import logo from "../../../assets/Logo.svg";
+import cart from "../../../assets/Cart.svg";
 
 const Header = ({ user }) => {
   return (

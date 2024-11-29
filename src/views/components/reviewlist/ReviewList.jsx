@@ -1,5 +1,5 @@
 import React from 'react'
-import { reviewItems } from '../../models/test-data'
+import { reviewItems } from '../../../models/test-data'
 import ReviewItem from './ReviewItem'
 
 const ReviewList = () => {

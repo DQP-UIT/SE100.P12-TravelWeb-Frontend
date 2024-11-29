@@ -1,11 +1,11 @@
 import React from "react";
 import SettingTag from "./room_component/SettingTag";
-import Bed from "../../../src/assets/OverallBed.svg";
-import Photo from "../../../src/assets/OverallPhoto.svg";
-import Bell from "../../../src/assets/OverallBell.svg";
-import Dollar from "../../../src/assets/OverallDollar.svg";
-import Book from "../../../src/assets/OverallBook.svg";
-import Contract from "../../../src/assets/OverallContract.svg";
+import Bed from "../../../assets/OverallBed.svg";
+import Photo from "../../../assets/OverallPhoto.svg";
+import Bell from "../../../assets/OverallBell.svg";
+import Dollar from "../../../assets/OverallDollar.svg";
+import Book from "../../../assets/OverallBook.svg";
+import Contract from "../../../assets/OverallContract.svg";
 
 const OveralRoomSetting = () => {
   const settings = [
@@ -73,7 +73,7 @@ const OveralRoomSetting = () => {
           </button>
         </div>
       </div>
-      <div className="container mx-auto p-4 w-[1300px]">
+      <div className="container mx-auto p-4 w-[1150px]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {settings.map((setting, index) => (
             <SettingTag

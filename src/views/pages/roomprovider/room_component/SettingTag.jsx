@@ -5,7 +5,7 @@ const SettingTag = ({ name, content, detail, image, route }) => {
   //const navigator = useNavigate();
   return (
     <div
-      className="w-[400px] h-[300px] p-4 bg-[#C9C9C9] rounded-[5px] cursor-pointer hover:scale-110 hover:bg-[#5498F0] group"
+      className="w-[350px] h-[300px] p-4 bg-[#C9C9C9] rounded-[5px] cursor-pointer hover:scale-110 hover:bg-[#5498F0] group"
       // onClick={() => {
       //   navigator(route);
       // }}

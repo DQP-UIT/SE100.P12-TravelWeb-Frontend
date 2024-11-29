@@ -14,7 +14,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import Logo from "../../assets/Logo.svg";
+import Logo from "../../../assets/Logo.svg";
 import CustomerMG from "../admin/CustomerMG";
 import CustomerInfo from "../admin/CustomerInfo";
 import ProviderMG from "../admin/ProviderMG";
