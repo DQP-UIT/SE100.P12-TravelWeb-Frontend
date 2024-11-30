@@ -1,0 +1,4 @@
+export const ALL_HOTEL_REQUEST = "ALL_HOTEL_REQUEST";
+export const ALL_HOTEL_SUCCESS = "ALL_HOTEL_SUCCESS";
+export const ALL_HOTEL_FAIL = "ALL_HOTEL_FAIL";
+export const CLEAR_ERRORS = "CLEAR_ERRORS";

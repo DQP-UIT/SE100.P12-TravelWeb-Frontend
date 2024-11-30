@@ -3,11 +3,36 @@ import MenuFilter from "../../components/menufilter/MenuFilter"
 import RoomList from "../../components/roomlist/RoomList"
 import SearchBar from "../../components/searchbar/SearchBar"
 import { reviewList } from "../../../models/test-data"
+import { useDispatch, useSelector } from "react-redux"
+import { useEffect } from "react"
+import { clearErrors, getHotelType } from "../../../controller/hotelTypeAction"
 
 const Search = (type) => {
-  
+  const dispatch = useDispatch();
+    
+  const {
+    hotelTypes,
+    loading,
+    error,
+   
+  } = useSelector((state) => state.hotelType);
+
+  useEffect(() => {
+    if (error) {
+      alert.error(error);
+      dispatch(clearErrors());
+    }
+
+    dispatch(getHotelType());
+  }, [dispatch, error]);
+
+
+
   return (
     <div className="md:w-full font-['Roboto']">
+    {
+      console.log(hotelTypes)
+    }
       <SearchBar type={type?'hotel':type}/>
       
       <div className='grid grid-cols-3 my-4 relative justify-center'>

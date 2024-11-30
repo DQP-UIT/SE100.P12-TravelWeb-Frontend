@@ -1,0 +1,4 @@
+export const ALL_SUB_REQUEST = "ALL_SUB_REQUEST";
+export const ALL_SUB_SUCCESS = "ALL_SUB_SUCCESS";
+export const ALL_SUB_FAIL = "ALL_SUB_FAIL";
+export const CLEAR_ERRORS = "CLEAR_ERRORS";
