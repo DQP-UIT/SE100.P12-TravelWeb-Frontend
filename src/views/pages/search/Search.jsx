@@ -8,31 +8,12 @@ import { useEffect } from "react"
 import { clearErrors, getHotelType } from "../../../controller/hotelTypeAction"
 
 const Search = (type) => {
-  const dispatch = useDispatch();
-    
-  const {
-    hotelTypes,
-    loading,
-    error,
-   
-  } = useSelector((state) => state.hotelType);
-
-  useEffect(() => {
-    if (error) {
-      alert.error(error);
-      dispatch(clearErrors());
-    }
-
-    dispatch(getHotelType());
-  }, [dispatch, error]);
-
+  
 
 
   return (
     <div className="md:w-full font-['Roboto']">
-    {
-      console.log(hotelTypes)
-    }
+    
       <SearchBar type={type?'hotel':type}/>
       
       <div className='grid grid-cols-3 my-4 relative justify-center'>

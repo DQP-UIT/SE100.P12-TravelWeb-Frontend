@@ -3,6 +3,8 @@ import SearchInput from "../searchinput/SearchInput"
 import SearchMember from "../searchmember/SearchMember"
 
 const SearchBar = ({type}) => {
+
+  
   return (
     <div className="w-screen bg-[#9BE1DE] flex py-3 items-center justify-center">
       <div className="w-1/3">
