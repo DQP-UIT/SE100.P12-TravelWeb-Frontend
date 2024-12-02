@@ -244,7 +244,19 @@ const RoomBookingCalendar = () => {
                   <ListItem key={service.id}>
                     <ListItemText
                       primary={service.name}
-                      secondary={`Schedule: ${service.schedule}, Status: ${service.status}, Cost: $${service.cost}`}
+                      secondary={
+                        <>
+                          <Typography component="span" variant="body2" className="whitespace-nowrap">
+                            Schedule: {service.schedule},
+                          </Typography>
+                          <Typography component="span" variant="body2" className="inline-block">
+                            Status: {service.status},
+                          </Typography>
+                          <Typography component="span" variant="body2" className="inline-block">
+                            Cost: ${service.cost}
+                          </Typography>
+                        </>
+                      }
                     />
                     <FormControlLabel
                       control={
