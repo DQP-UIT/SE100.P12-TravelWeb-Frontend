@@ -1,22 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
   Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
   Switch,
   FormControlLabel,
   IconButton,
   List,
   ListItem,
   ListItemText,
+  Paper,
+  TextField,
 } from "@mui/material";
-import Calendar from "@toast-ui/react-calendar";
-import "@toast-ui/calendar/dist/toastui-calendar.min.css";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
@@ -29,6 +27,8 @@ const fakeServices = [
     status: "Active",
     cost: 20,
     enabled: true,
+    from: new Date(2024, 10, 1),
+    to: new Date(2024, 10, 30),
   },
   {
     id: "2",
@@ -37,6 +37,8 @@ const fakeServices = [
     status: "Inactive",
     cost: 10,
     enabled: false,
+    from: new Date(2024, 10, 1),
+    to: new Date(2024, 10, 30),
   },
   {
     id: "3",
@@ -45,75 +47,66 @@ const fakeServices = [
     status: "Active",
     cost: 15,
     enabled: true,
+    from: new Date(2024, 10, 1),
+    to: new Date(2024, 10, 30),
+  },
+  {
+    id: "4",
+    name: "Spa Service",
+    schedule: "Daily",
+    status: "Active",
+    cost: 50,
+    enabled: true,
+    from: new Date(2024, 10, 1),
+    to: new Date(2024, 10, 30),
+  },
+  {
+    id: "5",
+    name: "Laundry Service",
+    schedule: "Weekdays",
+    status: "Inactive",
+    cost: 25,
+    enabled: false,
+    from: new Date(2024, 10, 1),
+    to: new Date(2024, 10, 30),
+  },
+  {
+    id: "6",
+    name: "Swimming Pool Access",
+    schedule: "Weekends",
+    status: "Active",
+    cost: 30,
+    enabled: true,
+    from: new Date(2024, 10, 1),
+    to: new Date(2024, 10, 30),
   },
 ];
 
+const localizer = momentLocalizer(moment);
+
 // Function to generate schedules for the services
-const generateSchedules = (services, year, month) => {
+const generateSchedules = (services) => {
   const schedules = [];
 
   services.forEach((service) => {
-    switch (service.schedule) {
-      case "Daily":
-        for (let day = 1; day <= 31; day++) {
-          const date = new Date(year, month, day);
-          if (date.getMonth() === month) {
-            schedules.push({
-              id: `${service.id}-${day}`,
-              calendarId: "1",
-              title: service.name,
-              category: "time",
-              dueDateClass: "",
-              start: date,
-              end: date,
-              isReadOnly: true,
-            });
-          }
-        }
-        break;
-      case "Weekdays":
-        for (let day = 1; day <= 31; day++) {
-          const date = new Date(year, month, day);
-          if (
-            date.getMonth() === month &&
-            date.getDay() !== 0 &&
-            date.getDay() !== 6
-          ) {
-            schedules.push({
-              id: `${service.id}-${day}`,
-              calendarId: "1",
-              title: service.name,
-              category: "time",
-              dueDateClass: "",
-              start: date,
-              end: date,
-              isReadOnly: true,
-            });
-          }
-        }
-        break;
-      case "Weekends":
-        for (let day = 1; day <= 31; day++) {
-          const date = new Date(year, month, day);
-          if (
-            date.getMonth() === month &&
-            (date.getDay() === 0 || date.getDay() === 6)
-          ) {
-            schedules.push({
-              id: `${service.id}-${day}`,
-              calendarId: "1",
-              title: service.name,
-              category: "time",
-              dueDateClass: "",
-              start: date,
-              end: date,
-              isReadOnly: true,
-            });
-          }
-        }
-        break;
-      default:
-        break;
+    const { from, to, schedule, enabled } = service;
+    if (!enabled) return;
+
+    const startDate = new Date(from);
+    const endDate = new Date(to);
+
+    for (
+      let date = new Date(startDate);
+      date <= endDate;
+      date.setDate(date.getDate() + 1)
+    ) {
+      schedules.push({
+        id: `${service.id}-${date.getDate()}`,
+        title: service.name,
+        start: new Date(date),
+        end: new Date(date),
+        allDay: true,
+      });
     }
   });
 
@@ -121,44 +114,29 @@ const generateSchedules = (services, year, month) => {
 };
 
 const RoomBookingCalendar = () => {
-  const calendarRef = useRef(null);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [services, setServices] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [services, setServices] = useState(fakeServices);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [schedules, setSchedules] = useState([]);
+  const [selectedServices, setSelectedServices] = useState([]);
 
   useEffect(() => {
     // Generate schedules for the services
-    const generatedSchedules = generateSchedules(
-      fakeServices,
-      currentYear,
-      currentMonth
-    );
+    const generatedSchedules = generateSchedules(services);
     setSchedules(generatedSchedules);
-  }, [currentMonth, currentYear]);
+  }, [services]);
 
-  useEffect(() => {
-    // Update calendar view to the current month and year
-    if (calendarRef.current) {
-      const calendarInstance = calendarRef.current.getInstance();
-      calendarInstance.setDate(new Date(currentYear, currentMonth));
-      calendarInstance.clear();
-      calendarInstance.createSchedules(schedules);
-    }
-  }, [currentMonth, currentYear, schedules]);
-
-  const handleDateClick = (event) => {
-    const date = event.date;
+  const handleDateClick = (date) => {
     setSelectedDate(date);
-    // Simulate API call to get services for the selected date
-    setServices(fakeServices);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
+    const servicesForDate = services.map((service) => {
+      const serviceStart = new Date(service.from);
+      const serviceEnd = new Date(service.to);
+      return {
+        ...service,
+        enabled: date >= serviceStart && date <= serviceEnd && service.enabled,
+      };
+    });
+    setSelectedServices(servicesForDate);
   };
 
   const handleServiceToggle = (serviceId) => {
@@ -171,22 +149,30 @@ const RoomBookingCalendar = () => {
     );
   };
 
+  const handleDateChange = (serviceId, field, value) => {
+    setServices((prevServices) =>
+      prevServices.map((service) =>
+        service.id === serviceId
+          ? { ...service, [field]: new Date(value) }
+          : service
+      )
+    );
+  };
+
   const handlePrevMonth = () => {
-    setCurrentMonth((prevMonth) => (prevMonth === 0 ? 11 : prevMonth - 1));
-    if (currentMonth === 0) {
-      setCurrentYear((prevYear) => prevYear - 1);
-    }
+    setCurrentDate(
+      (prevDate) => new Date(prevDate.getFullYear(), prevDate.getMonth() - 1, 1)
+    );
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth((prevMonth) => (prevMonth === 11 ? 0 : prevMonth + 1));
-    if (currentMonth === 11) {
-      setCurrentYear((prevYear) => prevYear + 1);
-    }
+    setCurrentDate(
+      (prevDate) => new Date(prevDate.getFullYear(), prevDate.getMonth() + 1, 1)
+    );
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="lg">
       <Typography variant="h4" component="h1" gutterBottom>
         Room Booking Calendar
       </Typography>
@@ -200,7 +186,7 @@ const RoomBookingCalendar = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h6">
-          {new Date(currentYear, currentMonth).toLocaleString("default", {
+          {currentDate.toLocaleString("default", {
             month: "long",
             year: "numeric",
           })}
@@ -209,48 +195,100 @@ const RoomBookingCalendar = () => {
           <ArrowForwardIcon />
         </IconButton>
       </Box>
-      <Box>
-        <Calendar
-          ref={calendarRef}
-          height="800px"
-          view="month"
-          useCreationPopup={false}
-          useDetailPopup={false}
-          schedules={schedules}
-          onClickDay={(event) => handleDateClick(event)}
-        />
-      </Box>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
-          Services on {selectedDate && selectedDate.toDateString()}
-        </DialogTitle>
-        <DialogContent>
-          <List>
-            {services.map((service) => (
-              <ListItem key={service.id}>
-                <ListItemText
-                  primary={service.name}
-                  secondary={`Schedule: ${service.schedule}, Status: ${service.status}, Cost: $${service.cost}`}
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={service.enabled}
-                      onChange={() => handleServiceToggle(service.id)}
+      <Box display="flex">
+        <Box flex={2} mr={2}>
+          <Calendar
+            localizer={localizer}
+            events={schedules}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 800 }}
+            date={currentDate}
+            onNavigate={(date) => setCurrentDate(date)}
+            onSelectSlot={(slotInfo) => handleDateClick(slotInfo.start)}
+            onSelectEvent={(event) => handleDateClick(event.start)}
+            selectable
+            dayPropGetter={(date) => ({
+              style: {
+                backgroundColor:
+                  selectedDate && moment(date).isSame(selectedDate, "day")
+                    ? "#d3d3d3"
+                    : undefined,
+              },
+            })}
+            eventPropGetter={(event) => ({
+              style: {
+                backgroundColor: "#3174ad",
+                color: "white",
+                borderRadius: "5px",
+                padding: "2px 5px",
+                fontSize: "10px",
+              },
+            })}
+          />
+        </Box>
+        <Box flex={1}>
+          <Paper elevation={3} style={{ padding: "16px" }}>
+            <Typography variant="h6" gutterBottom>
+              Services on {selectedDate && selectedDate.toDateString()}
+            </Typography>
+            <List>
+              {services.map((service) => {
+                const serviceStart = new Date(service.from);
+                const serviceEnd = new Date(service.to);
+                const isServiceEnabled =
+                  selectedDate >= serviceStart &&
+                  selectedDate <= serviceEnd &&
+                  service.enabled;
+                return (
+                  <ListItem key={service.id}>
+                    <ListItemText
+                      primary={service.name}
+                      secondary={`Schedule: ${service.schedule}, Status: ${service.status}, Cost: $${service.cost}`}
                     />
-                  }
-                  label="Enabled"
-                />
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={isServiceEnabled}
+                          onChange={() => handleServiceToggle(service.id)}
+                        />
+                      }
+                      label="Enabled"
+                    />
+                    <Box display="flex" flexDirection="column" ml={2} gap={2}>
+                      <TextField
+                        label="From"
+                        type="date"
+                        value={moment(service.from).format("YYYY-MM-DD")}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        onChange={(e) =>
+                          handleDateChange(service.id, "from", e.target.value)
+                        }
+                      />
+                      <TextField
+                        label="To"
+                        type="date"
+                        value={moment(service.to).format("YYYY-MM-DD")}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        onChange={(e) =>
+                          handleDateChange(service.id, "to", e.target.value)
+                        }
+                        inputProps={{
+                          min: moment(service.from).format("YYYY-MM-DD"),
+                        }}
+                      />
+                    </Box>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Paper>
+        </Box>
+      </Box>
     </Container>
   );
 };
