@@ -8,9 +8,11 @@ const Default = () => {
     avatar: "https://via.placeholder.com/150",
   };
   return (
-    <div>
+    <div className='w-full h-full'>
         <Header user={fakeUser}/>
+        <div className='w-full h-full'>
         <Outlet/>
+        </div>
         <Footer/>
     </div>
   )
