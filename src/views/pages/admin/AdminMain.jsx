@@ -69,7 +69,16 @@ const AdminMain = () => {
       case "Revenue Report":
         return <RevenueReportPage />;
       default:
-        return <div>Welcome to the Admin Dashboard</div>;
+        return (
+          <div className="w-full h-[100vh] flex flex-col justify-center">
+            <div className="w-full h-32 flex flex-auto justify-center">
+              <img src={Logo} alt="logo" />
+            </div>
+            <div className="mt-8 w-full h-fit flex flex-auto justify-center text-4xl font-semibold upercase -rotate-2 p-8 text-teal-400 mix-blend-overlay ">
+              Welcome to the Admin Dashboard
+            </div>
+          </div>
+        );
     }
   };
 
