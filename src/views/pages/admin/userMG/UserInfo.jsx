@@ -12,25 +12,9 @@ import {
   FormControl,
 } from "@mui/material";
 
-// Fake customer data to simulate API call
-const fakeCustomer = {
-  id: "1",
-  fullName: "John Doe",
-  email: "john.doe@example.com",
-  phoneNumber: "123-456-7890",
-  birthday: "1990-01-01",
-  username: "johndoe",
-  password: "password123",
-  role: "Admin",
-  loyaltyPoint: 1500,
-  address: "123 Main St, Anytown, USA",
-  avatar: "https://via.placeholder.com/150",
-};
-
-const CustomerInfo = () => {
-  const [customer, setCustomer] = useState(fakeCustomer);
+const UserInfo = ({ user, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(fakeCustomer);
+  const [formData, setFormData] = useState(user);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -38,12 +22,14 @@ const CustomerInfo = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    setFormData(customer); // Reset form data to original customer data
+    setFormData(user);
+    onClose();
   };
 
   const handleSave = () => {
-    setCustomer(formData);
+    // Save logic here
     setIsEditing(false);
+    onClose();
   };
 
   const handleChange = (e) => {
@@ -55,17 +41,17 @@ const CustomerInfo = () => {
   };
 
   const handleDelete = () => {
-    // Handle delete customer logic here
-    console.log("Delete customer:", customer);
-    setCustomer(null); // Simulate customer deletion
+    // Handle delete user logic here
+    console.log("Delete user:", user);
+    onClose();
   };
 
   return (
-    <Container maxWidth="sm" className="flex flex-col items-center">
+    <Container maxWidth="lg" className="flex flex-col items-center min-w-96">
       <Typography variant="h4" component="h1">
-        Provider Information
+        user Information
       </Typography>
-      {customer ? (
+      {user ? (
         <Box
           className={
             isEditing
@@ -76,8 +62,8 @@ const CustomerInfo = () => {
           borderColor="grey.300"
         >
           <Avatar
-            src={customer.avatar}
-            alt={customer.fullName}
+            src={user.avatar}
+            alt={user.name}
             className="mb-4"
             sx={{ width: 100, height: 100 }}
           />
@@ -85,8 +71,8 @@ const CustomerInfo = () => {
             <>
               <TextField
                 label="Full Name"
-                name="fullName"
-                value={formData.fullName}
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 fullWidth
                 margin="normal"
@@ -101,32 +87,8 @@ const CustomerInfo = () => {
               />
               <TextField
                 label="Phone Number"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Birthday"
-                name="birthday"
-                value={formData.birthday}
-                onChange={handleChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Password"
-                name="password"
-                value={formData.password}
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
                 fullWidth
                 margin="normal"
@@ -140,26 +102,10 @@ const CustomerInfo = () => {
                   onChange={handleChange}
                 >
                   <MenuItem value="Admin">Admin</MenuItem>
-                  <MenuItem value="Customer">Customer</MenuItem>
-                  <MenuItem value="Provider">Provider</MenuItem>
+                  <MenuItem value="User">User</MenuItem>
+                  <MenuItem value="Moderator">Moderator</MenuItem>
                 </Select>
               </FormControl>
-              <TextField
-                label="Loyalty Points"
-                name="loyaltyPoint"
-                value={formData.loyaltyPoint}
-                onChange={handleChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                fullWidth
-                margin="normal"
-              />
               <Box
                 mt={2}
                 display="flex"
@@ -181,34 +127,19 @@ const CustomerInfo = () => {
           ) : (
             <>
               <Typography variant="h6" component="div" gutterBottom>
-                {customer.fullName}
+                {user.name}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                ID: {customer.id}
+                ID: {user.id}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Email: {customer.email}
+                Email: {user.email}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Phone Number: {customer.phoneNumber}
+                Phone: {user.phone}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Birthday: {customer.birthday}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Username: {customer.username}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Password: {customer.password}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Role: {customer.role}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Loyalty Points: {customer.loyaltyPoint}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Address: {customer.address}
+                Role: {user.role}
               </Typography>
               <Box
                 mt={2}
@@ -236,11 +167,11 @@ const CustomerInfo = () => {
         </Box>
       ) : (
         <Typography variant="body1" color="textSecondary">
-          Customer has been deleted.
+          user has been deleted.
         </Typography>
       )}
     </Container>
   );
 };
 
-export default CustomerInfo;
+export default UserInfo;
