@@ -40,7 +40,7 @@ const UserTag = ({ user }) => {
       <Modal open={open} onClose={handleClose}>
         <Box
           position="absolute"
-          top="10%"
+          top="5%"
           left="35%"
           transform="translate(-50%, -50%)"
           bgcolor="background.paper"
