@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Container, Typography, TextField } from "@mui/material";
 import UserTag from "./userMG/UserTag";
-
 // Fake data to simulate API call
 const fakeUsers = [
   {
@@ -81,6 +80,7 @@ const fakeUsers = [
 const CustomerMG = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     // Simulate API call
@@ -89,6 +89,14 @@ const CustomerMG = () => {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
+  };
+
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+  };
+
+  const handleClose = () => {
+    setSelectedUser(null);
   };
 
   const filteredUsers = users.filter((user) =>
@@ -126,9 +134,16 @@ const CustomerMG = () => {
         borderRadius="8px"
       >
         {filteredUsers.map((user) => (
-          <UserTag key={user.id} user={user} />
+          <UserTag
+            key={user.id}
+            user={user}
+            onClick={() => handleUserClick(user)}
+          />
         ))}
       </Box>
+      {selectedUser && (
+        <UserTag customer={selectedUser} onClose={handleClose} />
+      )}
     </Container>
   );
 };
