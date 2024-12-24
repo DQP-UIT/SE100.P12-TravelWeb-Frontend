@@ -111,7 +111,7 @@ const CustomerMG = () => {
         className="text-center"
         gutterBottom
       >
-        User Management
+        Customer Management
       </Typography>
       <TextField
         label="Search Users"

@@ -103,7 +103,7 @@ const ProviderMG = () => {
         className="text-center"
         gutterBottom
       >
-        User Management
+        Provider Management
       </Typography>
       <TextField
         label="Search Users"
