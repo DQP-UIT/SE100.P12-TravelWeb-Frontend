@@ -8,7 +8,7 @@ const fakeUsers = [
     name: "John Doe",
     email: "john.doe@example.com",
     phone: "123-456-7890",
-    role: "Admin",
+    role: "Customer",
     avatar: "https://via.placeholder.com/150",
   },
   {
@@ -16,7 +16,7 @@ const fakeUsers = [
     name: "Jane Smith",
     email: "jane.smith@example.com",
     phone: "098-765-4321",
-    role: "User",
+    role: "Customer",
     avatar: "https://via.placeholder.com/150",
   },
   {
@@ -24,7 +24,7 @@ const fakeUsers = [
     name: "Alice Johnson",
     email: "alice.johnson@example.com",
     phone: "555-555-5555",
-    role: "Moderator",
+    role: "Customer",
     avatar: "https://via.placeholder.com/150",
   },
   {
@@ -32,7 +32,7 @@ const fakeUsers = [
     name: "Bob Brown",
     email: "bob.brown@example.com",
     phone: "222-333-4444",
-    role: "User",
+    role: "Customer",
     avatar: "https://via.placeholder.com/150",
   },
   {
@@ -40,7 +40,7 @@ const fakeUsers = [
     name: "Charlie Black",
     email: "charlie.black@example.com",
     phone: "555-666-7777",
-    role: "Admin",
+    role: "Customer",
     avatar: "https://via.placeholder.com/150",
   },
   {
@@ -48,7 +48,7 @@ const fakeUsers = [
     name: "Diana White",
     email: "diana.white@example.com",
     phone: "888-999-0000",
-    role: "User",
+    role: "Customer",
     avatar: "https://via.placeholder.com/150",
   },
   {
@@ -56,7 +56,7 @@ const fakeUsers = [
     name: "Eve Green",
     email: "eve.green@example.com",
     phone: "111-222-3333",
-    role: "Moderator",
+    role: "Customer",
     avatar: "https://via.placeholder.com/150",
   },
   {
@@ -64,7 +64,7 @@ const fakeUsers = [
     name: "Frank Blue",
     email: "frank.blue@example.com",
     phone: "444-555-6666",
-    role: "User",
+    role: "Customer",
     avatar: "https://via.placeholder.com/150",
   },
   {
@@ -72,7 +72,7 @@ const fakeUsers = [
     name: "Grace Yellow",
     email: "grace.yellow@example.com",
     phone: "777-888-9999",
-    role: "Admin",
+    role: "Customer",
     avatar: "https://via.placeholder.com/150",
   },
 ];
