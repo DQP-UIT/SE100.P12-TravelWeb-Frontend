@@ -49,7 +49,7 @@ const UserInfo = ({ user, onClose }) => {
   return (
     <Container maxWidth="lg" className="flex flex-col items-center min-w-96">
       <Typography variant="h4" component="h1">
-        user Information
+        User Information
       </Typography>
       {user ? (
         <Box
@@ -102,8 +102,8 @@ const UserInfo = ({ user, onClose }) => {
                   onChange={handleChange}
                 >
                   <MenuItem value="Admin">Admin</MenuItem>
-                  <MenuItem value="User">User</MenuItem>
-                  <MenuItem value="Moderator">Moderator</MenuItem>
+                  <MenuItem value="Customer">Customer</MenuItem>
+                  <MenuItem value="Provider">Provider</MenuItem>
                 </Select>
               </FormControl>
               <Box
