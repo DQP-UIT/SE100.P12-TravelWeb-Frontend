@@ -16,9 +16,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Logo from "../../../assets/Logo.svg";
 import CustomerMG from "../admin/CustomerMG";
-import CustomerInfo from "../admin/CustomerInfo";
 import ProviderMG from "../admin/ProviderMG";
-import ProviderInfo from "../admin/ProviderInfo";
 import RevenueReportPage from "../admin/report/RevenueReport";
 
 const drawerWidth = 240;
@@ -43,33 +41,38 @@ const AdminMain = () => {
     fetchAdminInfo();
   }, []);
 
-  const handleAvatarClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  // const handleAvatarClick = (event) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  // const handleMenuClose = () => {
+  //   setAnchorEl(null);
+  // };
 
-  const handleAdminInfoClick = () => {
-    handleMenuClose();
-    navigate("/admin/admininfo");
-  };
+  // const handleAdminInfoClick = () => {
+  //   handleMenuClose();
+  //   navigate("/admin/admininfo");
+  // };
 
   const renderPage = () => {
     switch (selectedPage) {
       case "Customer Management":
         return <CustomerMG />;
-      case "Customer Info":
-        return <CustomerInfo />;
       case "Provider Management":
         return <ProviderMG />;
-      case "Provider Info":
-        return <ProviderInfo />;
       case "Revenue Report":
         return <RevenueReportPage />;
       default:
-        return <div>Welcome to the Admin Dashboard</div>;
+        return (
+          <div className="w-full h-[100vh] flex flex-col justify-center">
+            <div className="w-full h-32 flex flex-auto justify-center">
+              <img src={Logo} alt="logo" />
+            </div>
+            <div className="mt-8 w-full h-fit flex flex-auto justify-center text-4xl font-semibold upercase -rotate-2 p-8 text-teal-400 mix-blend-overlay ">
+              Welcome to the Admin Dashboard
+            </div>
+          </div>
+        );
     }
   };
 
@@ -84,7 +87,7 @@ const AdminMain = () => {
             Admin Dashboard
           </Typography>
           {adminInfo && (
-            <IconButton onClick={handleAvatarClick} sx={{ p: 0 }}>
+            <IconButton sx={{ p: 0 }}>
               <Avatar alt={adminInfo.name} src={adminInfo.avatar} />
             </IconButton>
           )}
@@ -128,17 +131,11 @@ const AdminMain = () => {
             >
               <ListItemText primary="Customer Management" />
             </ListItem>
-            <ListItem button onClick={() => setSelectedPage("Customer Info")}>
-              <ListItemText primary="Customer Info" />
-            </ListItem>
             <ListItem
               button
               onClick={() => setSelectedPage("Provider Management")}
             >
               <ListItemText primary="Provider Management" />
-            </ListItem>
-            <ListItem button onClick={() => setSelectedPage("Provider Info")}>
-              <ListItemText primary="Provider Info" />
             </ListItem>
             <ListItem button onClick={() => setSelectedPage("Revenue Report")}>
               <ListItemText primary="Revenue Report" />

@@ -10,9 +10,7 @@ import BookingPage from "../views/pages/booking/BookingPage";
 import PaymentCart from "../views/pages/booking/PaymentCart";
 import AdminSet from "../views/components/default/AdminSet";
 import CustomerMG from "../views/pages/admin/CustomerMG";
-import CustomerInfo from "../views/pages/admin/CustomerInfo";
 import ProviderMG from "../views/pages/admin/ProviderMG";
-import ProviderInfo from "../views/pages/admin/ProviderInfo";
 import AdminMain from "../views/pages/admin/AdminMain";
 import PaymentPage from "../views/pages/booking/PaymentPage";
 import RevenueReportPage from "../views/pages/admin/report/RevenueReport";
@@ -109,37 +107,37 @@ export const router = createBrowserRouter([
           },
         ],
       },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminSet />,
+    errorElement: <NotFound />,
+    children: [
       {
-        path: "/admin",
-        element: <AdminSet />,
-        errorElement: <NotFound />,
-        children: [
-          {
-            path: "/admin/",
-            element: <AdminMain />,
-          },
-          // {
-          //   path: "/admin/customer",
-          //   element: <CustomerMG />,
-          // },
-          // {
-          //   path: "/admin/customerinfo",
-          //   element: <CustomerInfo />,
-          // },
-          // {
-          //   path: "/admin/provider",
-          //   element: <ProviderMG />,
-          // },
-          // {
-          //   path: "/admin/providerinfo",
-          //   element: <ProviderInfo />,
-          // },
-          // {
-          //   path: "/admin/revenue",
-          //   element: <RevenueReportPage />,
-          // },
-        ],
+        path: "/admin/",
+        element: <AdminMain />,
       },
+      // {
+      //   path: "/admin/customer",
+      //   element: <CustomerMG />,
+      // },
+      // {
+      //   path: "/admin/customerinfo",
+      //   element: <CustomerInfo />,
+      // },
+      // {
+      //   path: "/admin/provider",
+      //   element: <ProviderMG />,
+      // },
+      // {
+      //   path: "/admin/providerinfo",
+      //   element: <ProviderInfo />,
+      // },
+      // {
+      //   path: "/admin/revenue",
+      //   element: <RevenueReportPage />,
+      // },
     ],
   },
 ]);
