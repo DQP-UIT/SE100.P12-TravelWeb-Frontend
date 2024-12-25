@@ -40,9 +40,10 @@ export const router = createBrowserRouter([
         element: <Search />,
       },
       {
-        path: "detail",
+        path: "detail/:hotelId", // Thêm tham số động ":id"
         element: <Detail />,
       },
+      
       {
         path: "account",
         element: <AccountLogin />,

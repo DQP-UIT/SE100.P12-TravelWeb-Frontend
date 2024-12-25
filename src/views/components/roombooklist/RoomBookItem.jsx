@@ -58,10 +58,12 @@ const RoomBookItem = ({data}) => {
                 <MdOutlineGroups className='mx-auto fill-[#359894]' size={40} />
                 {data.capacities.map((capacity, index) => (
                     <div key={index} className='flex gap-1 text-left text-sm items-center'>
-                        <p>{capacity}</p>
+                        <p>{capacity != 0 && capacity}</p>
                         <p>
-                            {index == 0 && ('người lớn')}
-                            {index == 1 && ('trẻ em')}
+                            {capacity != 0 && index == 0 && ('phòng')}
+                            {capacity != 0 &&index == 1 && ('người lớn')}
+                            {capacity != 0 &&index == 2 && ('trẻ em')}
+                           
                         </p>
                     </div>
                 ))}
@@ -71,7 +73,7 @@ const RoomBookItem = ({data}) => {
                 <div className='flex justify-end w-full'>
                     {data.discount!=0 && (
                         <p className='bg-red-500 text-white text-sm px-1 shadow-md'>
-                            Giảm {data.discount}%
+                            Giảm {Math.floor(((data.price - data.discount) / data.price) * 100) }%
                         </p>
                     )}
                 </div>
@@ -82,7 +84,7 @@ const RoomBookItem = ({data}) => {
                 {data.discount!=0 && (   
                     <div className='sm:flex lg:grid lg:grid-cols-2 gap-1 text-sm'>
                         <p className='font-bold text-left'>Giá ưu đãi: </p>
-                        <p className='text-right text-red-500'>{currency.format(data.price * (100-data.discount) / 100)}</p>
+                        <p className='text-right text-red-500'>{currency.format(data.discount) }</p>
                     </div>
                 )}
             </div>

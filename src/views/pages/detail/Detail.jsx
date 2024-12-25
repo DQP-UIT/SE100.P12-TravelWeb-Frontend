@@ -3,6 +3,10 @@ import { hotelList } from '../../../models/test-data'
 import { FaCheck, FaStar } from 'react-icons/fa6'
 import RoomBookList from '../../components/roombooklist/RoomBookList'
 import RateList from '../../components/ratelist/RateList'
+import { useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { getHotelDetails } from '../../../viewModel/hotelAction'
 
 const starRate = (index) => {
     const stars = []
@@ -26,10 +30,94 @@ const averageRate = (data) => {
     return result
 }
 
+
+const createHotelDataFromObject = (inputData) => {
+    try {
+      return {
+        images: inputData.hotel.serviceID.images || [], // Nếu không có images, trả về mảng rỗng
+        avatar: inputData.avatar || "", // Nếu không có avatar, trả về chuỗi rỗng
+        title: inputData.hotel.serviceID.serviceName || "", // Nếu không có title, trả về chuỗi rỗng
+        location: inputData.hotel.serviceID.locationID.locationName || "", // Nếu không có location, trả về chuỗi rỗng
+        general: inputData.hotel.serviceID.description || "", // Nếu không có general, trả về chuỗi rỗng
+        room: inputData.rooms
+          ? inputData.rooms.map(room => ({
+              name: room.roomName || "", // Nếu không có tên phòng, trả về chuỗi rỗng
+              image: room.pictures ? room.pictures[0] || "" : "", // Lấy hình ảnh đầu tiên nếu có
+              utilites: room.facilities ? room.facilities.map(facility => facility.name) : [], // Lấy danh sách tiện nghi
+              capacities: room.capacity ? [room.capacity.roomNumber   ,room.capacity.adults, room.capacity.children] : [], // Nếu có capacity, lấy số người lớn và trẻ em
+              price: room.price || 0, // Giá phòng, nếu không có thì mặc định là 0
+              discount: room.discountPrice || 10, // Giảm giá, nếu không có thì mặc định là 0
+            }))
+          : [], // Nếu không có rooms, trả về mảng rỗng
+        amenities: inputData.hotel.serviceID.facilities
+          ? inputData.hotel.serviceID.facilities.map(facility => facility.name)
+          : [], // Nếu không có amenities, trả về mảng rỗng
+        numberRate: [
+          { title: 'Tất cả', number: 1000 },
+          { title: '5 sao', number: 200 },
+          { title: '4 sao', number: 200 },
+          { title: '3 sao', number: 200 },
+          { title: '2 sao', number: 200 },
+          { title: '1 sao', number: 200 },
+        ], // Nếu không có numberRate, trả về mảng mặc định
+        rate: [], // Nếu không có rate, trả về mảng rỗng
+      };
+    } catch (error) {
+      console.error("Error creating hotel data:", error);
+      return {
+        images: [],
+        avatar: "",
+        title: "",
+        location: "",
+        general: "",
+        room: [],
+        amenities: [],
+        numberRate: [],
+        rate: [],
+      }; // Trả về dữ liệu mặc định nếu có lỗi
+    }
+  };
+  
+  
+
 const Detail = ({data, type}) => {
+
+
+    
+
+    
+
+
+    const { hotelId } = useParams();
+    
+
+
+
+    const dispatch = useDispatch();
+
+    // Lấy thông tin chi tiết từ state
+    const { hotelDetails, loading, error } = useSelector((state) => state.hotel);
+  
+    useEffect(() => {
+      dispatch(getHotelDetails(hotelId));
+    }, [dispatch, hotelId]);
+
+    console.log(hotelDetails);
+  
+
+   if(hotelDetails){
+        data = createHotelDataFromObject(hotelDetails);
+   }
+   else{
     data = hotelList[0]
+   }
+  
+
+
   return (
     <div className="md:w-full font-['Roboto']">
+
+
       <SearchBar type={type?type:'hotel'}/>
 
       <div className='md:w-5/6 lg:w-4/6 mx-auto'>

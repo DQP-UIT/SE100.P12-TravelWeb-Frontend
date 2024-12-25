@@ -64,6 +64,16 @@ const RoomTag = ({ room }) => {
             <div className="text-blue-600 text-xs font-semibold mb-2">
               {room.location}
             </div>
+            <div>
+  <span style={{ textDecoration: "line-through", fontSize: "0.8em" }}>
+    {room.price.toLocaleString('vi-VN')} VND
+  </span>
+</div>
+<div>
+  <span style={{ color: "red", fontWeight: "bold" }}>
+    {room.dprice.toLocaleString('vi-VN')} VND
+  </span>
+</div>
           </div>
           <div className="flex-1 ml-2 mr-1">
             <div className="text-gray-800 text-lg font-semibold mb-2">
