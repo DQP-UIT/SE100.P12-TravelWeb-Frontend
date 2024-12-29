@@ -22,6 +22,9 @@ import LoginOTP from "../views/components/loginotp/LoginOTP";
 import LoginOTPNext from "../views/components/loginotp/LoginOTPnext";
 import User from "../views/pages/user/User";
 import Profile from "../views/components/profile/Profile";
+import UserNew from "../views/pages/userNew/userNew"
+import Service from "../views/components/service/Service";
+import Room from "../views/components/room/Room";
 
 export const router = createBrowserRouter([
   {
@@ -69,45 +72,59 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: "user",
-        element: <User />,
-        children: [
-          {
-            path: "",
-            element: <Profile />,
-          },
-          {
-            path: "profile",
-            element: <Profile />,
-          },
-          {
-            path: "overalset",
-            element: <OveralRoomSetting />,
-          },
-          {
-            path: "roomset",
-            element: <RoomSetting />,
-          },
-          {
-            path: "roomcalendar",
-            element: <BookingCalendar />,
-          },
-          {
-            path: "booking",
-            element: <BookingPage />,
-          },
-          {
-            path: "myorder",
-            element: <PaymentCart />,
-          },
-          {
-            path: "payment",
-            element: <PaymentPage />,
-          },
-        ],
-      },
+      
     ],
+  },
+  {
+    
+      path:  "user/:id",
+      element: <UserNew />,
+      children: [
+        {
+          path: "",
+          element: <Profile />,
+        },
+        {
+          path: "profile",
+          element: <Profile />,
+        },
+        {
+          path: "overalset",
+          element: <OveralRoomSetting />,
+        },
+        {
+          path: "roomset",
+          element: <RoomSetting />,
+        },
+        {
+          path: "roomcalendar",
+          element: <BookingCalendar />,
+        },
+        {
+          path: "booking",
+          element: <BookingPage />,
+        },
+        {
+          path: "myorder",
+          element: <PaymentCart />,
+        },
+        {
+          path: "payment",
+          element: <PaymentPage />,
+        },
+      ],
+    
+  },
+
+  {
+    
+    path:  "service/:id",
+    element: <Service />,
+  },
+  {
+    
+    path:  "room/:id",
+    element: <Room />,
   },
   {
     path: "/admin",

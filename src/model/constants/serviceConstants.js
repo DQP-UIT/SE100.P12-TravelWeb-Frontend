@@ -1,0 +1,5 @@
+// constants/serviceConstants.js
+export const UPDATE_SERVICE_REQUEST = "UPDATE_SERVICE_REQUEST";
+export const UPDATE_SERVICE_SUCCESS = "UPDATE_SERVICE_SUCCESS";
+export const UPDATE_SERVICE_FAIL = "UPDATE_SERVICE_FAIL";
+export const CLEAR_ERRORS = "CLEAR_ERRORS";

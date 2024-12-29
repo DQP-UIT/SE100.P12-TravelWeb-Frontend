@@ -10,7 +10,10 @@ import filterReducer from "./filterSlice";
 import placeReducer from "./placeSlice";
 import dateReducer from "./dateSlice";
 import memberValueReducer from "./memberValueSlice"
-
+import { userReducer } from "./userReducer";
+import { roomReducer } from "./roomReducer";
+import uploadReducer from "./uploadSlice"
+import {serviceReducer} from "./serviceReducer"
 // Cấu hình redux-persist
 const persistConfig = {
   key: "root", // Khóa lưu trữ chính
@@ -27,7 +30,11 @@ const rootReducer = {
   filters: filterReducer,
   place: placeReducer,
   date: dateReducer,
-  memberValue: memberValueReducer
+  memberValue: memberValueReducer,
+  user: userReducer,
+  room: roomReducer,
+  upload:uploadReducer,
+  serviceState: serviceReducer,
 };
 
 // Áp dụng persistReducer vào rootReducer
