@@ -6,6 +6,8 @@ import SearchDate from '../searchdate/SearchDate'
 import SearchMember from '../searchmember/SearchMember'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { notification } from 'antd'
+import { useSelector } from 'react-redux'
 
 const typeSearch = [
   {
@@ -26,15 +28,33 @@ const typeSearch = [
 ]
 
 // eslint-disable-next-line react/prop-types
+
+
 const HomeSearch = ({ suggestSearch }) => {
   const [type, setType] = useState(['hotel']);
   const navigate = useNavigate(); // Hook điều hướng
+
+  // Lấy giá trị từ Redux store
+  const place = useSelector((state) => state.place.selectedPlace);  // Lấy giá trị place từ Redux
+  const member = useSelector((state) => state.memberValue);  // Lấy giá trị member từ Redux
+  const date = useSelector((state) => state.date.selectedDate);  // Lấy giá trị date từ Redux
 
   const click = (e) => {
     setType(e.target.id);
   };
 
+  console.log("Ngày",date)
   const handleSearch = () => {
+    // Kiểm tra nếu place, member và date đều không rỗng
+    if (!place || !member.numRoom || !member.numAldult || date.length === 0) {
+      notification.warning({
+        message: 'Lỗi',
+        description: 'Vui lòng chọn địa điểm, thành viên và ngày để tìm kiếm!',
+        placement: 'topRight', // Vị trí thông báo
+      });
+      return;
+    }
+    
     // Chuyển hướng đến trang tìm kiếm
     navigate('/search', { state: { searchType: type } });
   };
@@ -92,5 +112,7 @@ const HomeSearch = ({ suggestSearch }) => {
 };
 
 export default HomeSearch;
+
+
 
 

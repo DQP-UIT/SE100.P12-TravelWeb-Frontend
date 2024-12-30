@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Input, Table, Button, Select, Image, Form, InputNumber, Modal, notification, Upload, Checkbox, message } from 'antd';
+import { Input, Table, Button, Select, Image, Form, InputNumber, Modal, notification, Upload, Checkbox, message, Row } from 'antd';
 import { ContainerFilled, DeleteOutlined, EditOutlined, LeftOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
 // import { filtersData } from '../../../models/fake-data';
 // import { product, productData } from '../../../models/fake-data';
 // import DecriptionEnterZone from '../DecriptionEnterZone/DecriptionEnterZone';
 import { ImageBlock, ImageWrapper, ThumbnailList, ThumbnailWrapper, Thumbnail, NavButton, Wrapper, Container, LeftSection, RightSection, Title, StyledInput, TableWrapper } from './style';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getHotelDetails } from '../../../viewModel/hotelAction';
 import { set } from "lodash";
 import TextArea from 'antd/es/input/TextArea';
@@ -1059,9 +1059,44 @@ setProductData(he)
             console.log("HEE",  productDataState)
 
 
-            
+            const navigate = useNavigate()
 
-
+ const valueColumns = [
+    { title: "ID", dataIndex: "roomID", key: "roomID" },
+    { title: "Loại phòng", dataIndex: "roomType", key: "roomType" },
+    {
+      title: "Giá gốc",
+      dataIndex: "price",
+      key: "price",
+      render: (value) => `${value.toLocaleString("vi-VN")} đ`,
+    },
+    {
+      title: "Giá giảm",
+      dataIndex: "discountPrice",
+      key: "discountPrice",
+      render: (value) => `${value.toLocaleString("vi-VN")} đ`,
+    },
+    
+    {
+      title: "Tình trạng",
+      dataIndex: "active",
+      key: "active",
+      render: (value) => (value ? "Hoạt động" : "Không hoạt động"),
+    },
+   
+    {
+      title: "Hành động",
+      key: "action",
+      render: (text, record) => (
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          onClick={() => navigate(`/room/${record?._id}`)}
+          data-testid={`${record.value}`} 
+        />
+      ),
+    },
+  ];
 
 
             
@@ -1292,6 +1327,43 @@ setService(updatedService)
   </div>
 </Container>
 
+<Container>
+<div style={{
+        width: '100%',
+        height: '100%', // Điều chỉnh chiều cao
+        fontSize: '16px',
+        padding: '10px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        resize: 'none', // Ngăn người dùng thay đổi kích thước khung
+        lineHeight: '1.5', // Tăng khoảng cách giữa các dòng
+        overflowY: 'auto', // Thêm scroll nếu vượt quá chiều cao
+      }}>
+    <Row justify="space-between" align="middle" 
+    >
+      <h3>
+        Danh sách phòng
+      </h3>
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        
+        //onClick={() => showEditModal(null, true, true)}
+      >
+        Thêm Giá trị
+      </Button>
+    </Row>
+    <Table
+      dataSource={
+       service.rooms
+      }
+      columns={valueColumns}
+      rowKey="id"
+      
+    />
+  </div>
+</Container>
+
 <Modal
         title="Chỉnh địa chỉ"
         visible={isModalVisible}
@@ -1341,7 +1413,7 @@ setService(updatedService)
           </Form.Item>
           <Form.Item label="Upload ảnh mới">
             <Upload
-           //   customRequest={handleImageUpload}
+              customRequest={handleImageUpload}
               listType="picture-card"
               showUploadList={false}
             >

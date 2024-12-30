@@ -5,8 +5,9 @@ import RoomBookList from '../../components/roombooklist/RoomBookList'
 import RateList from '../../components/ratelist/RateList'
 import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getHotelDetails } from '../../../viewModel/hotelAction'
+import { Button, Image, Modal } from 'antd'
 
 const starRate = (index) => {
     const stars = []
@@ -24,6 +25,7 @@ const starRate = (index) => {
 const averageRate = (data) => {
     let result = 0
     data.map(item => {
+
         result += item.rate
     })
     result /= data.length
@@ -41,12 +43,14 @@ const createHotelDataFromObject = (inputData) => {
         general: inputData.hotel.serviceID.description || "", // Nếu không có general, trả về chuỗi rỗng
         room: inputData.rooms
           ? inputData.rooms.map(room => ({
-              name: room.roomName || "", // Nếu không có tên phòng, trả về chuỗi rỗng
+            _id : room._id,
+              name: room.roomType || "", // Nếu không có tên phòng, trả về chuỗi rỗng
               image: room.pictures ? room.pictures[0] || "" : "", // Lấy hình ảnh đầu tiên nếu có
               utilites: room.facilities ? room.facilities.map(facility => facility.name) : [], // Lấy danh sách tiện nghi
               capacities: room.capacity ? [room.capacity.roomNumber   ,room.capacity.adults, room.capacity.children] : [], // Nếu có capacity, lấy số người lớn và trẻ em
               price: room.price || 0, // Giá phòng, nếu không có thì mặc định là 0
               discount: room.discountPrice || 10, // Giảm giá, nếu không có thì mặc định là 0
+              roomAvailability: room.roomsAvailable || []
             }))
           : [], // Nếu không có rooms, trả về mảng rỗng
         amenities: inputData.hotel.serviceID.facilities
@@ -102,16 +106,18 @@ const Detail = ({data, type}) => {
       dispatch(getHotelDetails(hotelId));
     }, [dispatch, hotelId]);
 
-    console.log(hotelDetails);
+    console.log("DITTT",hotelDetails);
   
 
    if(hotelDetails){
         data = createHotelDataFromObject(hotelDetails);
+        console.log(data)
    }
    else{
     data = hotelList[0]
    }
-  
+   const [isModalOpen, setIsModalOpen] = useState(false);
+
 
 
   return (
@@ -121,23 +127,62 @@ const Detail = ({data, type}) => {
       <SearchBar type={type?type:'hotel'}/>
 
       <div className='md:w-5/6 lg:w-4/6 mx-auto'>
-        <div className='flex my-4'>
-            <img src={data.images[0]} className='w-2/5 rounded-xl mx-3'/>
-            <div className='grid grid-cols-3 grid-rows-2 gap-3'>
-                {data.images.map((image, index) => {
-                    return index > 0 && index < 7 && (
-                        <div>
-                            <img key={index} src={image} className='rounded-md'/>
-                        </div>
-                    )
-                })}
-            </div>
-            <img
-                className="w-10 h-10 absolute right-20 rounded-full"
-                src={data.avatar}
-                alt="Avatar"
-            />
-        </div>
+      <div className="grid grid-cols-5 gap-3 my-4 relative w-full">
+  {/* Ảnh chính - chiều cao gấp đôi */}
+  <div className="col-span-2 row-span-2 relative">
+    <Image
+      src={data.images[0]}
+      className="w-full h-[500px] rounded-xl object-cover"
+      style={{ aspectRatio: '1/1' }}
+      alt="Main"
+    />
+  </div>
+
+  {/* Thư viện ảnh nhỏ */}
+  {data.images.slice(1, 7).map((image, index) => (
+    <div
+      key={index}
+      className="col-span-1 row-span-1 relative overflow-hidden"
+    >
+      <Image
+        src={image}
+        className="w-full h-[250px] rounded-md object-cover"
+        style={{ aspectRatio: '1/1' }}
+        alt={`Thumbnail ${index}`}
+      />
+    </div>
+  ))}
+
+  {/* Modal hiển thị tất cả ảnh */}
+  {isModalOpen && (
+    <Modal
+      title="Tất cả ảnh"
+      visible={isModalOpen}
+      footer={null}
+      onCancel={() => setIsModalOpen(false)}
+    >
+      <div className="grid grid-cols-3 gap-3">
+        {data.images.map((image, index) => (
+          <Image
+            key={index}
+            src={image}
+            className="rounded-md object-cover w-full"
+            style={{ aspectRatio: '16/9' }}
+            alt={`Image ${index}`}
+          />
+        ))}
+      </div>
+    </Modal>
+  )}
+</div>
+
+    <Button 
+        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Xem tất cả ảnh
+      </Button>
+    
         <div className='w-full bg-[#9BE1DE] grid grid-cols-2 py-3 items-center justify-center rounded-md'>
             <ul className='grid grid-cols-6 text-center font-bold'>
                 <li>Tổng quan</li>
@@ -178,7 +223,7 @@ const Detail = ({data, type}) => {
         <fieldset className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
             <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Phòng nghỉ</legend>
             <div className='w-5/6 mx-auto my-3'>
-                <RoomBookList data={data.room}/>
+                <RoomBookList service = {hotelDetails?.hotel?.serviceID} provider = {hotelDetails?.hotel?.serviceID?.providerID?.userID} data={data.room}/>
             </div>
         </fieldset>
         <fieldset className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>

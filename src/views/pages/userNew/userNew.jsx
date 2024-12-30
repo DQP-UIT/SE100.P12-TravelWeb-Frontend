@@ -38,9 +38,11 @@ import { jwtDecode } from 'jwt-decode';
 import { Link } from 'react-router-dom';
 import { ShopOutlined } from '@mui/icons-material';
 import CatagoryItemComponent from '../../components/CatagoryItemComponent/CatagoryItemComponent';
+import AdminOrdersComponent from '../../components/AdminOrdersComponent/AdminOrdersComponent';
+import AdminOrdersComponent2 from '../../components/AdminOrdersComponentcopy/AdminOrdersComponent2';
+import ReviewAd from '../../components/reviewAd/ReviewAd';
 
-
-
+import AdminReport from '../../components/adminReport/AdminReport';
 const itemMenu = [
 
  {
@@ -49,8 +51,8 @@ const itemMenu = [
     icon:  <UserOutlined />, 
     children: [
       { label: "Thông tin cá nhân", key: "userInfo", icon: <DashboardOutlined />, component: AccountInfoComponent ,allowedRoles: ["Admin"]},
-      { label: "Dịch vụ bạn đã đặt", key: "serviceU", icon: <ShoppingOutlined />, component: AccountInfoComponent ,allowedRoles: ["Admin"]},
-      { label: "Thống kê", key: "reportU", icon: < AreaChartOutlined />, component: AccountInfoComponent ,allowedRoles: ["Admin"]},
+      { label: "Dịch vụ bạn đã đặt", key: "serviceU", icon: <ShoppingOutlined />, component: AdminOrdersComponent ,allowedRoles: ["Admin"]},
+      { label: "Thống kê đánh giá", key: "reportU", icon: < AreaChartOutlined />, component: ReviewAd ,allowedRoles: ["Admin"]},
     ],allowedRoles: ["Admin", "WarehouseStaff"],
     testid: "menu-products2"
   },
@@ -60,9 +62,9 @@ const itemMenu = [
     icon:<ShopOutlined />, 
     children: [
      
-      { label: "Đơn hàng của bạn", key: "order", icon: <FileTextOutlined/>, component: AccountInfoComponent ,allowedRoles: ["Admin"]},
+      { label: "Đơn hàng của bạn", key: "order", icon: <FileTextOutlined/>, component: AdminOrdersComponent2 ,allowedRoles: ["Admin"]},
       { label: "Dịch vụ bạn cung cấp", key: "serviceP", icon: < ProductOutlined />, component: CatagoryItemComponent ,allowedRoles: ["Admin"]},
-      { label: "Thống kê", key: "reportP", icon: < AreaChartOutlined />, component: AccountInfoComponent ,allowedRoles: ["Admin"]},
+      { label: "Thống kê", key: "reportP", icon: < AreaChartOutlined />, component: AdminReport ,allowedRoles: ["Admin"]},
     ],allowedRoles: ["Admin", "WarehouseStaff"],
     testid: "menu-products2"
   },

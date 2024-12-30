@@ -19,14 +19,20 @@ import { getFacilityTypeByType } from '../../../viewModel/FacilityTypeAction';
 import { getFacilitiesByType } from '../../../viewModel/facilitiesAction';
 import { getSuitabilities } from '../../../viewModel/suitabilitiesAction';
 import { updateService } from '../../../viewModel/serviceActions';
-import { clearRoomErrors, getRoomById } from '../../../viewModel/roomActions';
+import { clearRoomErrors, getRoomById, updateRoomInfo } from '../../../viewModel/roomActions';
 //import { uploadFile } from '../../../redux/Slicer/uploadSlice';
 // import { fetchAttributesByType } from '../../../redux/Slicer/attributeSlice';
 // import { updateProduct } from '../../../redux/Slicer/productSlice';
-
+const RowContainer = styled.div`
+            display: flex;
+            gap: 16px; /* Khoảng cách giữa các cột */
+            align-items: center;
+          `;
+          
 const { Option } = Select;
 
 const Room = (selectedRow) => {
+  const [saveState, setSave] = useState(false);
     const dispatch = useDispatch();
 
     const { id } = useParams();
@@ -38,7 +44,7 @@ const Room = (selectedRow) => {
     return () => {
       dispatch(clearRoomErrors());
     };
-  }, [dispatch, id]);
+  }, [dispatch, id,saveState]);
 
 
   const [errorMessage, setErrorMessage] = useState('');
@@ -159,11 +165,12 @@ const Room = (selectedRow) => {
       console.log("MÁ M",updatedService2)
       // Update the correct array based on the 'editingAttributes.name'
       if (editingAttributes?.name === 'Phù hợp') {
-        updatedService2.hotel.serviceID.suitability = selectedItems.map((idd) => ({ _id: idd }));
+        updatedService2.hotel.serviceID.suitability = selectedItems?.map((idd) => ({ _id: idd }));
       } else if (editingAttributes?.name === 'Tiện nghi') {
-        updatedService2.hotel.serviceID.facilities = selectedItems.map((idd) => ({ _id: idd }));
+        updatedService2.facilities = selectedItems?.map(idd => idd);
+
       } else if (editingAttributes?.name === 'Loại giá') {
-        updatedService2.hotel.serviceID.priceCategories = selectedItems.map((idd) => ({ _id: idd }));
+        updatedService2.hotel.serviceID.priceCategories = selectedItems?.map((idd) => ({ _id: idd }));
       }
   
       // Update the service state with the deep copy
@@ -386,7 +393,7 @@ const Room = (selectedRow) => {
    useEffect(() => {
 
     setSelectedImage(visibleThumbnails?  visibleThumbnails[0] : {});
-  }, [hotelDetails]);
+  }, [service]);
 //   const handleColorSelect = (record, index) => {
 
 //     const result = productDataState.find(obj => obj.name === "Size");
@@ -422,7 +429,10 @@ const attributesColumns = [
     title: 'Giá trị', 
     dataIndex: 'values', 
     key: 'values',
-    render: (values) => values ? values.join(' - ') : ''  // Nối các giá trị mảng với dấu phẩy
+    render: (values) => (
+      values ? <div style={{ whiteSpace: 'pre-wrap' }}>{values.join('\n')}</div> : ''
+    )
+    
   },
   {
     title: 'Hành động',
@@ -437,6 +447,15 @@ const attributesColumns = [
     ),
   },
 ];
+const handleCapacityChange = (field, value) => {
+  setService((prevService) => ({
+    ...prevService,
+    capacity: {
+      ...prevService.capacity,
+      [field]: value,
+    },
+  }));
+};
 
 
   const colorsColumns = [
@@ -966,29 +985,13 @@ const [selectedLocation, setSelectedLocation] = useState(null);
 
 
   const handleSave = () => {
-    const inputObject = { ...service?.hotel?.serviceID };
-    
-    // Đảm bảo rằng chúng ta không thay đổi trực tiếp các thuộc tính của inputObject
-    const transformedObject = {
-      _id: String(inputObject._id),  // Convert _id to string
-      serviceID: String(inputObject.serviceID),  // Convert serviceID to string
-      providerID: String(inputObject.providerID),  // Convert providerID to string
-      locationID: String(inputObject.locationID),  // Convert locationID to string
-      serviceName: inputObject.serviceName,
-      price: String(inputObject.price),  // Ensure price is a string
-      discountPrice: String(inputObject.discountPrice),  // Ensure discountPrice is a string
-      description: inputObject.description,
-      status: inputObject.status,
-      facilities: inputObject.facilities.map(f => String(f._id)),  // Convert each facility's _id to string
-      priceCategories: inputObject.priceCategories.map(p => String(p._id)),  // Chuyển mỗi _id của price category thành chuỗi
-      suitability: inputObject.suitability.map(s => String(s._id)),  // Convert each suitability's _id to string
-      reviews: inputObject.reviews.map(r => String(r._id)),  // Convert each review's _id to string
-      images: inputObject.images  // Assume images are already in the desired format
-    };
-    console.log( )
+
+    const newssssss = JSON.parse(JSON.stringify(service));
     // Dispatch action với transformedObject đã được tạo bản sao
-    dispatch(updateService(transformedObject._id,transformedObject));
-    console.log("DIT", transformedObject);
+    dispatch(updateRoomInfo(newssssss._id,newssssss));
+
+
+    setSave(!saveState)
   };
   
   console.log( service?.hotel?.serviceID?.status === "Active",   service?.hotel?.serviceID?.status)
@@ -1020,9 +1023,9 @@ const [selectedLocation, setSelectedLocation] = useState(null);
 
 
     const he = [
-      { id: 1, name: "Loại giá", values: [] },
-      { id: 2, name: "Phù hợp", values: [] },
-      { id: 3, name: "Tiện nghi", values: [] }
+      
+      { id: 1, name: "Tiện nghi", values: [] },
+      {id: 2, name: "Sức chứa" , values:[]}
   ];
   
   // Chuyển các _id thành tên tương ứng
@@ -1032,9 +1035,13 @@ const [selectedLocation, setSelectedLocation] = useState(null);
   };
   
   // Thêm giá trị vào các mảng trong he
-  he[0].values = service?.hotel?.serviceID?.priceCategories.map(item => getNameById(item._id, priceC)).filter(Boolean); // Loại giá
-  he[1].values = service?.hotel?.serviceID?.suitability.map(item => getNameById(item._id, suitabilities?.datas)).filter(Boolean);   // Phù hợp
-  he[2].values = service?.hotel?.serviceID?.facilities.map(item => getNameById(item._id,  facilityTypes?.facilitiesType)).filter(Boolean);      // Tiện nghi
+  he[0].values = service?.facilities?.map(item => getNameById(item, facilities?.datas)).filter(Boolean); // Loại giá
+  
+  he[1].values = [
+      `Số phòng: ${service?.capacity?.roomNumber}`,
+       `Số người lớn: ${service?.capacity?.adults}`,
+       `Số trẻ em: ${service?.capacity?.children}`
+  ]
 
 setProductData(he)
    
@@ -1055,7 +1062,7 @@ setProductData(he)
           editingAttributes?.name === 'Phù hợp'
             ? service?.hotel?.serviceID?.suitability?.map((item) => item._id) || []
             : editingAttributes?.name === 'Tiện nghi'
-            ? service?.hotel?.serviceID?.facilities?.map((item) => item._id) || []
+            ? service?.facilities?.map((item) => item) || []
             : editingAttributes?.name === 'Loại giá'
             ? service?.hotel?.serviceID?.priceCategories?.map((item) => item._id) || []
             : [],
@@ -1075,39 +1082,48 @@ setProductData(he)
 
             
 
-
-
+            const handleChange = (field, value) => {
+              const parsedValue = parseCurrency(value);
+              setService((prev) => ({
+                ...prev,
+                [field]: parsedValue,
+              }));
+            };
 
             
+            const formatCurrency = (value) => {
+              if (!value) return ""; // Nếu giá trị không tồn tại, trả về chuỗi rỗng
+              return new Intl.NumberFormat("vi-VN").format(
+                typeof value === "string" ? value.replace(/\D/g, "") : value
+              );
+            };
+            
+          const parseCurrency = (value) => value.replace(/\D/g, ""); // Chỉ giữ lại số
+            console.log("VUU", facilities?.datas)            
   return (
     <Wrapper>
-      <Title>Thông tin dịch vụ</Title>
+      <Title>Thông tin phòng</Title>
       <Button  type="primary" style={{ width: "10%" }} data-testid = "nutluu"  onClick={handleSave} >
                   Lưu
                 </Button>
                 <Select
                 data-testid = "select"
-                value={service?.hotel?.serviceID?.status === "Active" ? "Hoạt động" : "Không hoạt động"}
+                value={service?.active === true ? "Hoạt động" : "Không hoạt động"}
   style={{ width: 180, marginLeft: "20px" }}
   onChange={(value) => {
 
                 
-      const updatedService = {
+      const updatedService ={
   ...service,
-  hotel: {
-    ...service.hotel,
-    serviceID: {
-      ...service.hotel.serviceID,
-      status: value === "Hoạt động" ? "Active" : "Inactive"
-          }
+  active: value === "Hoạt động" ? true : false
   }
-};
+
 setService(updatedService)
 if(value === "Hoạt động"){
-                  message.success(`Đưa ${service?.hotel?.serviceID?.serviceName} hoạt động!`);
+                  message.success(`Đưa ${service?.roomType} hoạt động!`);
                 }
                 else{
-                  message.success(`Vô hiệu hóa ${service?.hotel?.serviceID?.serviceName}!`);
+                  message.success(`Vô hiệu hóa ${service?.roomType}!`);
                 }
 
 
@@ -1155,7 +1171,7 @@ if(value === "Hoạt động"){
         <RightSection>
           <Form form={formAttribute} layout="vertical">
           <Form.Item
-  label="Tên dịch vụ"
+  label="Tên phòng"
   name="productName" 
   initialValue={service?.hotel?.serviceID?.serviceName   }
   style={{ display: 'inline-block', width: '100%', marginRight: '16px' }}
@@ -1178,6 +1194,35 @@ setService(updatedService)
      {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
 </Form.Item>
 
+
+<RowContainer>
+  <Form.Item label="Giá gốc" style={{ flex: 1 }}>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <StyledInput
+        placeholder="Nhập giá"
+        value={formatCurrency(service?.price)}
+        onChange={(e) => handleChange("price", e.target.value)}
+        data-testid="giagoc"
+      />
+      <span style={{ marginLeft: '8px' }}>đ</span>
+    </div>
+    {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
+  </Form.Item>
+
+  <Form.Item label="Giá giảm" style={{ flex: 1 }}>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <StyledInput
+        placeholder="Nhập giá giảm"
+        value={formatCurrency(service?.discountPrice)}
+        onChange={(e) => handleChange("discountedPrice", e.target.value)}
+        data-testid="giagiam"
+      />
+      <span style={{ marginLeft: '8px' }}>đ</span>
+    </div>
+    {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
+  </Form.Item>
+</RowContainer>
+
          
 
 
@@ -1196,9 +1241,7 @@ setService(updatedService)
               <Button icon={<PlusOutlined />} data-testid = "inputanh" >Tải ảnh lên</Button>
             </Upload>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginTop: '20px' }}>
-              {service?.pictures
-
-.map((img, idx) => (
+              {service?.pictures?.map((img, idx) => (
                 <div key={idx} style={{ position: 'relative' }}>
   <Image src={img} alt={`Image ${idx + 1}`} width={70} />
   <Button
@@ -1240,10 +1283,9 @@ setService(updatedService)
           style={{ marginBottom: '20px' }}
         />
       </Container>
-      <Container style={{ display: 'block' }}>
+    
 
-
-  <Title>Mô tả</Title>
+  {/* <Title>Mô tả</Title>
   <div style={{ width: '100%', marginTop: '15px' }}>
   {errorMessage3 && <div style={{ color: 'red' }}>{errorMessage3}</div>}
     <textarea
@@ -1277,8 +1319,8 @@ setService(updatedService)
         overflowY: 'auto', // Thêm scroll nếu vượt quá chiều cao
       }}
     />
-  </div>
-</Container>
+  </div> */}
+
 
 <Modal
         title="Chỉnh địa chỉ"
@@ -1345,7 +1387,7 @@ setService(updatedService)
 
   
       <Modal 
-        title="Chỉnh sửa thông số kỹ thuật"
+        title="Chỉnh sửa thuộc tính của phòng"
         visible={isAttributesModalVisible}
         onOk={handleOkAttributesModal}
      
@@ -1359,7 +1401,7 @@ setService(updatedService)
       editingAttributes?.name === 'Phù hợp'
         ? service?.hotel?.serviceID?.suitability?.map((item) => item._id) || []
         : editingAttributes?.name === 'Tiện nghi'
-        ? service?.hotel?.serviceID?.facilities?.map((item) => item._id) || []
+        ? service?.facilities?.map((item) => item) || []
         : editingAttributes?.name === 'Loại giá'
         ? service?.hotel?.serviceID?.priceCategories?.map((item) => item._id) || []
         : [],
@@ -1369,35 +1411,65 @@ setService(updatedService)
     <Checkbox.Group>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         {/* Phù hợp */}
-        {editingAttributes?.name === 'Phù hợp' &&
-          suitabilities?.datas?.map((filter) => {
-            const isChecked = service?.hotel?.serviceID?.suitability?.some(
-              (suitability) => suitability._id === filter._id
-            );
+        {editingAttributes?.name === 'Sức chứa' && (
+  <div>
+  <div
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '10px',
+  }}
+>
+  <label style={{ width: '100px' }}>Số phòng</label>
+  <InputNumber
+    min={0}
+    placeholder="Nhập số phòng"
+    value={service?.capacity?.roomNumber || 0}
+    onChange={(value) => handleCapacityChange('roomNumber', value)}
+    style={{ width: '150px' }}
+  />
+</div>
+<div
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '10px',
+  }}
+>
+  <label style={{ width: '100px' }}>Người lớn</label>
+  <InputNumber
+    min={0}
+    placeholder="Nhập số người lớn"
+    value={service?.capacity?.adults || 0}
+    onChange={(value) => handleCapacityChange('adults', value)}
+    style={{ width: '150px' }}
+  />
+</div>
+<div
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '10px',
+  }}
+>
+  <label style={{ width: '100px' }}>Trẻ em</label>
+  <InputNumber
+    min={0}
+    placeholder="Nhập số trẻ em"
+    value={service?.capacity?.children || 0}
+    onChange={(value) => handleCapacityChange('children', value)}
+    style={{ width: '150px' }}
+  />
+</div>
 
-            return (
-              <div
-                key={filter._id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <Checkbox
-                  value={filter._id}
-                  style={{ marginRight: '5px' }}
-                  data-testid={filter.name}
-                  checkedhecked={isChecked}
-                />
-                <span>{filter.name}</span>
-              </div>
-            );
-          })}
+  </div>
+)}
+
 
         {/* Tiện nghi */}
         {editingAttributes?.name === 'Tiện nghi' &&
-          facilityTypes?.facilitiesType?.map((filter) => {
-            const isChecked = service?.hotel?.serviceID?.facilities?.some(
+          facilities?.datas?.map((filter) => {
+            const isChecked = service?.facilities?.some(
               (facility) => facility.name === filter.name
             );
 

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Table, Row, Col, Select, Button, Modal, Input, Form, notification, message } from "antd";
+import { Table, Row, Col, Select, Button, Modal, Input, Form, notification, message, Typography } from "antd";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { clearErrors, getUserByUserID } from "../../../viewModel/userActions";
 import RoomAvailabilityCalendar from "../roomAvailabilityCalendar/RoomAvailabilityCalendar";
+import { createService } from "../../../viewModel/serviceActions";
+import { createRoom } from "../../../viewModel/roomActions";
 //import { bulkUpdateAttributes, fetchAttributesByType } from "../../../redux/Slicer/attributeSlice";
 
 const { Option } = Select;
@@ -23,7 +25,7 @@ const CatagoryItemComponent = ({ title }) => {
   console.log(id)
   
   
-  
+  const [addSer, setAddSer] = useState(false);
     const {  error, user } = useSelector((state) => state.user);
    
     useEffect(() => {
@@ -33,8 +35,15 @@ const CatagoryItemComponent = ({ title }) => {
       }
   
       dispatch(getUserByUserID(id));
+      console.log("SLDFHLSDFJLDSF")
       
-    }, [dispatch,loading]);
+    }, [addSer ]);
+
+
+    useEffect(() => {
+      setAttributes(user.services)
+      
+    }, [user ]);
   
     console.log("GÀ",user)
    
@@ -47,6 +56,7 @@ const [errorMessage, setErrorMessage] = useState('');
   const [isValueModalVisible, setIsValueModalVisible] = useState(false);
   const [editData, setEditData] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
+ 
   const [form] = Form.useForm();
 
   // useEffect(() => {
@@ -64,6 +74,7 @@ const [errorMessage, setErrorMessage] = useState('');
 console.log("HELLO")
 console.log(attributes)
 console.log("HELLO")
+
 
   const handleSave = async () => {
     try {
@@ -193,6 +204,7 @@ if (values.attribute.length < 3) {
   const handleAttributeClick = (record) => {
     setSelectedAttributeId(record.serviceID);
   };
+  const navigate = useNavigate();
 
   const attributeColumns = [
     
@@ -205,7 +217,7 @@ if (values.attribute.length < 3) {
       title: "Tình trạng",
       dataIndex: "status",
       key: "status",
-      render: (value) => (value === "Active" ? "Hoạt động" : value),
+      render: (value) => (value === "Active" ? "Hoạt động" : "Không hoạt động"),
       
     },
     {
@@ -215,7 +227,7 @@ if (values.attribute.length < 3) {
         <Button
           type="primary"
           icon={<EditOutlined />}
-          onClick={() => showEditModal(record, false)}
+          onClick={() => navigate(`/service/${record?.hotels[0]?._id}`)}
           data-testid={`${record.name}`} 
         />
       ),
@@ -226,11 +238,25 @@ if (values.attribute.length < 3) {
     { title: "ID", dataIndex: "roomID", key: "roomID" },
     { title: "Loại phòng", dataIndex: "roomType", key: "roomType" },
     {
+      title: "Giá gốc",
+      dataIndex: "price",
+      key: "price",
+      render: (value) => `${value.toLocaleString("vi-VN")} đ`,
+    },
+    {
+      title: "Giá giảm",
+      dataIndex: "discountPrice",
+      key: "discountPrice",
+      render: (value) => `${value.toLocaleString("vi-VN")} đ`,
+    },
+    
+    {
       title: "Tình trạng",
       dataIndex: "active",
       key: "active",
-      render: (value) => (value ? "Hoạt động" : value),
+      render: (value) => (value ? "Hoạt động" : "Không hoạt động"),
     },
+   
     {
       title: "Hành động",
       key: "action",
@@ -238,7 +264,7 @@ if (values.attribute.length < 3) {
         <Button
           type="primary"
           icon={<EditOutlined />}
-          onClick={() => showEditModal(record, true)}
+          onClick={() => navigate(`/room/${record?._id}`)}
           data-testid={`${record.value}`} 
         />
       ),
@@ -275,13 +301,14 @@ useEffect(() => {
         // You can optionally refetch or reset anything here if needed onClick={() => handleSave2()}
     }
 }, [isSaved]);
-
+const { Title } = Typography;
 
   return (
     <div>
     {/* <Button  type="primary" style={{ width: "100px" }} >
             Lưu  
           </Button> */}
+          <Title level={3}>Thống kê đánh giá</Title>
       <Row gutter={16}>
       
       <Col
@@ -298,19 +325,27 @@ useEffect(() => {
     <Button
       type="primary"
       icon={<PlusOutlined />}
-      onClick={() => showEditModal(null, false, true)}
+      onClick={() => {
+       
+      dispatch(createService({providerID: user.services[0].providerID._id}))
+      setTimeout(() => {
+      setAddSer((prev) => !prev); // Đảo ngược trạng thái sau 3 giây
+    }, 0);
+    setAttributes(user.services)
+      }
+      }
     >
       Thêm dịch vụ
     </Button>
   </Row>
   <Table
-    dataSource={attributes}
-    columns={attributeColumns}
-    rowKey="id"
-    onRow={(record) => ({
-      onClick: () => handleAttributeClick(record),
-    })}
-  />
+  dataSource={[...attributes].reverse()} // Đảo ngược thứ tự của attributes
+  columns={attributeColumns}
+  rowKey="id"
+  onRow={(record) => ({
+    onClick: () => handleAttributeClick(record),
+  })}
+/>
 </Col>
 
   <Col span={11}
@@ -332,21 +367,32 @@ useEffect(() => {
         type="primary"
         icon={<PlusOutlined />}
         disabled={!selectedAttributeId}
-        onClick={() => showEditModal(null, true, true)}
+        onClick={() => {
+          
+          dispatch(createRoom({hotelID: attributes?.find((attr) => attr.serviceID === selectedAttributeId)?.hotels[0]?._id }))
+          setTimeout(() => {
+      setAddSer((prev) => !prev); // Đảo ngược trạng thái sau 3 giây
+    }, 0);
+    setAttributes(user.services)
+      }
+        }
       >
-        Thêm Giá trị
+        Thêm phòng
       </Button>
     </Row>
     <Table
-      dataSource={
-        attributes.find((attr) => attr.serviceID === selectedAttributeId)?.hotels[0]?.rooms || []
-      }
-      columns={valueColumns}
-      rowKey="id"
-      onRow={(record) => ({
-        onClick: () => setSelectedRoom(record._id),
-      })}
-    />
+  dataSource={
+    attributes
+      ?.find((attr) => attr.serviceID === selectedAttributeId)
+      ?.hotels[0]?.rooms?.slice().reverse() || [] // Sử dụng slice() để tạo bản sao trước khi reverse
+  }
+  columns={valueColumns}
+  rowKey="id"
+  onRow={(record) => ({
+    onClick: () => setSelectedRoom(record._id),
+  })}
+/>
+
   </Col>
 </Row>
  <Col span={23}

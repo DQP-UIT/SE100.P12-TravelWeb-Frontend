@@ -12,7 +12,7 @@ import AdminSet from "../views/components/default/AdminSet";
 import CustomerMG from "../views/pages/admin/CustomerMG";
 import ProviderMG from "../views/pages/admin/ProviderMG";
 import AdminMain from "../views/pages/admin/AdminMain";
-import PaymentPage from "../views/pages/booking/PaymentPage";
+
 import RevenueReportPage from "../views/pages/admin/report/RevenueReport";
 import Detail from "../views/pages/detail/Detail";
 import AccountLogin from "../views/pages/accountlogin/AccountLogin";
@@ -25,7 +25,7 @@ import Profile from "../views/components/profile/Profile";
 import UserNew from "../views/pages/userNew/userNew"
 import Service from "../views/components/service/Service";
 import Room from "../views/components/room/Room";
-
+import PaymentPage from "../views/pages/PaymentPage/PaymentPage"
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -115,11 +115,16 @@ export const router = createBrowserRouter([
       ],
     
   },
-
+  
   {
     
     path:  "service/:id",
     element: <Service />,
+  },
+  {
+    
+    path:  "payment",
+    element: <PaymentPage />,
   },
   {
     
