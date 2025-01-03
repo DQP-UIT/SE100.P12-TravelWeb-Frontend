@@ -1,50 +1,94 @@
-import { DatePicker, TimePicker } from 'antd'
-import { useState } from 'react'
-import dayjs from 'dayjs'
+// SearchDate.js
+import { DatePicker, TimePicker } from 'antd';
+import { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { useDispatch, useSelector } from 'react-redux';
+import { setDate, setDateRange, clearDate } from '../../../model/dateSlice';
 
-const {RangePicker} = DatePicker
+dayjs.extend(customParseFormat);
 
-// eslint-disable-next-line react/prop-types
-const SearchDate = ({searchType}) => {
-  const [hackValue, setHackValue] = useState();
-  const [value, setValue] = useState();
+const { RangePicker } = DatePicker;
+
+const SearchDate = ({ searchType }) => {
   const dateFormat = 'DD/MM/YYYY';
+  const dispatch = useDispatch();
+  const { selectedDate, dateRange } = useSelector((state) => state.date);
+
+  const [hackValue, setHackValue] = useState(() => {
+    if (dateRange) {
+      return [dayjs(dateRange.startDate, dateFormat), dayjs(dateRange.endDate, dateFormat)];
+    }
+    if (selectedDate && selectedDate.length > 0) {
+      return dayjs(selectedDate[0], dateFormat); // Hiển thị ngày đầu tiên nếu có
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    if (dateRange) {
+      setHackValue([dayjs(dateRange.startDate, dateFormat), dayjs(dateRange.endDate, dateFormat)]);
+    } else if (selectedDate && selectedDate.length > 0) {
+      setHackValue(dayjs(selectedDate[0], dateFormat)); // Hiển thị ngày đầu tiên trong mảng
+    }
+  }, [dateRange, selectedDate]);
+
+  const onDateChange = (val) => {
+    if (val && val.length === 2) {
+      const [startDate, endDate] = val;
+      dispatch(setDateRange({
+        startDate: startDate.format(dateFormat),
+        endDate: endDate.format(dateFormat)
+      }));
+    } else if (val) {
+      dispatch(setDate({ date: val.format(dateFormat) }));
+    } else {
+      dispatch(clearDate());
+    }
+    setHackValue(val); // Cập nhật giá trị hackValue khi thay đổi
+  };
 
   const onOpenChange = (open) => {
     if (open) {
-      setHackValue([]);
+      setHackValue([]); // Khi mở calendar, reset hackValue
     } else {
-      setHackValue(undefined);
+      setHackValue(null); // Khi đóng calendar, reset hackValue
     }
   };
-
-  if (searchType == 'hotel') 
+console.log(selectedDate)
+  if (searchType == 'hotel') {
     return (
-      <div className='bg-white rounded-md border gap-1'>
+      <div className="bg-white rounded-md border gap-1">
         <RangePicker
-          minDate={dayjs()}
-          value={hackValue || value}
-          onChange={(val) => setValue(val)}
+          value={hackValue || (dateRange
+            ? [dayjs(dateRange.startDate, dateFormat), dayjs(dateRange.endDate, dateFormat)]
+            : null)}
+          onChange={onDateChange}
           onOpenChange={onOpenChange}
           format={dateFormat}
-          className='h-12'
+          className="h-12"
         />
       </div>
-    )
-  if (searchType == 'restaurant') 
-    return (
-      <div className='bg-white rounded-md border flex'>
-        <DatePicker
-          minDate={dayjs()}
-          value={hackValue || value}
-          onChange={(val) => setValue(val)}
-          onOpenChange={onOpenChange}
-          format={dateFormat}
-          className='h-12'
-        />
-        <TimePicker/>
-      </div>
-    )
-}
+    );
+  }
 
-export default SearchDate
+  if (searchType == 'restaurant') {
+    return (
+      <div className="bg-white rounded-md border flex">
+        <DatePicker
+          value={hackValue || (selectedDate ? dayjs(selectedDate[0], dateFormat) : null)}
+          onChange={onDateChange}
+          onOpenChange={onOpenChange}
+          format={dateFormat}
+          className="h-12"
+        />
+        <TimePicker />
+      </div>
+    );
+  }
+
+  return null;
+};
+
+export default SearchDate;
+

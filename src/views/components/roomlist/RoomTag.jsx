@@ -13,7 +13,7 @@ const RoomTag = ({ room }) => {
   };
 
   return (
-    <div className="relative w-full min-w-fit max-w-3xl h-[260px] p-4 mb-6 bg-teal-50 shadow-lg rounded-lg">
+    <div className="relative w-full min-w-fit max-w-3xl h-[270px] p-4 mb-6 bg-teal-50 shadow-lg rounded-lg mt-4 mx-4">
       <div className="w-full h-full flex flex-col sm:flex-row">
         <div className="w-full sm:w-[450px] h-full bg-black/0 rounded-[5px] relative overflow-hidden">
           <Carousel
@@ -48,9 +48,10 @@ const RoomTag = ({ room }) => {
         </div>
         <div className="flex flex-row ml-4 max-w-2xl min-w-[330px]">
           <div className="flex-1">
-            <div className="text-gray-900 text-xl font-semibold mb-2">
-              {room.title}
-            </div>
+          <div className="text-gray-900 text-base font-semibold mb-2">
+  {room.title}
+</div>
+
             <div className="text-gray-800 text-xs font-semibold mb-4 flex items-center">
               {room.reviews} Nhận xét
               <Rating
@@ -64,6 +65,16 @@ const RoomTag = ({ room }) => {
             <div className="text-blue-600 text-xs font-semibold mb-2">
               {room.location}
             </div>
+            <div>
+  <span style={{ textDecoration: "line-through", fontSize: "0.8em" }}>
+    {room.price.toLocaleString('vi-VN')} VND
+  </span>
+</div>
+<div>
+  <span style={{ color: "red", fontWeight: "bold" }}>
+    {room.dprice.toLocaleString('vi-VN')} VND
+  </span>
+</div>
           </div>
           <div className="flex-1 ml-2 mr-1">
             <div className="text-gray-800 text-lg font-semibold mb-2">
