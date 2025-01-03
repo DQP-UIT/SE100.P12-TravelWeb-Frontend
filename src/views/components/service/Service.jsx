@@ -19,6 +19,7 @@ import { getFacilityTypeByType } from '../../../viewModel/FacilityTypeAction';
 import { getFacilitiesByType } from '../../../viewModel/facilitiesAction';
 import { getSuitabilities } from '../../../viewModel/suitabilitiesAction';
 import { updateService } from '../../../viewModel/serviceActions';
+import { createRoom } from '../../../viewModel/roomActions';
 //import { uploadFile } from '../../../redux/Slicer/uploadSlice';
 // import { fetchAttributesByType } from '../../../redux/Slicer/attributeSlice';
 // import { updateProduct } from '../../../redux/Slicer/productSlice';
@@ -35,7 +36,7 @@ const Service = (selectedRow) => {
 
    const { id } = useParams();
       
-  
+  const [addSer, setAddSer] = useState(false);
   
  
   
@@ -44,7 +45,7 @@ const Service = (selectedRow) => {
     
       useEffect(() => {
         dispatch(getHotelDetails(id));
-      }, [dispatch, id]);
+      }, [dispatch, id,addSer]);
   
       
     
@@ -952,6 +953,9 @@ const [selectedLocation, setSelectedLocation] = useState(null);
 
 
   const handleSave = () => {
+    notification.success({
+            message: 'Lưu thành công!',
+          });
     const inputObject = { ...service?.hotel?.serviceID };
     
     // Đảm bảo rằng chúng ta không thay đổi trực tiếp các thuộc tính của inputObject
@@ -1194,6 +1198,7 @@ if(value === "Hoạt động"){
     }
   }
 };
+
 setService(updatedService)
     }}
     data-testid = "tensanpham"
@@ -1348,14 +1353,25 @@ setService(updatedService)
         type="primary"
         icon={<PlusOutlined />}
         
-        //onClick={() => showEditModal(null, true, true)}
+       onClick={() => {
+                 notification.success({
+                         message: "Thêm phòng thành công"
+                       
+                       });
+                 dispatch(createRoom({hotelID: service.hotel._id }))
+                 setTimeout(() => {
+             setAddSer((prev) => !prev); // Đảo ngược trạng thái sau 3 giây
+           }, 0);
+           
+             }
+               }
       >
-        Thêm Giá trị
+        Thêm phòng
       </Button>
     </Row>
     <Table
       dataSource={
-       service.rooms
+       service?.rooms?.slice()?.reverse() || []
       }
       columns={valueColumns}
       rowKey="id"

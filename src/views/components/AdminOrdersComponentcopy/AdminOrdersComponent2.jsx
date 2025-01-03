@@ -1,30 +1,65 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag, Tooltip, Button, Image, Input, Typography } from "antd";
+import { Table, Select, Typography, Button, Input, Tag, Image, Tooltip, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllOrders, getInvoicesByUserID } from "../../../viewModel/invoiceActions";
+import { getAllOrders } from "../../../viewModel/invoiceActions";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
+import { jwtDecode } from "jwt-decode";
 
 const InvoiceTable = () => {
+  const token = localStorage.getItem("token");
+
+  let decodedToken = {};
+  if (token) {
+    try {
+      decodedToken = jwtDecode(token);
+    } catch (error) {
+      console.error("Lỗi giải mã token:", error);
+    }
+  } else {
+    console.warn("Không có token để giải mã.");
+  }
+
   const dispatch = useDispatch();
   const { invoice, loading } = useSelector((state) => state.invoice);
 
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState(null);
-
+  const [localInvoice, setLocalInvoice] = useState([]); // State quản lý dữ liệu hóa đơn
+console.log("HELLO",filteredData)
   let searchInput = null;
 
   useEffect(() => {
-    const userID = "6746c92c80b53a817395f3f6"; // ID cố định
     dispatch(getAllOrders());
+    if (invoice?.length > 0) {
+      const userInvoices = invoice.filter(
+        (inv) => inv?.serviceID?.providerID?.userID === decodedToken.userId
+      );
+      setFilteredData(userInvoices);
+      setLocalInvoice(userInvoices); // Đồng bộ hóa dữ liệu vào localInvoice
+    }
   }, [dispatch]);
 
+  console.log(invoice)
   useEffect(() => {
     if (invoice?.length > 0) {
-      setFilteredData(invoice || []);
+      const userInvoices = invoice.filter(
+        (inv) => inv?.serviceID?.providerID?.userID === decodedToken.userId
+      );
+      setFilteredData(userInvoices);
+      setLocalInvoice(userInvoices); // Đồng bộ hóa dữ liệu vào localInvoice
     }
-  }, [invoice]);
+  }, [invoice, decodedToken.userId]);
+
+  const handleStatusChange = (value, recordId) => {
+    const updatedInvoices = localInvoice.map((item) =>
+      item._id === recordId ? { ...item, status: value } : item
+    );
+    setLocalInvoice(updatedInvoices);
+    setFilteredData(updatedInvoices);
+    message.success("Cập nhật trạng thái thành công!");
+  };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -36,6 +71,7 @@ const InvoiceTable = () => {
     clearFilters();
     setSearchText("");
   };
+
   const { Title } = Typography;
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -113,14 +149,12 @@ const InvoiceTable = () => {
       dataIndex: "serviceID",
       key: "serviceName",
       render: (serviceID) => serviceID?.serviceName || "Chưa có tên dịch vụ",
-      
     },
     {
       title: "Loại phòng",
       dataIndex: "roomID",
       key: "roomType",
       render: (roomID) => roomID?.roomType || "Chưa có loại phòng",
-      
     },
     {
       title: "Số lượng",
@@ -143,35 +177,22 @@ const InvoiceTable = () => {
       render: (date) => date?.slice(0, 10),
       ...getColumnSearchProps("checkOutDate"),
     },
-    {
-      title: "Tổng tiền",
-      dataIndex: "totalAmount",
-      key: "totalAmount",
-      render: (amount) => `${amount?.toLocaleString()} VND`,
-      ...getColumnSearchProps("totalAmount"),
-    },
+   
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      filters: [
-        { text: "Chờ xác nhận", value: "chờ xác nhận" },
-        { text: "Đã xác nhận", value: "đã xác nhận" },
-        { text: "Đã hủy", value: "đã hủy" },
-      ],
-      onFilter: (value, record) => record.status === value,
-      render: (status) => (
-        <Tag
-          color={
-            status === "chờ xác nhận"
-              ? "orange"
-              : status === "đã xác nhận"
-              ? "blue"
-              : "gray"
-          }
-        >
-          {status}
-        </Tag>
+      render: (status, record) => (
+        <Select
+          value={status}
+          onChange={(value) => handleStatusChange(value, record._id)}
+          options={[
+            { value: "chờ xác nhận", label: "Chờ xác nhận" },
+            { value: "đã xác nhận", label: "Đã xác nhận" },
+            { value: "đã hủy", label: "Đã hủy" },
+            { value: "đã dùng", label: "Đã dùng" },
+          ]}
+        />
       ),
     },
     {
@@ -214,15 +235,14 @@ const InvoiceTable = () => {
 
   return (
     <div>
-      <Title level={3}>Dơn hàng của bạn</Title>
-    
-    <Table
-      columns={columns}
-      dataSource={filteredData}
-      rowKey="_id.$oid"
-      loading={loading}
-      pagination={{ pageSize: 5 }}
-    />
+      <Title level={3}>Đơn hàng của bạn</Title>
+      <Table
+        columns={columns}
+        dataSource={filteredData}
+        rowKey="_id"
+        loading={loading}
+        pagination={{ pageSize: 5 }}
+      />
     </div>
   );
 };

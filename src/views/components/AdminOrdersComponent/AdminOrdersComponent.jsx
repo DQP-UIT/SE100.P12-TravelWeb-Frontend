@@ -4,8 +4,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { getInvoicesByUserID } from "../../../viewModel/invoiceActions";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const InvoiceTable = () => {
+
+  const token = localStorage.getItem("token");
+
+let decodedToken ={}
+
+if (token) {
+    decodedToken = jwtDecode(token);
+   // console.log("Thông tin giải mã token:",decodedToken );
+  } else {
+    console.log("Không có token để giải mã.");
+  }
+
   const dispatch = useDispatch();
   const { invoice, loading } = useSelector((state) => state.invoice);
 
@@ -16,15 +30,17 @@ const InvoiceTable = () => {
   let searchInput = null;
 
   useEffect(() => {
-    const userID = "6746c92c80b53a817395f3f6"; // ID cố định
-    dispatch(getInvoicesByUserID(userID));
+    
+    dispatch(getInvoicesByUserID(decodedToken?.userId));
   }, [dispatch]);
 
   useEffect(() => {
     if (invoice?.length > 0) {
-      setFilteredData(invoice || []);
+      setFilteredData([...invoice].reverse()); // Tạo bản sao và đảo ngược
     }
   }, [invoice]);
+  
+console.log(filteredData)
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -199,17 +215,19 @@ const InvoiceTable = () => {
       key: "action",
       render: (_, record) => (
         <Tooltip title="Xem chi tiết">
-          <Button type="link" onClick={() => handleViewDetail(record._id)}>
+          <Button type="link" onClick={() =>{ handleViewDetail(record.roomID.hotelID); console.log(record)} } >
             Xem
           </Button>
         </Tooltip>
       ),
     },
   ];
-
+const navigate = useNavigate();
   const handleViewDetail = (id) => {
-    console.log("Chi tiết hóa đơn:", id);
-    // Xử lý logic hiển thị chi tiết hóa đơn
+    if(id){
+      navigate(`/detail/${id}`);
+    }
+   
   };
 
   return (

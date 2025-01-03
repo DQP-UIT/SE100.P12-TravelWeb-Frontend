@@ -55,3 +55,22 @@ export const updateUserById = (userID, userData) => async (dispatch) => {
 export const clearErrors = () => async (dispatch) => {
   dispatch({ type: CLEAR_ERRORS });
 };
+
+// Gọi API lấy tất cả user
+export const getAllUsers = () => async (dispatch) => {
+  try {
+    dispatch({ type: USER_REQUEST });
+
+    const { data } = await axios.get(`${URL}/api/users`);
+    console.log(data)
+    dispatch({
+      type: USER_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_FAIL,
+      payload: error.response?.data?.message || "Server Error",
+    });
+  }
+};

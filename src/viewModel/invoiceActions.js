@@ -57,6 +57,7 @@ export const getInvoicesByUserID = (userID) => async (dispatch) => {
 
   // Lấy tất cả đơn hàng
 export const getAllOrders = () => async (dispatch) => {
+  console.log("HELLO")
     try {
       dispatch({ type: INVOICE_REQUEST });
   

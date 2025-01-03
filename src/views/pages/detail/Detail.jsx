@@ -119,7 +119,19 @@ const Detail = ({data, type}) => {
    const [isModalOpen, setIsModalOpen] = useState(false);
 
 
-
+   const handleNavigateToGoogleMap = (data) => {
+    console.log
+    if (hotelDetails.hotel.serviceID.locationID.latitude && hotelDetails.hotel.serviceID.locationID.longitude) {
+      const currentLocation = "My+Location"; // Dùng Google Maps để lấy vị trí hiện tại
+      const destination = `${hotelDetails.hotel.serviceID.locationID.latitude},${hotelDetails.hotel.serviceID.locationID.longitude}`;
+      const googleMapsUrl = `https://www.google.com/maps/dir/${currentLocation}/${destination}`;
+  
+      window.open(googleMapsUrl, "_blank");
+    } else {
+      alert("Không có thông tin vị trí để dẫn đường.");
+    }
+  };
+  
   return (
     <div className="md:w-full font-['Roboto']">
 
@@ -189,7 +201,15 @@ const Detail = ({data, type}) => {
                 <li>Tiện nghi</li>
                 <li>Phòng nghỉ</li>
                 <li>Đánh giá</li>
-                <li>Vị trí</li>
+                <li>
+  <button
+   
+    onClick={() => handleNavigateToGoogleMap(data)}
+  >
+    Đường đi
+  </button>
+</li>
+
                 <li>Chính sách</li>
             </ul>
             <div className='flex justify-end gap-2 items-center px-2'>

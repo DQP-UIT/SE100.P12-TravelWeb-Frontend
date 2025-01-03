@@ -985,7 +985,9 @@ const [selectedLocation, setSelectedLocation] = useState(null);
 
 
   const handleSave = () => {
-
+notification.success({
+            message: 'Lưu thành công!',
+          });
     const newssssss = JSON.parse(JSON.stringify(service));
     // Dispatch action với transformedObject đã được tạo bản sao
     dispatch(updateRoomInfo(newssssss._id,newssssss));

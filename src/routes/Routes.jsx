@@ -26,6 +26,7 @@ import UserNew from "../views/pages/userNew/userNew"
 import Service from "../views/components/service/Service";
 import Room from "../views/components/room/Room";
 import PaymentPage from "../views/pages/PaymentPage/PaymentPage"
+import Admin2 from "../views/pages/Admin2/Admin2"
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -44,10 +45,13 @@ export const router = createBrowserRouter([
         path: "detail/:hotelId", // Thêm tham số động ":id"
         element: <Detail />,
       },
-      
+      {
+        path: "login",
+        element: <Login />,
+      },
       {
         path: "account",
-        element: <AccountLogin />,
+        element: <Default />,
         children: [
           {
             path: "signup",
@@ -76,7 +80,6 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    
       path:  "user/:id",
       element: <UserNew />,
       children: [
@@ -128,38 +131,43 @@ export const router = createBrowserRouter([
   },
   {
     
+    path:  "admin",
+    element: <Admin2 />,
+  },
+  {
+    
     path:  "room/:id",
     element: <Room />,
   },
-  {
-    path: "/admin",
-    element: <AdminSet />,
-    errorElement: <NotFound />,
-    children: [
-      {
-        path: "/admin/",
-        element: <AdminMain />,
-      },
-      // {
-      //   path: "/admin/customer",
-      //   element: <CustomerMG />,
-      // },
-      // {
-      //   path: "/admin/customerinfo",
-      //   element: <CustomerInfo />,
-      // },
-      // {
-      //   path: "/admin/provider",
-      //   element: <ProviderMG />,
-      // },
-      // {
-      //   path: "/admin/providerinfo",
-      //   element: <ProviderInfo />,
-      // },
-      // {
-      //   path: "/admin/revenue",
-      //   element: <RevenueReportPage />,
-      // },
-    ],
-  },
+  // {
+  //   path: "/admin",
+  //   element: <AdminSet />,
+  //   errorElement: <NotFound />,
+  //   children: [
+  //     {
+  //       path: "/admin/",
+  //       element: <AdminMain />,
+  //     },
+  //     // {
+  //     //   path: "/admin/customer",
+  //     //   element: <CustomerMG />,
+  //     // },
+  //     // {
+  //     //   path: "/admin/customerinfo",
+  //     //   element: <CustomerInfo />,
+  //     // },
+  //     // {
+  //     //   path: "/admin/provider",
+  //     //   element: <ProviderMG />,
+  //     // },
+  //     // {
+  //     //   path: "/admin/providerinfo",
+  //     //   element: <ProviderInfo />,
+  //     // },
+  //     // {
+  //     //   path: "/admin/revenue",
+  //     //   element: <RevenueReportPage />,
+  //     // },
+  //   ],
+  // },
 ]);

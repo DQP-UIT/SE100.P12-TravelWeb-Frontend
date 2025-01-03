@@ -15,6 +15,7 @@ import { roomReducer } from "./roomReducer";
 import uploadReducer from "./uploadSlice"
 import {serviceReducer} from "./serviceReducer"
 import { invoiceReducer } from "./invoiceReducer";
+import authReducer from "./authSlice"; 
 // Cấu hình redux-persist
 const persistConfig = {
   key: "root", // Khóa lưu trữ chính
@@ -37,6 +38,7 @@ const rootReducer = {
   upload:uploadReducer,
   serviceState: serviceReducer,
   invoice: invoiceReducer,
+  auth: authReducer,
 };
 
 // Áp dụng persistReducer vào rootReducer

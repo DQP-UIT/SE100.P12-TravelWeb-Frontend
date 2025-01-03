@@ -7,6 +7,7 @@ import { getUserByUserID } from '../../../../viewModel/userActions';
 import { PlusOneOutlined } from '@mui/icons-material';
 import { uploadFile } from '../../../../model/uploadSlice';
 import { createInvoice } from '../../../../viewModel/invoiceActions';
+import { jwtDecode } from 'jwt-decode';
 
 const { TextArea } = Input;
 
@@ -15,7 +16,16 @@ const PaymentComponent = ({ products }) => {
   const [paymentMethod, setPaymentMethod] = useState("Ship Cod");
   const [uploadedImage, setUploadedImage] = useState(null); // State to store uploaded image URL
   const localCartItems = JSON.parse(localStorage.getItem("cartItems"));
+const token = localStorage.getItem("token");
 
+let decodedToken ={}
+
+  if (token) {
+    decodedToken = jwtDecode(token);
+   // console.log("Thông tin giải mã token:",decodedToken );
+  } else {
+    console.log("Không có token để giải mã.");
+  }
   const transformData = (inputArray) =>
     inputArray?.map((item) => ({
       idproduct: item._id,
@@ -35,7 +45,7 @@ const PaymentComponent = ({ products }) => {
       message.error(error);
       dispatch(clearErrors());
     }
-    dispatch(getUserByUserID("P002"));
+    dispatch(getUserByUserID(decodedToken.userID));
   }, [dispatch, error]);
 
   const handlePaymentMethodChange = (e) => {
@@ -49,33 +59,42 @@ const PaymentComponent = ({ products }) => {
     const day = String(d.getMonth() + 1).padStart(2, "0");
     return `${year}-${month}-${day}`;
 };
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-    
-      const invoiceData = {
-        invoiceID: `INV-${Date.now()}`, // Tạo mã hóa đơn tự động
-        userID: user?._id, // ID người dùng
-        serviceID: products?.service?._id, // ID dịch vụ
-        quantity: products?.numberBooked || 1, // Số lượng đặt
-        totalAmount: (products?.roomInfo?.discount || 0) * (products?.numberBooked || 0) * (date?.length || 0), // Tổng tiền
-        issueDate: new Date().toISOString(), // Ngày tạo
-        paymentStatus: "unpaid", // Trạng thái thanh toán mặc định
-        roomID: products?.roomInfo?._id, // ID phòng
-        checkInDate: formatDate(date?.[0]), // Ngày check-in
-        checkOutDate: formatDate(date?.[date?.length - 1]), // Ngày check-out
-        status: "chờ xác nhận", // Trạng thái mặc định
-        pictures: uploadedImage ? uploadedImage : "", // Ảnh tải lên
-        orderNote, // Ghi chú đơn hàng
-      };
-    
-      try {
-        await dispatch(createInvoice(invoiceData));
-        message.success("Đặt hàng thành công!");
-       
-      } catch (error) {
-        message.error(`Lỗi đặt hàng: ${error}`);
-      }
-    };
+console.log("USER" ,user)
+console.log("OR",decodedToken)
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Kiểm tra xem người dùng đã tải lên ảnh hay chưa
+  if (!uploadedImage) {
+    message.warning("Vui lòng tải lên ảnh thanh toán trước khi đặt hàng!");
+    return;
+  }
+
+  const invoiceData = {
+    invoiceID: `INV-${Date.now()}`, // Tạo mã hóa đơn tự động
+    userID: user?._id, // ID người dùng
+    serviceID: products?.service?._id, // ID dịch vụ
+    quantity: products?.numberBooked || 1, // Số lượng đặt
+    totalAmount: (products?.roomInfo?.discount || 0) * (products?.numberBooked || 0) * (date?.length || 0), // Tổng tiền
+    issueDate: new Date().toISOString(), // Ngày tạo
+    paymentStatus: "unpaid", // Trạng thái thanh toán mặc định
+    roomID: products?.roomInfo?._id, // ID phòng
+    checkInDate: formatDate(date?.[0]), // Ngày check-in
+    checkOutDate: formatDate(date?.[date?.length - 1]), // Ngày check-out
+    status: "chờ xác nhận", // Trạng thái mặc định
+    pictures: uploadedImage, // Ảnh tải lên
+    orderNote, // Ghi chú đơn hàng
+  };
+
+  try {
+    await dispatch(createInvoice(invoiceData));
+    message.success("Đặt hàng thành công!");
+    navigate(`/user/${decodedToken.userID}`);
+  } catch (error) {
+    message.error(`Lỗi đặt hàng: ${error}`);
+  }
+};
+
     
   
 
@@ -171,7 +190,7 @@ const PaymentComponent = ({ products }) => {
               
               
             </div>
-              { date && <p style={{ margin: 0 }}>Từ ngày: {date[0]} đến ngày: {date[date?.length-1]} ({date?.length} ngày)</p>}
+              { date && <p style={{ margin: 0 }}>Từ 8h ngày: {date[0]} đến 8h ngày: {date[date?.length-1]} ({date?.length - 1 > 0 ? date?.length -1 :0 } ngày)</p>}
             <div
               style={{
                 display: 'flex',
@@ -182,7 +201,7 @@ const PaymentComponent = ({ products }) => {
               <h3>
                 Tổng cộng:{' '}
                 {(
-                  (products?.roomInfo?.discount || 0) * (products?.numberBooked || 0) * (date?.length || 0)
+                  (products?.roomInfo?.discount || 0) * (products?.numberBooked || 0) * (date?.length - 1 > 0 ? date?.length -1 :0)
                 ).toLocaleString('vi-VN')} ₫
               </h3>
             </div>
@@ -193,7 +212,7 @@ const PaymentComponent = ({ products }) => {
               <span>Số tài khoản: {products?.service?.providerID?.accountNumber}</span>
               <span>Tên tài khoản: {products?.service?.providerID?.accountName }</span>
               <span>Số tiền cần thanh toán: {(
-                  (products?.roomInfo?.discount || 0) * (products?.numberBooked || 0) * (date?.length || 0)
+                  (products?.roomInfo?.discount || 0) * (products?.numberBooked || 0) * (date?.length - 1 > 0 ? date?.length -1 :0  )
                 ).toLocaleString('vi-VN')} ₫</span>
             </Space>
           </Card>

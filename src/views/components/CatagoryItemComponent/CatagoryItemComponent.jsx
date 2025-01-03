@@ -7,7 +7,7 @@ import { clearErrors, getUserByUserID } from "../../../viewModel/userActions";
 import RoomAvailabilityCalendar from "../roomAvailabilityCalendar/RoomAvailabilityCalendar";
 import { createService } from "../../../viewModel/serviceActions";
 import { createRoom } from "../../../viewModel/roomActions";
-//import { bulkUpdateAttributes, fetchAttributesByType } from "../../../redux/Slicer/attributeSlice";
+
 
 const { Option } = Select;
 
@@ -58,18 +58,13 @@ const [errorMessage, setErrorMessage] = useState('');
   const [isAdding, setIsAdding] = useState(false);
  
   const [form] = Form.useForm();
+ 
 
-  // useEffect(() => {
-  //   if (title) {
-  //     dispatch(fetchAttributesByType(title)); // Lấy dữ liệu từ Redux
-  //   }
-  // }, [dispatch, title]);
+  const rowClassName = (record) =>
+    record.id ===  selectedAttributeId
+      ? { backgroundColor: '#f0f8ff', fontWeight: 'bold' } // Style trực tiếp
+      : {};
 
-  // useEffect(() => {
-  //   if (reduxAttributes) {
-  //     setAttributes(reduxAttributes); // Khởi tạo state nội bộ từ Redux
-  //   }
-  // }, [reduxAttributes]);
 
 console.log("HELLO")
 console.log(attributes)
@@ -273,28 +268,7 @@ if (values.attribute.length < 3) {
   
 
   const [isSaved, setIsSaved] = useState(false);
-  const roomsAvailable = [
-    { id: "1", date: "2025-01-01T00:00:00.000Z", availableRooms: 5 },
-    { id: "2", date: "2025-01-02T00:00:00.000Z", availableRooms: 3 },
-    { id: "3", date: "2025-01-03T00:00:00.000Z", availableRooms: 0 },
-    // ...
-  ];
-// const handleSave2 = async () => {
-//     // Your save logic here
-//     dispatch(bulkUpdateAttributes(attributes))
-//     .unwrap()
-//     .then((response) => {
-//         console.log("Update successful:", response);
-//         // After successful save, set isSaved to true
-//         setIsSaved(true);
-//     })
-//     .catch((error) => {
-//         console.error("Update failed:", error);
-//     });
-//     message.success("Lưu thành công.");
-// };
-
-// Use an effect to trigger re-render when isSaved changes
+  
 useEffect(() => {
     if (isSaved) {
         setIsSaved(false); // Reset isSaved state after re-render
@@ -308,7 +282,7 @@ const { Title } = Typography;
     {/* <Button  type="primary" style={{ width: "100px" }} >
             Lưu  
           </Button> */}
-          <Title level={3}>Thống kê đánh giá</Title>
+          <Title level={3}>Dịch vụ</Title>
       <Row gutter={16}>
       
       <Col
@@ -326,7 +300,10 @@ const { Title } = Typography;
       type="primary"
       icon={<PlusOutlined />}
       onClick={() => {
-       
+        notification.success({
+        message: "Thêm dịch vụ thành công"
+      
+      });
       dispatch(createService({providerID: user.services[0].providerID._id}))
       setTimeout(() => {
       setAddSer((prev) => !prev); // Đảo ngược trạng thái sau 3 giây
@@ -339,13 +316,21 @@ const { Title } = Typography;
     </Button>
   </Row>
   <Table
-  dataSource={[...attributes].reverse()} // Đảo ngược thứ tự của attributes
+  dataSource={[...attributes]?.reverse()} // Đảo ngược thứ tự của attributes
   columns={attributeColumns}
   rowKey="id"
   onRow={(record) => ({
     onClick: () => handleAttributeClick(record),
   })}
+  rowClassName={(record) =>
+    selectedAttributeId === record.serviceID ? '' : '' // Không cần class
+  }
+  rowStyle={(record) => ({
+    backgroundColor: selectedAttributeId === record.serviceID ? '#f0f9ff' : 'transparent', // Màu cho hàng khớp
+  
+  })}
 />
+
 </Col>
 
   <Col span={11}
@@ -356,19 +341,28 @@ const { Title } = Typography;
      margin:'10px'
   }}>
     <Row justify="space-between" align="middle">
-      <h3>
-        {selectedAttributeId
-          ? `Danh sách phòng của: ${
-              attributes.find((attr) => attr.serviceID === selectedAttributeId)?.serviceName || ""
-            }`
-          : "Vui lòng chọn một Thuộc tính"}
-      </h3>
+    <h3 style={{ fontSize: "18px" }}>
+  {selectedAttributeId ? (
+    <>
+      Danh sách phòng của:{" "}
+      <span style={{ fontSize: "24px", fontWeight: "bold", color: "#333" }}>
+        {attributes?.find((attr) => attr.serviceID === selectedAttributeId)?.serviceName || ""}
+      </span>
+    </>
+  ) : (
+    "Vui lòng chọn một dịch vụ"
+  )}
+</h3>
+
       <Button
         type="primary"
         icon={<PlusOutlined />}
         disabled={!selectedAttributeId}
         onClick={() => {
-          
+          notification.success({
+        message: "Thêm phòng thành công"
+      
+      });
           dispatch(createRoom({hotelID: attributes?.find((attr) => attr.serviceID === selectedAttributeId)?.hotels[0]?._id }))
           setTimeout(() => {
       setAddSer((prev) => !prev); // Đảo ngược trạng thái sau 3 giây
@@ -421,13 +415,6 @@ const { Title } = Typography;
             <Input />
           </Form.Item>
           {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-          {/* {( !isAdding &&
-             <Form.Item name="status" label="Tình trạng">
-            <Select>
-              <Option value="Hoạt động">Hoạt động</Option>
-              <Option value="Không hoạt động">Không hoạt động</Option>
-            </Select>
-          </Form.Item> )} */}
           
         </Form>
       </Modal>
@@ -447,12 +434,7 @@ const { Title } = Typography;
           >
             <Input />
           </Form.Item>
-          {/* <Form.Item name="status" label="Tình trạng">
-            <Select>
-              <Option value="Hoạt động">Hoạt động</Option>
-              <Option value="Không hoạt động">Không hoạt động</Option>
-            </Select>
-          </Form.Item> */}
+
         </Form>
       </Modal>
     </div>
