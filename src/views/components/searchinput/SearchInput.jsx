@@ -3,10 +3,57 @@ import { useState, useEffect, useRef } from 'react';
 import { CiSearch } from 'react-icons/ci';
 import { FaMapLocationDot } from 'react-icons/fa6';
 import { setPlace } from '../../../model/placeSlice';
+import { Modal } from 'antd';
+import LocationPicker from '../locationPicker/LocationPicker';
 
 const SearchInput = () => {
   const dispatch = useDispatch();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState('');
 
+  const handleOpenModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleLocationSelect = async  (locationInfo) => {
+    setSelectedLocation(locationInfo);
+   
+    
+    let infone = await getDescription(locationInfo.name);
+   
+      const placeData = {
+        name: locationInfo.name,
+        coordinates: {
+          lat: locationInfo.latitude,
+          lng: locationInfo.longitude,
+        },
+        description: locationInfo.des,
+        information: infone || "Không có thông tin gì",
+        reviews: locationInfo.reviews,
+        photos: locationInfo.photos ? locationInfo.photos : [],
+      };
+
+      // Cập nhật Redux và input
+      dispatch(
+        setPlace({
+          place: placeData,
+          distance, // Đưa khoảng cách hiện tại vào Redux
+        })
+      );
+      setSearchTerm(placeData); // Hiển thị địa điểm trong input
+      
+      console.log('Place details:', placeData);
+    
+  
+
+
+
+    console.log('Selected Location:', locationInfo);
+  };
   // Lấy giá trị từ Redux Store
   const { initialSearchTerm, initialDistance } = useSelector((state) => ({
     initialSearchTerm: state.place.selectedPlace || '', // Giá trị mặc định
@@ -60,9 +107,11 @@ const SearchInput = () => {
   };
   
   const getDescription = async (name) => {
+    if(name){
     const description = await fetchPlaceDescription(name);
     console.log("DES",description)
     return description // In ra mô tả hoặc chuỗi rỗng nếu không có mô tả
+    }
   };
   
   // Lấy thông tin chi tiết của địa điểm
@@ -142,7 +191,7 @@ const SearchInput = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-console.log("PLACE", searchTerm)
+//console.log("PLACE", searchTerm)
 
 
 
@@ -162,13 +211,13 @@ console.log("PLACE", searchTerm)
             className="w-full py-3 ps-10 pe-2 block text-sm bg-white border-2 rounded-full border-[#DEEBF0] focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-blue-500"
             onChange={handleSearch}
             onFocus={handleFocus}
-            value={searchTerm.name} // Luôn hiển thị theo state
+            value={searchTerm.name || searchTerm.description} // Luôn hiển thị theo state
           />
         </div>
 
         {/* Icon vị trí */}
         <div className="flex items-center ms-4">
-          <FaMapLocationDot className="size-8 text-[#359894]" />
+          <FaMapLocationDot className="size-8 text-[#359894]"  onClick={handleOpenModal} />
         </div>
       </div>
 
@@ -240,6 +289,16 @@ console.log("PLACE", searchTerm)
           ))}
         </div>
       )}
+
+      <Modal
+        title="Chọn vị trí"
+        visible={isModalVisible}
+        onCancel={handleCloseModal}
+        footer={null} // Remove default footer buttons
+        width={600}
+      >
+        <LocationPicker onLocationSelect={handleLocationSelect} />
+      </Modal>
     </div>
   );
 };

@@ -10,6 +10,8 @@ import {
   BellOutlined,
   LogoutOutlined,
   FileTextOutlined,
+  MessageOutlined,
+  StarOutlined,
 } from '@ant-design/icons';
 
 import { Avatar, Button, Col, Image, Row } from 'antd';
@@ -23,6 +25,8 @@ import AdminOrdersComponent from '../../components/AdminOrdersComponent/AdminOrd
 import AdminOrdersComponent2 from '../../components/AdminOrdersComponentcopy/AdminOrdersComponent2';
 import ReviewAd from '../../components/reviewAd/ReviewAd';
 import CatagoryItemComponent from '../../components/CatagoryItemComponent/CatagoryItemComponent';
+import CatagoryItemComponent2 from '../../components/CatagoryItemComponent/CatagoryItemComponent2';
+
 import AdminReport from '../../components/adminReport/AdminReport';
 
 
@@ -44,7 +48,8 @@ const UserNew = () => {
       children: [
         { label: "Thông tin cá nhân", key: "userInfo", icon: <DashboardOutlined />, component: AccountInfoComponent, allowedRoles: ["Admin"] },
         { label: "Dịch vụ bạn đã đặt", key: "serviceU", icon: <ShoppingCartOutlined />, component: AdminOrdersComponent, allowedRoles: ["Admin"] },
-        { label: "Thống kê đánh giá", key: "reportU", icon: <AreaChartOutlined />, component: ReviewAd, allowedRoles: ["Admin"] },
+        { label: "Các đánh giá của bạn", key: "reportU", icon: <StarOutlined />, component: ReviewAd, allowedRoles: ["Admin"] },
+        { label: "Dịch vụ bạn đã thích", key: "servic", icon: <ProductOutlined />, component: CatagoryItemComponent2, allowedRoles: ["Provider"] },
       ],
       allowedRoles: ["Admin", "WarehouseStaff"],
       testid: "menu-products2",

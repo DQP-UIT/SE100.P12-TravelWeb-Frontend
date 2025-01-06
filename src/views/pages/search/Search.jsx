@@ -3,7 +3,7 @@ import { FaLongArrowAltUp, FaLongArrowAltDown } from "react-icons/fa";
 import MenuFilter from "../../components/menufilter/MenuFilter";
 import RoomList from "../../components/roomlist/RoomList";
 import SearchBar from "../../components/searchbar/SearchBar";
-
+import GPT from "../../components/GPT/GPT"
 
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, filterHotel } from "../../../viewModel/hotelAction";
@@ -40,8 +40,8 @@ const Search = (type) => {
     facilities: filters?.filters?.facilities || [],
     facilityTypes: filters?.filters?.facilityTypes || [],
     hotelTypes: filters?.filters?.hotelTypes || [],
-    latitude: place.selectedPlace.coordinates.lat,
-    longitude: place.selectedPlace.coordinates.lng,
+    latitude: place?.selectedPlace?.coordinates?.lat,
+    longitude: place?.selectedPlace?.coordinates?.lng,
     distance: place.distance,
     capacity: newCap,
     dates: formattedDates
@@ -51,32 +51,34 @@ const Search = (type) => {
   console.log("FILLDATA",filterData)
   console.log("ATADLLIF",filters)
   useEffect(() => {
-    if (hotels.error) {
-      alert.error(hotels.error);
-      dispatch(clearErrors());
-    }
-
+   
     dispatch(filterHotel(filterData));
   }, [dispatch, hotels.error, filters, place,numRoom, numAldult, numChildren,selectedDate]);
 
+  
   const generateReviewList = (inputHotels) => {
-    return inputHotels.map((hotel) => {
-      const amenities = hotel.serviceID.facilities?.map((facility) => facility.name) || [];
-
-      return {
-        id: hotel._id,
-        images: hotel.serviceID.images,
-        avatar: "https://via.placeholder.com/40x40", // Default avatar
-        title: hotel.serviceID.serviceName, // Service name
-        location: hotel.serviceID.locationID?.locationName || "Unknown location", // Location name
-        reviews: Math.floor(Math.random() * 200 + 50), // Random reviews
-        amenities: amenities,
-        overview: hotel.starRating,
-        dprice: hotel.lowestDiscountPrice ,
-        price:  hotel.correspondingPrice,
-      };
-    });
+    console.log("INNNNNN",inputHotels)
+    return inputHotels
+      .filter((hotel) => hotel.serviceID?.status === "Active") // Filter by active status
+      .map((hotel) => {
+        const amenities = hotel.serviceID.facilities?.map((facility) => facility.name) || [];
+  
+        return {
+          _id: hotel.serviceID._id,
+          id: hotel._id,
+          images: hotel.serviceID.images,
+          avatar: "https://via.placeholder.com/40x40", // Default avatar
+          title: hotel.serviceID.serviceName, // Service name
+          location: hotel.serviceID.locationID?.locationName || "Unknown location", // Location name
+          reviews: Math.floor(Math.random() * 200 + 50), // Random reviews
+          amenities: amenities,
+          overview: hotel.starRating,
+          dprice: hotel.lowestDiscountPrice,
+          price: hotel.correspondingPrice,
+        };
+      });
   };
+  
 
   const sortHotels = () => {
     if (!hotels.datas) return [];
@@ -99,7 +101,7 @@ const Search = (type) => {
       order: prev.field === field && prev.order === "asc" ? "desc" : "asc",
     }));
   };
-
+  //console.log("INNNNNN",inputHotels)
   const sortedHotels = sortHotels();
 
 
@@ -118,6 +120,7 @@ const Search = (type) => {
 
   return (
     <div className="md:w-full font-['Roboto']">
+     <GPT></GPT>
       <SearchBar type={type ? "hotel" : type} />
       <div className="my-4 relative flex justify-center">
         <div className="flex gap-4">

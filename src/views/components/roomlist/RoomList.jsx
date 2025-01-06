@@ -1,16 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FixedSizeList } from "react-window";
 import { useNavigate } from "react-router-dom";
 import RoomTag from "./RoomTag";
+import { fetchLoveList } from "../../../model/loveListSlice";
+import { jwtDecode } from "jwt-decode";
+import { useDispatch, useSelector } from "react-redux";
 
 const RoomList = ({ rooms = [] }) => {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const token = localStorage.getItem("token");
+
+  let decodedToken = {};
+  if (token) {
+    decodedToken = jwtDecode(token);
+  } else {
+    console.log("Không có token để giải mã.");
+  }
+
+  const { loveList, status, error } = useSelector((state) => state.loveList);
+
+  useEffect(() => {
+    dispatch(fetchLoveList(decodedToken.userID));
+  }, [dispatch]);
 
   const Row = ({ index, style }) => {
-    const handleRoomClick = () => {
-      navigate(`/detail/${rooms[index].id}`);
-    };
-  
     return (
       <div
         style={{
@@ -22,25 +35,23 @@ const RoomList = ({ rooms = [] }) => {
         <div
           className="room-wrapper"
           style={{
-            padding: "10px",
-            marginBottom: "10px", // Khoảng cách bên trong mỗi room
+           
+           
             cursor: "pointer",
           }}
-          onClick={handleRoomClick}
         >
-          <RoomTag room={rooms[index]} />
+          <RoomTag room={rooms[index]} userID={decodedToken.userID} />
         </div>
       </div>
     );
   };
-  
 
   return (
     <div className="w-full h-[1500px]">
       <FixedSizeList
         height={1500}
         width={840}
-        itemCount={rooms.length}
+        itemCount={Math.min(rooms.length, 8)} // Ensure no more than 10 rooms are shown
         itemSize={280}
         style={{
           overflowX: "hidden",

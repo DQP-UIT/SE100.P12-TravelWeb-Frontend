@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Typography, Form, Input, Select, notification } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllUsers } from "../../../viewModel/userActions";
+import { getAllUsers, updateUserById } from "../../../viewModel/userActions";
 import { clearErrors } from "../../../viewModel/hotelAction";
 import { Option } from "antd/es/mentions";
 
@@ -12,6 +12,7 @@ const InvoiceTable2 = () => {
   const [userType, setUserType] = useState("customer");
   const [filteredData, setFilteredData] = useState([]);  // Dữ liệu đã lọc
   const [userId, setUserId] = useState(""); // Store user ID for role change
+  const [userId2, setUserId2] = useState(""); // Store user ID for role change
   const [newRole, setNewRole] = useState(""); // Store new role to update
   const [users, setUsers] = useState([]);  // Dữ liệu người dùng (cập nhật khi thay đổi vai trò)
 
@@ -30,15 +31,31 @@ const InvoiceTable2 = () => {
       setUsers(user);  // Cập nhật dữ liệu người dùng ban đầu
     }
   }, [user]);
-  const handleStatusChange = (value, userId) => {
+  const handleStatusChange = (value, record) => {
+    // const updatedUserData = {
+    //   ...user,
+    //   birthDate: values?.dateOfBirth || "",
+    //   fullName: values?.username || "",
+    //   phoneNumber: values?.phoneNumber || ""
+
+    // };
+
+    // // Gửi thông tin cập nhật tới API
+     dispatch(updateUserById(record._id,{active: value}))
+console.log(userId)
+
     const updatedData = filteredData.map((item) =>
-      item.userID === userId ? { ...item, active: value } : item
+      item.userID === record.userID ? { ...item, active: value } : item
     );
     setFilteredData(updatedData); // Cập nhật lại trạng thái cho người dùng
     notification.success({
       message: `Người dùng có id ${userId} đã ${value ? "hoạt động" : "vô hiệu hóa"}`,
     });
   };
+
+
+
+  
   useEffect(() => {
     if (users && users.length > 0) {
       const filtered = users
@@ -55,8 +72,9 @@ const InvoiceTable2 = () => {
   const handleUserTypeChange = (type) => {
     setUserType(type);
   };
-
+  console.log("MÁ", userId2?._id)
   const handleRoleChange = () => {
+
     if (!userId || !newRole) {
       notification.error({ message: "Hãy nhập ID và loại người dùng hợp lệ!" });
       return;
@@ -67,7 +85,8 @@ const InvoiceTable2 = () => {
       item.userID === userId ? { ...item, role: newRole } : item
     );
     setUsers(updatedData); // Cập nhật lại dữ liệu người dùng sau khi thay đổi vai trò
-
+    dispatch(updateUserById(userId2?._id,{role: newRole}))
+  
     // Xóa các trường nhập liệu
     setUserId("");
     setNewRole("");
@@ -243,7 +262,7 @@ const InvoiceTable2 = () => {
       render: (text, record) => (
         <Select
           defaultValue={record.active}
-          onChange={(value) => handleStatusChange(value, record.userID)}
+          onChange={(value) => handleStatusChange(value, record)}
           style={{ width: 120 }}
         >
           <Option value={true}>Hoạt động</Option>
@@ -337,7 +356,8 @@ const InvoiceTable2 = () => {
   pagination={{ pageSize: 5 }}
   onRow={(record) => ({
     onClick: () => {
-      setUserId(record.userID); // Cập nhật userId từ hàng được chọn
+      setUserId(record.userID);
+      setUserId2(record); // Cập nhật userId từ hàng được chọn
       setNewRole(record.role); // Cập nhật newRole từ vai trò hiện tại của hàng được chọn
     },
   })}
@@ -353,6 +373,7 @@ const InvoiceTable2 = () => {
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               placeholder="User ID"
+              style={{ pointerEvents: 'none' }}
             />
           </Form.Item>
           <Form.Item label="Chọn vai trò" style={{ marginRight: 16 }}>
@@ -362,9 +383,9 @@ const InvoiceTable2 = () => {
               placeholder="Chọn vai trò"
               style={{ width: 200 }}
             >
-              <Select.Option value="customer">Khách hàng</Select.Option>
-              <Select.Option value="provider">Nhà cung cấp</Select.Option>
-              <Select.Option value="admin">Admin</Select.Option>
+              <Select.Option value="Customer">Khách hàng</Select.Option>
+              <Select.Option value="Provider">Nhà cung cấp</Select.Option>
+              <Select.Option value="Admin">Admin</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item>

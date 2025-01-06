@@ -26,7 +26,10 @@ import UserNew from "../views/pages/userNew/userNew"
 import Service from "../views/components/service/Service";
 import Room from "../views/components/room/Room";
 import PaymentPage from "../views/pages/PaymentPage/PaymentPage"
+
+import GPT from "../views/components/GPT/GPT"
 import Admin2 from "../views/pages/Admin2/Admin2"
+import SigninPage from "../views/pages/SigninPage/SigninPage";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -36,6 +39,10 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "gpt",
+        element: <GPT />,
       },
       {
         path: "search",
@@ -48,6 +55,12 @@ export const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
+      },
+      
+
+      {
+        path: "Signup",
+        element: <SigninPage />,
       },
       {
         path: "account",
