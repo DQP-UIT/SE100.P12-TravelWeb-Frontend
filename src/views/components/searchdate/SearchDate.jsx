@@ -72,20 +72,7 @@ console.log(selectedDate)
     );
   }
 
-  if (searchType == 'restaurant') {
-    return (
-      <div className="bg-white rounded-md border flex">
-        <DatePicker
-          value={hackValue || (selectedDate ? dayjs(selectedDate[0], dateFormat) : null)}
-          onChange={onDateChange}
-          onOpenChange={onOpenChange}
-          format={dateFormat}
-          className="h-12"
-        />
-        <TimePicker />
-      </div>
-    );
-  }
+ 
 
   return null;
 };

@@ -18,11 +18,13 @@ import { invoiceReducer } from "./invoiceReducer";
 import authReducer from "./authSlice"; 
 import user2 from "./userSlice"; 
 import loveList from "./loveListSlice"
+import serviceTypeReducer from './serviceTypeSlice'; // Import slice mới
+import restaurantReducer from "./restaurantSlice";
 // Cấu hình redux-persist
 const persistConfig = {
   key: "root", // Khóa lưu trữ chính
   storage, // Lưu trữ vào localStorage
-  whitelist: ["filters", "place", "date","memberValue"], // Chỉ lưu trữ state của filters và place
+  whitelist: ["filters", "place", "date","memberValue","serviceType"], // Chỉ lưu trữ state của filters và place
 };
 
 const rootReducer = {
@@ -42,7 +44,9 @@ const rootReducer = {
   invoice: invoiceReducer,
   auth: authReducer,
   user2: user2,
-  loveList:loveList
+  loveList:loveList,
+  serviceType: serviceTypeReducer,
+  restaurant: restaurantReducer,
 };
 
 // Áp dụng persistReducer vào rootReducer

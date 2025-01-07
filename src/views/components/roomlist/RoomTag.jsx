@@ -103,7 +103,7 @@ console.log(newLoveList); // Mảng kết quả chỉ chứa _id
           <div className="flex-1">
             <div className="text-gray-900 text-base font-semibold mb-2">{room.title}</div>
             <div className="text-gray-800 text-xs font-semibold mb-4 flex items-center">
-              {room.reviews} Nhận xét
+              Số sao
               <Rating
                 name="read-only"
                 value={room.overview}

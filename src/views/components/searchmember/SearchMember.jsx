@@ -52,7 +52,7 @@ const SearchMember = () => {
     }
   };
   console.log(numRoom, numAldult, numChildren)
-
+ 
   return (
     <div className="relative">
       <button
@@ -83,6 +83,8 @@ const SearchMember = () => {
       )}
     </div>
   );
+
+
 };
 
 export default SearchMember;

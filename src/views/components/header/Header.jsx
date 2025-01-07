@@ -3,7 +3,7 @@ import logo from "../../../assets/Logo.svg";
 import cart from "../../../assets/Cart.svg";
 import { NewMenu2, MenuSpan, HotlineContainer, Icon, Label, PhoneNumber, Separator, SearchCol, LowText, FunCol, NewMenu, MenuItem2 } from "./style";
 import { jwtDecode } from "jwt-decode";
-import { Image } from "antd";
+import { Image, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 
 import user from '../../../assets/user.svg';
@@ -21,7 +21,12 @@ const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.reload()
+    
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000); // 2000ms = 2 giây
+    
+    message.success("Đăng xuất thành công!");
   }
 
   let canHover = true;

@@ -7,12 +7,15 @@ import { getFacilitiesByType } from '../../../viewModel/facilitiesAction';
 import { getSuitabilities } from '../../../viewModel/suitabilitiesAction';
 import { FaStar, FaTimes } from 'react-icons/fa';
 import { updateFilter } from '../../../model/filterSlice';
+import { fetchCoffeeTypes, fetchRestaurantFilterData } from '../../../model/restaurantSlice';
 
 const { Title } = Typography;
 
+
+
 const MenuFilter = ({ searchType }) => {
     const dispatch = useDispatch();
-
+    const selectedServiceType = useSelector((state) => state.serviceType.selectedServiceType);
     const [inputValue, setInputValue] = useState([0, 100000000]);
     const [searchQueries, setSearchQueries] = useState({});
     const { hotelTypes, error } = useSelector((state) => state.hotelType);
@@ -21,6 +24,25 @@ const MenuFilter = ({ searchType }) => {
     const suitabilities = useSelector((state) => state.suitabilities);
     const { filters } = useSelector((state) => state.filters);
 
+const { coffeeTypes, } = useSelector((state) => state.restaurant);
+
+  useEffect(() => {
+    dispatch(fetchCoffeeTypes()); // Gọi API lấy coffee types
+  }, [dispatch]);
+
+
+
+
+    const { cuisines, dishes, restaurants, status} = useSelector(
+        (state) => state.restaurant
+      );
+    
+      useEffect(() => {
+        dispatch(fetchRestaurantFilterData());
+      }, [dispatch]);
+
+
+    
     useEffect(() => {
         if (error) {
             alert.error(error);
@@ -28,7 +50,15 @@ const MenuFilter = ({ searchType }) => {
         }
 
         dispatch(getHotelType());
-        dispatch(getFacilityTypeByType('hotel'));
+        if(selectedServiceType === 'hotel'){
+            dispatch(getFacilityTypeByType('hotel'));
+        }
+        else if(selectedServiceType === 'restaurant'){
+            dispatch(getFacilityTypeByType('restaurant'));
+        }
+        else if (selectedServiceType === 'cafe'){
+            dispatch(getFacilityTypeByType('cafe'));
+        }
         dispatch(getFacilitiesByType('Room'));
         dispatch(getSuitabilities());
     }, [dispatch, error]);
@@ -41,7 +71,100 @@ const MenuFilter = ({ searchType }) => {
         </div>
     );
 
-    const filterHotel = [
+    const filterRes = [
+        {
+            title: 'Loại giá: ',
+            aName: 'priceCategories',
+            item: [
+                { title: 'Giá rẻ', id: '674984adf66ab12aab93f6f8' },
+                { title: 'Trung bình', id: '674984adf66ab12aab93f6f9' },
+                { title: 'Sang trọng', id: '674984adf66ab12aab93f6fa' },
+            ],
+        },
+        {
+            title: 'Phù hợp với: ',
+            aName: 'suitabilities',
+            item: suitabilities.datas?.map(({ name, _id }) => ({
+                title: name,
+                id: _id,
+            })),
+        },
+        {
+            title: 'Loại nhà hàng: ',
+            aName: 'restaurants',
+            item: restaurants?.map(({  type, _id }) => ({
+                title: type,
+                id: _id,
+            })),
+        },
+        {
+            title: 'Kiểu món ăn: ',
+            aName: 'cuisines',
+            item: cuisines?.map(({  type, _id }) => ({
+                title: type,
+                id: _id,
+            })),
+        },
+        {
+            title: 'Món ăn: ',
+            aName: 'dishes',
+            item: dishes?.map(({  name, _id }) => ({
+                title: name,
+                id: _id,
+            })),
+        },
+        
+        {
+            title: 'Tiện nghi của nhà hàng: ',
+            aName: 'facilityTypes',
+            item: facilityTypes.facilitiesType?.map(({ name, _id }) => ({
+                title: name,
+                id: _id,
+            })),
+        },
+        
+    ];
+
+    const filterCoffee = [
+        {
+            title: 'Loại giá: ',
+            aName: 'priceCategories',
+            item: [
+                { title: 'Giá rẻ', id: '674984adf66ab12aab93f6f8' },
+                { title: 'Trung bình', id: '674984adf66ab12aab93f6f9' },
+                { title: 'Sang trọng', id: '674984adf66ab12aab93f6fa' },
+            ],
+        },
+        {
+            title: 'Phù hợp với: ',
+            aName: 'suitabilities',
+            item: suitabilities.datas?.map(({ name, _id }) => ({
+                title: name,
+                id: _id,
+            })),
+        },
+        {
+            title: 'Loại quán cà phê: ',
+            aName: 'coffeeTypes',
+            item: coffeeTypes?.map(({  name, _id }) => ({
+                title: name,
+                id: _id,
+            })),
+        },
+        {
+            title: 'Tiện nghi của quán cafe: ',
+            aName: 'facilityTypes',
+            item: facilityTypes.facilitiesType?.map(({ name, _id }) => ({
+                title: name,
+                id: _id,
+            })),
+        },
+        
+    ];
+
+
+
+    const filterHotel1 = [
         {
             title: 'Loại giá: ',
             aName: 'priceCategories',
@@ -111,13 +234,25 @@ const MenuFilter = ({ searchType }) => {
         dispatch(updateFilter({ filterKey, value: null }));  // Remove filter value
     };
 
+console.log("filter",filters)
+let filterHotel = []
+    if(selectedServiceType === "hotel"){
+        filterHotel = filterHotel1
+        
+    }
+    else if(selectedServiceType === "restaurant"){
+        filterHotel = filterRes
+    }
+    else if(selectedServiceType === "cafe"){
+        filterHotel =  filterCoffee
+    }
     return (
         <div className="w-[300px] px-4 gap-3">
             {/* Display selected filters */}
             <div className="mb-4">
                 {Object.keys(filters).map((filterKey) => {
                     return filters[filterKey]?.map((selectedValue) => {
-                        console.log(selectedValue)
+                    
                         const itemWithAName = filterHotel
   .flatMap((filter) => filter.item.map((i) => ({ ...i, aName: filter.aName }))) // Add aName to each item
   .find((i) => i.id === selectedValue);

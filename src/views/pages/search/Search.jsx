@@ -8,6 +8,7 @@ import GPT from "../../components/GPT/GPT"
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, filterHotel } from "../../../viewModel/hotelAction";
 import PlaceInfo from "../../components/placeInfo/placeInfo";
+import { fetchCoffeeTypes } from "../../../model/restaurantSlice";
 
 const Search = (type) => {
   const dispatch = useDispatch();
@@ -117,6 +118,15 @@ const Search = (type) => {
   });
   console.log("CHUAN",filteredHotels )
   const reviewList = generateReviewList(filteredHotels);
+
+
+  const { coffeeTypes, status, error } = useSelector((state) => state.restaurant);
+
+  useEffect(() => {
+    dispatch(fetchCoffeeTypes()); // Gọi API lấy coffee types
+  }, [dispatch]);
+
+  console.log("COFFETYPE" ,coffeeTypes)
 
   return (
     <div className="md:w-full font-['Roboto']">

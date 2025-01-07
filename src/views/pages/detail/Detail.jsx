@@ -30,6 +30,7 @@ const averageRate = (data) => {
     })
     result /= data?.length
     return result
+
 }
 
 
@@ -46,12 +47,13 @@ const createHotelDataFromObject = (inputData) => {
           ? inputData.rooms.map(room => ({
             _id : room._id,
               name: room.roomType || "", // Nếu không có tên phòng, trả về chuỗi rỗng
-              image: room.pictures ? room.pictures[0] || "" : "", // Lấy hình ảnh đầu tiên nếu có
+              image: room.pictures ? room.pictures || "" : "", // Lấy hình ảnh đầu tiên nếu có
               utilites: room.facilities ? room.facilities.map(facility => facility.name) : [], // Lấy danh sách tiện nghi
               capacities: room.capacity ? [room.capacity.roomNumber   ,room.capacity.adults, room.capacity.children] : [], // Nếu có capacity, lấy số người lớn và trẻ em
               price: room.price || 0, // Giá phòng, nếu không có thì mặc định là 0
               discount: room.discountPrice || 10, // Giảm giá, nếu không có thì mặc định là 0
-              roomAvailability: room.roomsAvailable || []
+              roomAvailability: room.roomsAvailable || [],
+              meter: room.area
             }))
           : [], // Nếu không có rooms, trả về mảng rỗng
         amenities: inputData.hotel.serviceID.facilities

@@ -122,6 +122,8 @@ const SearchInput = () => {
         let infone = await getDescription(place.name);
         if (status === window.google.maps.places.PlacesServiceStatus.OK) {
           const placeData = {
+
+            
             name: place.name,
             coordinates: {
               lat: place.geometry.location.lat(),
