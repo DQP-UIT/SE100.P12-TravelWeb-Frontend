@@ -9,11 +9,9 @@ import {
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
 
 const InvoiceTable = () => {
   const token = localStorage.getItem("token");
-  const navigate = useNavigate();
   const [form] = Form.useForm();
   let decodedToken = {};
   if (token) {
