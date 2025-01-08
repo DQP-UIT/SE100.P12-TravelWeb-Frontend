@@ -77,7 +77,7 @@ const navigate = useNavigate();
           src={logo}
           alt="Logo"
         />
-        <div className="flex items-center space-x-8">
+        {/* <div className="flex items-center space-x-8">
           <div className="text-[#0f1035] text-sm font-semibold font-['Roboto']">
             Chỗ ở
           </div>
@@ -87,7 +87,7 @@ const navigate = useNavigate();
           <div className="text-[#0f1035] text-sm font-semibold font-['Roboto']">
             Quán cà phê
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="flex items-center space-x-4">
        

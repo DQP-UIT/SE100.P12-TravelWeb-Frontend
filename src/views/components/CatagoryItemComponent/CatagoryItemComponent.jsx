@@ -62,8 +62,8 @@ const [errorMessage, setErrorMessage] = useState('');
 
   const rowClassName = (record) =>
     record.id ===  selectedAttributeId
-      ? { backgroundColor: '#f0f8ff', fontWeight: 'bold' } // Style trực tiếp
-      : {};
+      ? "bg-gray-100"
+      : "";
 
 
 console.log("HELLO")
@@ -336,11 +336,9 @@ const { Title } = Typography;
     onClick: () => handleAttributeClick(record),
   })}
   rowClassName={(record) =>
-    selectedAttributeId === record.serviceID ? '' : '' // No class needed
+    selectedAttributeId === record.serviceID ? 'bg-blue-100' : 'bg-gray-200' 
   }
-  rowStyle={(record) => ({
-    backgroundColor: selectedAttributeId === record.serviceID ? '#f0f9ff' : 'transparent', // Color for matching row
-  })}
+  className="hover:cursor-pointer"
 />
 
 
@@ -363,7 +361,7 @@ const { Title } = Typography;
       </span>
     </>
   ) : (
-    "Vui lòng chọn một dịch vụ"
+    "Vui lòng chọn một khách sạn"
   )}
 </h3>
 

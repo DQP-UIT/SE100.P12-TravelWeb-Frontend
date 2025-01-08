@@ -1,14 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { Table, Select, Typography, Button, Input, Tag, Image, Tooltip, message, notification, Rate, Form, Modal } from "antd";
+import {
+  Table,
+  Select,
+  Typography,
+  Button,
+  Input,
+  Tag,
+  Image,
+  Tooltip,
+  message,
+  notification,
+  Rate,
+  Form,
+  Modal,
+} from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllOrders, updateInvoiceStatus } from "../../../viewModel/invoiceActions";
+import { useNavigate } from "react-router-dom";
+import {
+  getAllOrders,
+  updateInvoiceStatus,
+} from "../../../viewModel/invoiceActions";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
 import { jwtDecode } from "jwt-decode";
 
 const InvoiceTable = () => {
   const token = localStorage.getItem("token");
- const [form] = Form.useForm();
+  const navigate = useNavigate();
+  const [form] = Form.useForm();
   let decodedToken = {};
   if (token) {
     try {
@@ -28,7 +47,7 @@ const InvoiceTable = () => {
   const [oke, setOke] = useState(true);
   const [searchedColumn, setSearchedColumn] = useState(null);
   const [localInvoice, setLocalInvoice] = useState([]); // State quản lý dữ liệu hóa đơn
-console.log("HELLO",filteredData)
+  console.log("HELLO", filteredData);
   let searchInput = null;
 
   useEffect(() => {
@@ -40,9 +59,9 @@ console.log("HELLO",filteredData)
       setFilteredData(userInvoices);
       setLocalInvoice(userInvoices); // Đồng bộ hóa dữ liệu vào localInvoice
     }
-  }, [dispatch,oke]);
+  }, [dispatch, oke]);
 
-  console.log(invoice)
+  console.log(invoice);
   useEffect(() => {
     if (invoice?.length > 0) {
       const userInvoices = invoice.filter(
@@ -56,7 +75,7 @@ console.log("HELLO",filteredData)
   const handleStatusChange = (value, recordId) => {
     dispatch(updateInvoiceStatus(recordId, value))
       .then(() => {
-        setOke(!oke)
+        setOke(!oke);
         notification.success({
           message: "Thành công",
           description: "Cập nhật trạng thái thành công!",
@@ -69,9 +88,7 @@ console.log("HELLO",filteredData)
         });
       });
   };
-  
-  
-  
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -91,7 +108,12 @@ console.log("HELLO",filteredData)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
       <div style={{ padding: 8 }}>
         <Input
           ref={(node) => {
@@ -99,7 +121,9 @@ console.log("HELLO",filteredData)
           }}
           placeholder={`Tìm kiếm ${dataIndex}`}
           value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
           style={{ marginBottom: 8, display: "block" }}
         />
@@ -126,7 +150,10 @@ console.log("HELLO",filteredData)
     ),
     onFilter: (value, record) =>
       record[dataIndex]
-        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+        ? record[dataIndex]
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())
         : "",
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
@@ -197,7 +224,7 @@ console.log("HELLO",filteredData)
       render: (date) => date?.slice(0, 10),
       ...getColumnSearchProps("checkOutDate"),
     },
-   
+
     {
       title: "Trạng thái",
       dataIndex: "status",
@@ -239,29 +266,38 @@ console.log("HELLO",filteredData)
       title: "Hành động",
       key: "action",
       render: (_, record) => (
-              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                {record.status === "đã sử dụng" &&
-                  (record.review ? (
-                    <Tooltip title="Xem đánh giá">
-                      <Button type="primary" onClick={() => showReviewModal(record, true)}>
-                        Xem đánh giá
-                      </Button>
-                    </Tooltip>
-                  ) : (
-                      <div></div>
-                  ))}
-                <Button type="primary" onClick={() =>{ handleViewDetail(record.roomID.hotelID); console.log(record)} }>
-                  Xem dịch vụ
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          {record.status === "đã sử dụng" &&
+            (record.review ? (
+              <Tooltip title="Xem đánh giá">
+                <Button
+                  type="primary"
+                  onClick={() => showReviewModal(record, true)}
+                >
+                  Xem đánh giá
                 </Button>
-              </div>
-            ),
-          
+              </Tooltip>
+            ) : (
+              <div></div>
+            ))}
+          <Button
+            type="primary"
+            onClick={() => {
+              handleViewDetail(record.roomID.hotelID);
+              console.log(record);
+            }}
+          >
+            Xem dịch vụ
+          </Button>
+        </div>
+      ),
     },
   ];
 
   const handleViewDetail = (id) => {
-    console.log("Chi tiết hóa đơn:", id);
-    // Xử lý logic hiển thị chi tiết hóa đơn
+    if (id) {
+      navigate(`/detail/${id}`);
+    }
   };
 
   return (
@@ -275,40 +311,43 @@ console.log("HELLO",filteredData)
         pagination={{ pageSize: 5 }}
       />
 
-<Modal
-  title={reviewMode ? "Thông tin đánh giá" : "Đánh giá dịch vụ"}
-  open={isModalOpen}
-  onCancel={handleCancel}
-  footer={
-    reviewMode
-      ? [
-          <Button key="cancel" onClick={handleCancel}>
-            Thoát
-          </Button>,
-         
-        ]  // Không hiển thị footer khi reviewMode là true
-      : [
-          <Button key="cancel" onClick={handleCancel}>
-            Hủy
-          </Button>,
-          <Button key="submit" type="primary" onClick={() => form.submit()}>
-            Gửi
-          </Button>,
-        ]
-  }
->
-  {reviewMode ? (
-    <div>
-      <Typography.Text>Số sao: </Typography.Text>
-      <Rate disabled value={selectedRecord?.review?.stars} />
-      <Typography.Paragraph>
-        Nhận xét: {selectedRecord?.review?.positiveComment || "Không có"}
-      </Typography.Paragraph>
-    </div>
-  ) : (
-    <div></div>
-  )}
-</Modal>
+      <Modal
+        title={reviewMode ? "Thông tin đánh giá" : "Đánh giá dịch vụ"}
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={
+          reviewMode
+            ? [
+                <Button key="cancel" onClick={handleCancel}>
+                  Thoát
+                </Button>,
+              ] // Không hiển thị footer khi reviewMode là true
+            : [
+                <Button key="cancel" onClick={handleCancel}>
+                  Hủy
+                </Button>,
+                <Button
+                  key="submit"
+                  type="primary"
+                  onClick={() => form.submit()}
+                >
+                  Gửi
+                </Button>,
+              ]
+        }
+      >
+        {reviewMode ? (
+          <div>
+            <Typography.Text>Số sao: </Typography.Text>
+            <Rate disabled value={selectedRecord?.review?.stars} />
+            <Typography.Paragraph>
+              Nhận xét: {selectedRecord?.review?.positiveComment || "Không có"}
+            </Typography.Paragraph>
+          </div>
+        ) : (
+          <div></div>
+        )}
+      </Modal>
     </div>
   );
 };

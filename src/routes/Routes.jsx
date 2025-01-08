@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom"; 
+import { createBrowserRouter } from "react-router-dom";
 import Default from "../views/components/default/Default";
 import NotFound from "../views/pages/notfound/NotFound";
 import Home from "../views/pages/home/Home";
@@ -73,12 +73,12 @@ export const router = createBrowserRouter([
   {
     path: "user/:id",
     element: (
-      <ProtectedRoute allowedRoles={["Customer", "Admin","Provider"]}>
+      <ProtectedRoute allowedRoles={["Customer", "Admin", "Provider"]}>
         <UserNew />
       </ProtectedRoute>
     ),
     isProtected: true,
-    allowedRoles: [["Customer", "Admin","Provider"]],
+    allowedRoles: [["Customer", "Admin", "Provider"]],
     children: [
       { path: "", element: <Profile /> },
       { path: "profile", element: <Profile /> },
@@ -103,7 +103,7 @@ export const router = createBrowserRouter([
   {
     path: "payment",
     element: (
-      <ProtectedRoute allowedRoles={[["Customer", "Provider"]]}>
+      <ProtectedRoute allowedRoles={["Customer", "Provider"]}>
         <PaymentPage />
       </ProtectedRoute>
     ),
