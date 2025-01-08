@@ -112,7 +112,7 @@ const handleSubmit2 = async (e) => {
   e.preventDefault();
 
   
-
+  const today = new Date(); 
   const invoiceData = {
     invoiceID: `INV-${Date.now()}`, // Tạo mã hóa đơn tự động
     userID: user?._id, // ID người dùng
@@ -122,8 +122,8 @@ const handleSubmit2 = async (e) => {
     issueDate: new Date().toISOString(), // Ngày tạo
     paymentStatus: "unpaid", // Trạng thái thanh toán mặc định
     roomID: products?.roomInfo?._id, // ID phòng
-    checkInDate: formatDate(date?.[0]), // Ngày check-in
-    checkOutDate: formatDate(date?.[date?.length - 1]), // Ngày check-out
+  checkInDate : date?.[0] ? formatDate(date[0]) : formatDate(today), // Nếu có giá trị trong `date`, lấy ngày đầu tiên; nếu không, lấy ngày hôm nay
+checkOutDate : date?.[date?.length - 1] ? formatDate(date[date.length - 1]) : formatDate(today), // Nếu có giá trị trong `date`, lấy ngày cuối; nếu không, lấy ngày hôm nay
     status: "chờ xác nhận", // Trạng thái mặc định
     pictures: uploadedImage, // Ảnh tải lên
     orderNote, // Ghi chú đơn hàng

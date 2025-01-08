@@ -59,7 +59,7 @@ const [errorMessage, setErrorMessage] = useState('');
  
   const [form] = Form.useForm();
  
-
+    console.log("SELECTED",selectedRoom)
   const rowClassName = (record) =>
     record.id ===  selectedAttributeId
       ? "bg-gray-100"
