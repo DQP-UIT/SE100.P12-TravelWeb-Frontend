@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Table, Select, Row, Col, Typography, Button, Space } from "antd";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
@@ -11,7 +11,6 @@ const { Title } = Typography;
 
 const RevenueStatistics = () => {
   const [selectedMonth, setSelectedMonth] = useState("1");
-  const [roomData, setRoomData] = useState({});
   const currentyear = new Date().getFullYear();
   const token = localStorage.getItem("token");
 
@@ -44,6 +43,9 @@ const RevenueStatistics = () => {
     38000000, 41000000, 42000000, 43000000, 45000000,
   ];
 
+  const roomData = {};
+  
+
   const fetchRevenueData = async () => {
     try {
       console.log("id:", decodedToken.userId);
@@ -62,16 +64,35 @@ const RevenueStatistics = () => {
   };
 
   const updateRoomData = (apiData) => {
-    const updatedRoomData = apiData.map((item, index) => ({
-      key: `${selectedMonth}-${index + 1}`,
-      room: item.roomType,
-      revenue: item.revenue,
-    }));
-    setRoomData((prevData) => ({
-      ...prevData,
-      [selectedMonth]: updatedRoomData,
-    }));
+    const updatedRoomData = generateRoomData(selectedMonth).map(
+      (room, index) => {
+        const apiRoom = apiData.find((item) => item.roomID === room.room);
+        return {
+          ...room,
+          room: apiRoom ? apiRoom.roomId : room.room,
+          revenue: apiRoom ? apiRoom.revenue : room.revenue,
+        };
+      }
+    );
+    roomData[selectedMonth] = updatedRoomData;
   };
+
+  const generateRoomData = (month) => {
+    const rooms = Array.from({ length: 10 }, (_, i) => `Phòng ${101 + i}`);
+
+    return rooms.map((room, index) => {
+      const revenue = 100;
+      return {
+        key: `${month}-${index + 1}`,
+        room,
+        revenue,
+      };
+    });
+  };
+
+  for (let i = 1; i <= 12; i++) {
+    roomData[i] = generateRoomData(i);
+  }
 
   const chartData = {};
 
@@ -80,7 +101,7 @@ const RevenueStatistics = () => {
     const revenues = roomData[month].map((item) => item.revenue);
 
     chartData[month] = {
-      labels: labels,
+      labels,
       datasets: [
         {
           label: "Doanh thu",
@@ -238,20 +259,18 @@ const RevenueStatistics = () => {
           <Title level={4} style={{ textAlign: "center" }}>
             Biểu đồ doanh thu tháng {selectedMonth}
           </Title>
-          {chartData[selectedMonth] && (
-            <Bar
-              style={{ margin: "50px" }}
-              data={chartData[selectedMonth]}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: "top",
-                  },
+          <Bar
+            style={{ margin: "50px" }}
+            data={chartData[selectedMonth]}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: "top",
                 },
-              }}
-            />
-          )}
+              },
+            }}
+          />
         </Col>
         <Col span={12}>
           <Title level={4} style={{ textAlign: "center" }}>
