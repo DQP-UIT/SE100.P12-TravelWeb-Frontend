@@ -9,12 +9,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearErrors, filterHotel } from "../../../viewModel/hotelAction";
 import PlaceInfo from "../../components/placeInfo/placeInfo";
 import { fetchCoffeeTypes } from "../../../model/restaurantSlice";
+import { getAllRestaurants } from "../../../viewModel/serviceActions";
 
 const Search = (type) => {
   const dispatch = useDispatch();
   const hotels = useSelector((state) => state.hotel);
   const place = useSelector((state) => state.place); // Get place data from Redux
   const filters = useSelector((state) => state.filters);
+
+
+  const serviceState = useSelector(state => state.serviceState);
+  const { loading, restaurants } = serviceState;
+
+  useEffect(() => {
+    dispatch(getAllRestaurants());
+  }, [dispatch]);
+
+  console.log("RES", serviceState)
 
   const [sortCriteria, setSortCriteria] = useState({
     field: "distance", // Default sorting field
@@ -31,8 +42,8 @@ const Search = (type) => {
   let cap = JSON.parse( localStorage.getItem('memberValues'))
   let newCap = { adults: numAldult     ,children: numChildren      , roomNumber: numRoom  }
 
-  console.log( "Capacity",newCap)
-  console.log("DAY22222", formattedDates)
+  //console.log( "Capacity",newCap)
+ // console.log("DAY22222", formattedDates)
 
  
   const filterData = {
@@ -47,9 +58,9 @@ const Search = (type) => {
     capacity: newCap,
     dates: formattedDates
   };
+  console.log("PLACE", place)
 
-
-  console.log("FILLDATA",filterData)
+ // console.log("FILLDATA",filterData)
   console.log("ATADLLIF",filters)
   useEffect(() => {
    
@@ -58,7 +69,7 @@ const Search = (type) => {
 
   
   const generateReviewList = (inputHotels) => {
-    console.log("INNNNNN",inputHotels)
+   // console.log("INNNNNN",inputHotels)
     return inputHotels
       .filter((hotel) => hotel.serviceID?.status === "Active") // Filter by active status
       .map((hotel) => {
@@ -81,6 +92,165 @@ const Search = (type) => {
   };
   
 
+
+  // Helper function to convert degrees to radians
+const toRad = (deg) => deg * (Math.PI / 180);
+
+// Haversine formula to calculate the distance between two points on the Earth
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return 6371 * c; // Distance in kilometers (Earth radius)
+};
+const combinedFilters = [
+  ...filters?.filters?.priceCategories || [],
+  ...filters?.filters?.suitabilities || [],
+  ...filters?.filters?.facilities || [],
+  ...filters?.filters?.cuisines || [],
+  ...filters?.filters?.restaurants || [],
+  ...filters?.filters?.dishes || []
+];
+
+const generateReviewList2 = (inputHotels) => {
+  return inputHotels
+    ?.filter((hotel) => {
+      const isActive = hotel.serviceID?.status === "Active";
+      if (!isActive) return false;
+
+      const hotelLat = hotel.serviceID.locationID?.latitude;
+      const hotelLon = hotel.serviceID.locationID?.longitude;
+      const placeLat = place?.selectedPlace?.coordinates?.lat;
+      const placeLon = place?.selectedPlace?.coordinates?.lng;
+
+      if (!hotelLat || !hotelLon || !placeLat || !placeLon) return false;
+
+      const distance = calculateDistance(hotelLat, hotelLon, placeLat, placeLon);
+
+      const m1 = hotel?.cuisineTypeIDs?.map((a) => a._id);
+      const m2 = hotel?.dishes?.map((a) => a._id);
+      const m3 = hotel?.restaurantTypeID?._id;
+      const m4 = hotel?.serviceID?.facilities?.map((a) => a._id);
+      const m5 = hotel?.serviceID?.suitability?.map((a) => a._id);
+      const m6 = hotel?.serviceID?.priceCategories?.map((a) => a._id);
+      const combinedArray = [].concat(m1, m2, m3, m4, m5, m6);
+
+      return distance <= place.distance && combinedFilters.every((filter) => combinedArray.includes(filter));
+    })
+    .map((hotel) => {
+      const amenities = hotel.serviceID.facilities?.map((facility) => facility.name) || [];
+
+      return {
+        _id: hotel.serviceID._id,
+        id: hotel._id,
+        images: hotel.serviceID.images,
+        avatar: "https://via.placeholder.com/40x40",
+        title: hotel.serviceID.serviceName,
+        location: hotel.serviceID.locationID?.locationName || "Unknown location",
+        reviews: Math.floor(Math.random() * 200 + 50),
+        amenities: amenities,
+        overview: hotel.starRating,
+        dprice: hotel.serviceID.price,
+        price: hotel.serviceID.discountPrice,
+        distance: calculateDistance(
+          hotel.serviceID.locationID?.latitude,
+          hotel.serviceID.locationID?.longitude,
+          place?.selectedPlace?.coordinates?.lat,
+          place?.selectedPlace?.coordinates?.lng
+        ),
+      };
+    })
+    .sort((a, b) => {
+      const field = sortCriteria?.field;
+      const order = sortCriteria?.order === "asc" ? 1 : -1;
+console.log("VARRRR",field)
+      if (field === "price" || field === "distance" ) {
+        console.log("Vãi" ,a[field] )
+        return (a[field] - b[field]) * order;
+      }
+      return 0;
+    });
+};
+
+
+
+const combinedFilters2 = [
+  ...filters?.filters?.priceCategories || [],
+  ...filters?.filters?.suitabilities || [],
+  ...filters?.filters?.facilities || [],
+  
+  ...filters?.filters?.coffeeTypes || []
+];
+
+const generateReviewList3 = (inputHotels) => {
+  return inputHotels
+    ?.filter((hotel) => {
+      // Check if hotel is active
+      const isActive = hotel.serviceID?.status === "Active";
+      if (!isActive) return false;
+
+      // Get the hotel's coordinates and the place's coordinates
+      const hotelLat = hotel.serviceID.locationID?.latitude;
+      const hotelLon = hotel.serviceID.locationID?.longitude;
+      const placeLat = place?.selectedPlace?.coordinates?.lat;
+      const placeLon = place?.selectedPlace?.coordinates?.lng;
+      console.log(hotelLat , hotelLon ,placeLat ,placeLon)
+      // If either the hotel's or place's coordinates are not available, return false
+      if (!hotelLat || !hotelLon || !placeLat || !placeLon) return false;
+      console.log("DDDDDDDDD")
+      // Calculate the distance between the hotel and the place
+      const distance = calculateDistance(hotelLat, hotelLon, placeLat, placeLon);
+      console.log("DISSSS",distance)
+      const m1 = hotel?.coffeeTypes?.map((a)=> a._id)
+      const m2 = hotel?.serviceID?.priceCategories?.map((a)=> a._id)
+      const m4 = hotel?.serviceID?.facilities?.map((a)=> a._id)
+      const m5 = hotel?.serviceID?.suitability?.map((a)=> a._id)
+      const combinedArray = [].concat(m1, m2, m4, m5);
+      // Check if the distance is less than or equal to the specified max distance
+      return distance <= place.distance && combinedFilters2.every((filter) => combinedArray.includes(filter));
+
+    })
+    .map((hotel) => {
+      const amenities = hotel.serviceID.facilities?.map((facility) => facility.name) || [];
+      
+      //console.log("HỢP",combinedArray)
+
+      return {
+        _id: hotel.serviceID._id,
+        id: hotel._id,
+        images: hotel.serviceID.images,
+        avatar: "https://via.placeholder.com/40x40", // Default avatar
+        title: hotel.serviceID.serviceName, // Service name
+        location: hotel.serviceID.locationID?.locationName || "Unknown location", // Location name
+        reviews: Math.floor(Math.random() * 200 + 50), // Random reviews
+        amenities: amenities,
+        overview: hotel.starRating,
+       
+        dprice: hotel.serviceID.discountPrice,
+        price: hotel.serviceID.discountPrice,
+        distance: calculateDistance(
+          hotel.serviceID.locationID?.latitude,
+          hotel.serviceID.locationID?.longitude,
+          place?.selectedPlace?.coordinates?.lat,
+          place?.selectedPlace?.coordinates?.lng
+        ),
+        
+      };
+    }).sort((a, b) => {
+      const field = sortCriteria?.field;
+      const order = sortCriteria?.order === "asc" ? 1 : -1;
+console.log("VARRRR",field)
+      if (field === "price" || field === "distance" ) {
+        console.log("Vãi" ,a[field] )
+        return (a[field] - b[field]) * order;
+      }
+      return 0;
+    });
+};
+
   const sortHotels = () => {
     if (!hotels.datas) return [];
 
@@ -95,7 +265,7 @@ const Search = (type) => {
     });
   };
 
-  console.log("HOTEL",hotels)
+ // console.log("HOTEL",hotels)
   const handleSortChange = (field) => {
     setSortCriteria((prev) => ({
       field,
@@ -116,8 +286,9 @@ const Search = (type) => {
     // Kiểm tra tất cả ngày requiredDates có trong availableDates
     return formattedDates.every(date => availableDates.includes(date));
   });
-  console.log("CHUAN",filteredHotels )
-  const reviewList = generateReviewList(filteredHotels);
+ // console.log("CHUAN",filteredHotels )
+  let reviewList = [];
+  
 
 
   const { coffeeTypes, status, error } = useSelector((state) => state.restaurant);
@@ -126,8 +297,18 @@ const Search = (type) => {
     dispatch(fetchCoffeeTypes()); // Gọi API lấy coffee types
   }, [dispatch]);
 
-  console.log("COFFETYPE" ,coffeeTypes)
+ // console.log("COFFETYPE" ,coffeeTypes)
+ const selectedServiceType = useSelector((state) => state.serviceType.selectedServiceType);
 
+ if(selectedServiceType === "hotel"){
+  reviewList = generateReviewList(filteredHotels);
+ }
+ else if(selectedServiceType === "restaurant"){
+  reviewList = generateReviewList2(restaurants[0])
+ }
+ else if(selectedServiceType === "cafe"){
+  reviewList = generateReviewList3(restaurants[1])
+ }
   return (
     <div className="md:w-full font-['Roboto']">
      <GPT></GPT>
@@ -186,12 +367,6 @@ const Search = (type) => {
       </div>
     </div>
   );
-  
-  
-  
-  
-  
-  
 };
 
 export default Search;

@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react"; 
-import { Table, Tag, Tooltip, Button, Image, Input, Typography, Modal, Rate, Form, notification } from "antd";
+import { Table, Tag, Tooltip, Button, Image, Input, Typography, Modal, Rate, Form, notification, InputNumber, TimePicker, DatePicker } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { getInvoicesByUserID } from "../../../viewModel/invoiceActions";
 import Highlighter from "react-highlight-words";
@@ -17,6 +17,7 @@ const InvoiceTable = () => {
   const { invoice, loading } = useSelector((state) => state.invoice);
 
   const [filteredData, setFilteredData] = useState([]);
+  const [filteredData2, setFilteredData2] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,12 +33,30 @@ const InvoiceTable = () => {
     console.log("HELLLO")
   }, [dispatch,ok]);
 
+  console.log (invoice)
   // Cập nhật dữ liệu khi nhận được danh sách hóa đơn
   useEffect(() => {
     if (invoice?.length > 0) {
-      setFilteredData([...invoice].reverse());
+      const filteredInvoices = invoice.filter(item => item.invoiceType === 'hotel');
+      setFilteredData([...filteredInvoices].reverse());
+
+      const filteredInvoices2 = invoice.filter(item => item.invoiceType === 'restaurant');
+
+      const filteredResult = filteredInvoices2.map(invoice => ({
+        invoiceID: invoice.invoiceID,
+        issueDate: invoice.issueDate,
+        serviceID: invoice.serviceID|| null,
+        status: invoice.status,
+        arrivalDate: invoice.arrivalDate,
+    arrivalTime: invoice.arrivalTime,
+    adults: invoice.adults,
+    children1: invoice.checkOutDate
+        
+    }));
+      setFilteredData2(filteredResult);
     }
   }, [invoice]);
+  
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -149,7 +168,7 @@ const InvoiceTable = () => {
         text
       ),
   });
-console.log("CHONNN",selectedRecord)
+
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -279,12 +298,230 @@ console.log("CHONNN",selectedRecord)
     
   ];
 
+
+  const columns2 = [
+    {
+      title: "Mã đơn hàng",
+      dataIndex: "invoiceID",
+      key: "invoiceID",
+      ...getColumnSearchProps("invoiceID"),
+    },
+    {
+      title: "Ngày phát hành",
+      dataIndex: "issueDate",
+      key: "issueDate",
+      render: (date) => date?.slice(0, 10),
+      ...getColumnSearchProps("issueDate"),
+    },
+    {
+      title: "Tên dịch vụ",
+      dataIndex: "serviceID",
+      key: "serviceName",
+      render: (serviceID) => serviceID?.serviceName || "Chưa có tên dịch vụ",
+      
+    },
+    {
+      title: "Ngày đến",
+      dataIndex: "arrivalDate",
+      key: "arrivalDate",
+      render: (date) => date?.slice(0, 10),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ padding: 8 }}>
+          <DatePicker.RangePicker
+            onChange={(dates) => {
+              setSelectedKeys(
+                dates
+                  ? [
+                      `${dates[0]?.format("YYYY-MM-DD")},${dates[1]?.format(
+                        "YYYY-MM-DD"
+                      )}`,
+                    ]
+                  : []
+              );
+            }}
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Button
+            type="primary"
+            onClick={() => confirm()}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Áp dụng
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => {
+        const [start, end] = value.split(",");
+        const date = record.arrivalDate?.slice(0, 10);
+        return date >= start && date <= end;
+      },
+    },
+    {
+      title: "Thời gian đến",
+      dataIndex: "arrivalTime",
+      key: "arrivalTime",
+      filters: [
+        { text: "Buổi sáng (00:00 - 12:00)", value: "morning" },
+        { text: "Buổi chiều (12:00 - 18:00)", value: "afternoon" },
+        { text: "Buổi tối (18:00 - 23:59)", value: "evening" },
+      ],
+      onFilter: (value, record) => {
+        const time = record.arrivalTime?.split(":");
+        const hour = parseInt(time[0], 10);
+        if (value === "morning") return hour >= 0 && hour < 12;
+        if (value === "afternoon") return hour >= 12 && hour < 18;
+        if (value === "evening") return hour >= 18 && hour < 24;
+        return false;
+      },
+    },
+    {
+      title: "Số người lớn",
+      dataIndex: "adults",
+      key: "adults",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ padding: 8 }}>
+          <InputNumber
+            min={1}
+            placeholder="Từ"
+            style={{ marginBottom: 8, display: "block", width: "100%" }}
+            onChange={(value) => {
+              const range = selectedKeys[0]?.split(",") || ["", ""];
+              setSelectedKeys([`${value},${range[1] || ""}`]);
+            }}
+          />
+          <InputNumber
+            min={1}
+            placeholder="Đến"
+            style={{ marginBottom: 8, display: "block", width: "100%" }}
+            onChange={(value) => {
+              const range = selectedKeys[0]?.split(",") || ["", ""];
+              setSelectedKeys([`${range[0] || ""},${value}`]);
+            }}
+          />
+          <Button
+            type="primary"
+            onClick={() => confirm()}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Áp dụng
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => {
+        const [min, max] = value.split(",");
+        return (
+          record.adults >= (parseInt(min, 10) || 0) &&
+          record.adults <= (parseInt(max, 10) || Infinity)
+        );
+      },
+    },
+    {
+      title: "Số trẻ em",
+      dataIndex: "children1",
+      key: "children1",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ padding: 8 }}>
+          <InputNumber
+            min={0}
+            placeholder="Từ"
+            style={{ marginBottom: 8, display: "block", width: "100%" }}
+            onChange={(value) => {
+              const range = selectedKeys[0]?.split(",") || ["", ""];
+              setSelectedKeys([`${value},${range[1] || ""}`]);
+            }}
+          />
+          <InputNumber
+            min={0}
+            placeholder="Đến"
+            style={{ marginBottom: 8, display: "block", width: "100%" }}
+            onChange={(value) => {
+              const range = selectedKeys[0]?.split(",") || ["", ""];
+              setSelectedKeys([`${range[0] || ""},${value}`]);
+            }}
+          />
+          <Button
+            type="primary"
+            onClick={() => confirm()}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Áp dụng
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => {
+        const [min, max] = value.split(",");
+        return (
+          record.children1 >= (parseInt(min, 10) || 0) &&
+          record.children1 <= (parseInt(max, 10) || Infinity)
+        );
+      },
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      filters: [
+        { text: "Chờ xác nhận", value: "chờ xác nhận" },
+        { text: "Đã xác nhận", value: "đã xác nhận" },
+        { text: "Đã hủy", value: "đã hủy" },
+        { text: "Đã sử dụng", value: "đã sử dụng" },
+      ],
+      onFilter: (value, record) => record.status === value,
+      render: (status) => (
+        <Tag
+          color={
+            status === "chờ xác nhận"
+              ? "orange"
+              : status === "đã xác nhận"
+              ? "blue"
+              : "gray"
+          }
+        >
+          {status}
+        </Tag>
+      ),
+    },
+    
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          {record.status === "đã sử dụng" &&
+            (record.review ? (
+              <Tooltip title="Xem đánh giá">
+                <Button type="primary" onClick={() => showReviewModal(record, true)}>
+                  Xem đánh giá
+                </Button>
+              </Tooltip>
+            ) : (
+              <Tooltip title="Đánh giá">
+                <Button type="primary" onClick={() => showReviewModal(record, false)}>
+                  Đánh giá
+                </Button>
+              </Tooltip>
+            ))}
+          <Button type="primary" onClick={() =>{ handleViewDetail(record.roomID.hotelID   ); console.log(record)} }>
+            Xem dịch vụ
+          </Button>
+        </div>
+      ),
+    },
+    
+  ];
+  
+console.log(filteredData)
   const handleViewDetail = (id) => {
     if(id){
       navigate(`/detail/${id}`);
     }
   };
+  console.log("MASSSSSS",filteredData2)
 
+  const processedData = Array.isArray(filteredData2) ? filteredData2 : [];
   return (
     <div style={{marginTop:'50px'}}>
       <Typography.Title level={3}>Dịch vụ bạn đã đặt</Typography.Title>
@@ -294,7 +531,18 @@ console.log("CHONNN",selectedRecord)
         rowKey="_id.$oid"
         loading={loading}
         pagination={{ pageSize: 5 }}
+        title={() => <h3>Khách sạn</h3>}
       />
+<div>
+<Table
+        columns={columns2}
+        dataSource={Array.isArray(filteredData2) ? filteredData2 : []}
+      
+        loading={loading}
+        pagination={{ pageSize: 5 }}
+        title={() => <h3>Nhà hàng</h3>}
+      />
+      </div>
      <Modal
   title={reviewMode ? "Thông tin đánh giá" : "Đánh giá dịch vụ"}
   open={isModalOpen}
