@@ -76,7 +76,7 @@ const handleSubmit = async (e) => {
     message.warning("Vui lòng tải lên ảnh thanh toán trước khi đặt hàng!");
     return;
   }
-
+console.log("DATEE",date[0])
   const invoiceData = {
     invoiceID: `INV-${Date.now()}`, // Tạo mã hóa đơn tự động
     userID: user?._id, // ID người dùng
@@ -98,11 +98,11 @@ const handleSubmit = async (e) => {
     adults: deRes.adults, // Số lượng người lớn
     children: deRes.children, // Số lượng trẻ em
   };
-
+  console.log("MANMA",invoiceData)
   try {
     await dispatch(createInvoice(invoiceData));
     message.success("Đặt hàng thành công!");
-    navigate(`/user/${decodedToken.userID}`);
+    //navigate(`/user/${decodedToken.userID}`);
   } catch (error) {
     message.error(`Lỗi đặt hàng: ${error}`);
   }
@@ -176,7 +176,9 @@ checkOutDate : date?.[date?.length - 1] ? formatDate(date[date.length - 1]) : fo
     }
   };
   const date = useSelector((state) => state.date.selectedDate);  // Lấy giá trị date từ Redux
-  if(products?.service?.type==! "restaurant"){
+  
+  if(!(products?.service?.type ===  "restaurant")){
+   
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: 20 }}>
       <Card title="Thông tin đơn hàng" bordered style={{ width: '50%' }}>

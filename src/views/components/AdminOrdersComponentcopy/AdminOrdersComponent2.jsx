@@ -44,7 +44,7 @@ const InvoiceTable = () => {
       );
       if (invoice?.length > 0) {
         const filteredInvoices = invoice.filter(item => item.invoiceType === 'hotel');
-  
+       
         console.log("VAIIIII",filteredInvoices)
         const filteredResult = filteredInvoices.map(invoice => ({
           hotel: invoice?.roomID?.hotelID,
@@ -55,7 +55,9 @@ const InvoiceTable = () => {
           status: invoice.status,
           quantity: invoice.quantity,
           checkInDate:  invoice.checkInDate,
-          checkOutDate: invoice.checkOutDate
+          checkOutDate: invoice.checkOutDate,
+          roomID:invoice.roomID ,  
+          pictures: invoice.pictures
          
           
       }));
@@ -103,8 +105,9 @@ const InvoiceTable = () => {
           status: invoice.status,
           quantity: invoice.quantity,
           checkInDate:  invoice.checkInDate,
-          checkOutDate: invoice.checkOutDate
-          
+          checkOutDate: invoice.checkOutDate,
+          roomID:invoice.roomID ,  
+          pictures: invoice.pictures
       }));
      
         setFilteredData([...filteredResult].reverse());
