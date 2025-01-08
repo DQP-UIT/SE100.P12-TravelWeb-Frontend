@@ -103,7 +103,7 @@ export const router = createBrowserRouter([
   {
     path: "payment",
     element: (
-      <ProtectedRoute allowedRoles={[["Customer", "Provider"]]}>
+      <ProtectedRoute allowedRoles={["Customer", "Provider"]}>
         <PaymentPage />
       </ProtectedRoute>
     ),

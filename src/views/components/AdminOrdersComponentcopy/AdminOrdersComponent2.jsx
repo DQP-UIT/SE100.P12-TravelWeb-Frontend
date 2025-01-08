@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Table, Select, Typography, Button, Input, Tag, Image, Tooltip, message, notification, Rate, Form, Modal } from "antd";
+import { Table, Select, Typography, Button, Input, Tag, Image, Tooltip, message, notification, Rate, Form, Modal, InputNumber, DatePicker } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllOrders, updateInvoiceStatus } from "../../../viewModel/invoiceActions";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const InvoiceTable = () => {
   const token = localStorage.getItem("token");
@@ -24,20 +25,58 @@ const InvoiceTable = () => {
   const { invoice, loading } = useSelector((state) => state.invoice);
 
   const [filteredData, setFilteredData] = useState([]);
+  const [filteredData2, setFilteredData2] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [oke, setOke] = useState(true);
   const [searchedColumn, setSearchedColumn] = useState(null);
   const [localInvoice, setLocalInvoice] = useState([]); // State quản lý dữ liệu hóa đơn
 console.log("HELLO",filteredData)
   let searchInput = null;
-
+  console.log(invoice)
   useEffect(() => {
     dispatch(getAllOrders());
     if (invoice?.length > 0) {
       const userInvoices = invoice.filter(
         (inv) => inv?.serviceID?.providerID?.userID === decodedToken.userId
       );
-      setFilteredData(userInvoices);
+      if (invoice?.length > 0) {
+        const filteredInvoices = invoice.filter(item => item.invoiceType === 'hotel');
+  
+        console.log("VAIIIII",filteredInvoices)
+        const filteredResult = filteredInvoices.map(invoice => ({
+          hotel: invoice?.roomID?.hotelID,
+          _id: invoice._id,
+          invoiceID: invoice.invoiceID,
+          issueDate: invoice.issueDate,
+          serviceID: invoice.serviceID|| null,
+          status: invoice.status,
+          quantity: invoice.quantity,
+          checkInDate:  invoice.checkInDate,
+          checkOutDate: invoice.checkOutDate
+         
+          
+      }));
+        setFilteredData([...filteredResult].reverse());
+  
+        const filteredInvoices2 = invoice.filter(item => item.invoiceType === 'restaurant');
+  
+        const filteredResult2 = filteredInvoices2.map(invoice => ({
+          _id: invoice._id,
+          invoiceID: invoice.invoiceID,
+          issueDate: invoice.issueDate,
+          serviceID: invoice.serviceID|| null,
+          status: invoice.status,
+          arrivalDate: invoice.arrivalDate,
+      arrivalTime: invoice.arrivalTime,
+      adults: invoice.adults,
+      children1: invoice.checkOutDate
+          
+      }));
+  
+        setFilteredData2([...filteredResult2].reverse());
+  
+      
+      }
       setLocalInvoice(userInvoices); // Đồng bộ hóa dữ liệu vào localInvoice
     }
   }, [dispatch,oke]);
@@ -48,12 +87,49 @@ console.log("HELLO",filteredData)
       const userInvoices = invoice.filter(
         (inv) => inv?.serviceID?.providerID?.userID === decodedToken.userId
       );
-      setFilteredData(userInvoices);
-      setLocalInvoice(userInvoices); // Đồng bộ hóa dữ liệu vào localInvoice
+      if (invoice?.length > 0) {
+        const filteredInvoices = invoice.filter(item => item.invoiceType === 'hotel');
+  
+        console.log("VAIIIII",filteredInvoices)
+        const filteredResult = filteredInvoices.map(invoice => ({
+          hotel: invoice?.roomID?.hotelID,
+          _id: invoice._id,
+          invoiceID: invoice.invoiceID,
+          issueDate: invoice.issueDate,
+          serviceID: invoice.serviceID|| null,
+          status: invoice.status,
+          quantity: invoice.quantity,
+          checkInDate:  invoice.checkInDate,
+          checkOutDate: invoice.checkOutDate
+          
+      }));
+     
+        setFilteredData([...filteredResult].reverse());
+  
+        const filteredInvoices2 = invoice.filter(item => item.invoiceType === 'restaurant');
+  
+        const filteredResult2 = filteredInvoices2.map(invoice => ({
+          _id: invoice._id,
+          invoiceID: invoice.invoiceID,
+          issueDate: invoice.issueDate,
+          serviceID: invoice.serviceID|| null,
+          status: invoice.status,
+          arrivalDate: invoice.arrivalDate,
+      arrivalTime: invoice.arrivalTime,
+      adults: invoice.adults,
+      children1: invoice.checkOutDate
+          
+      }));
+  
+        setFilteredData2([...filteredResult2].reverse());
+  
+      
+      }
     }
-  }, [invoice, decodedToken.userId]);
+  }, [invoice, decodedToken.userId,oke]);
 
   const handleStatusChange = (value, recordId) => {
+    console.log("DLSDJFLDF",    value)
     dispatch(updateInvoiceStatus(recordId, value))
       .then(() => {
         setOke(!oke)
@@ -250,7 +326,7 @@ console.log("HELLO",filteredData)
                   ) : (
                       <div></div>
                   ))}
-                <Button type="primary" onClick={() =>{ handleViewDetail(record.roomID.hotelID); console.log(record)} }>
+                <Button type="primary" onClick={() =>{ handleViewDetail(record.hotel); console.log(record)} }>
                   Xem dịch vụ
                 </Button>
               </div>
@@ -259,9 +335,218 @@ console.log("HELLO",filteredData)
     },
   ];
 
+console.log("VLLLLLL",filteredData)
+  const columns2 = [
+    {
+      title: "Mã đơn hàng",
+      dataIndex: "invoiceID",
+      key: "invoiceID",
+      ...getColumnSearchProps("invoiceID"),
+    },
+    {
+      title: "Ngày phát hành",
+      dataIndex: "issueDate",
+      key: "issueDate",
+      render: (date) => date?.slice(0, 10),
+      ...getColumnSearchProps("issueDate"),
+    },
+    {
+      title: "Tên dịch vụ",
+      dataIndex: "serviceID",
+      key: "serviceName",
+      render: (serviceID) => serviceID?.serviceName || "Chưa có tên dịch vụ",
+      
+    },
+    {
+      title: "Ngày đến",
+      dataIndex: "arrivalDate",
+      key: "arrivalDate",
+      render: (date) => date?.slice(0, 10),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ padding: 8 }}>
+          <DatePicker.RangePicker
+            onChange={(dates) => {
+              setSelectedKeys(
+                dates
+                  ? [
+                      `${dates[0]?.format("YYYY-MM-DD")},${dates[1]?.format(
+                        "YYYY-MM-DD"
+                      )}`,
+                    ]
+                  : []
+              );
+            }}
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Button
+            type="primary"
+            onClick={() => confirm()}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Áp dụng
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => {
+        const [start, end] = value.split(",");
+        const date = record.arrivalDate?.slice(0, 10);
+        return date >= start && date <= end;
+      },
+    },
+    {
+      title: "Thời gian đến",
+      dataIndex: "arrivalTime",
+      key: "arrivalTime",
+      filters: [
+        { text: "Buổi sáng (00:00 - 12:00)", value: "morning" },
+        { text: "Buổi chiều (12:00 - 18:00)", value: "afternoon" },
+        { text: "Buổi tối (18:00 - 23:59)", value: "evening" },
+      ],
+      onFilter: (value, record) => {
+        const time = record.arrivalTime?.split(":");
+        const hour = parseInt(time[0], 10);
+        if (value === "morning") return hour >= 0 && hour < 12;
+        if (value === "afternoon") return hour >= 12 && hour < 18;
+        if (value === "evening") return hour >= 18 && hour < 24;
+        return false;
+      },
+    },
+    {
+      title: "Số người lớn",
+      dataIndex: "adults",
+      key: "adults",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ padding: 8 }}>
+          <InputNumber
+            min={1}
+            placeholder="Từ"
+            style={{ marginBottom: 8, display: "block", width: "100%" }}
+            onChange={(value) => {
+              const range = selectedKeys[0]?.split(",") || ["", ""];
+              setSelectedKeys([`${value},${range[1] || ""}`]);
+            }}
+          />
+          <InputNumber
+            min={1}
+            placeholder="Đến"
+            style={{ marginBottom: 8, display: "block", width: "100%" }}
+            onChange={(value) => {
+              const range = selectedKeys[0]?.split(",") || ["", ""];
+              setSelectedKeys([`${range[0] || ""},${value}`]);
+            }}
+          />
+          <Button
+            type="primary"
+            onClick={() => confirm()}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Áp dụng
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => {
+        const [min, max] = value.split(",");
+        return (
+          record.adults >= (parseInt(min, 10) || 0) &&
+          record.adults <= (parseInt(max, 10) || Infinity)
+        );
+      },
+    },
+    {
+      title: "Số trẻ em",
+      dataIndex: "children1",
+      key: "children1",
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+        <div style={{ padding: 8 }}>
+          <InputNumber
+            min={0}
+            placeholder="Từ"
+            style={{ marginBottom: 8, display: "block", width: "100%" }}
+            onChange={(value) => {
+              const range = selectedKeys[0]?.split(",") || ["", ""];
+              setSelectedKeys([`${value},${range[1] || ""}`]);
+            }}
+          />
+          <InputNumber
+            min={0}
+            placeholder="Đến"
+            style={{ marginBottom: 8, display: "block", width: "100%" }}
+            onChange={(value) => {
+              const range = selectedKeys[0]?.split(",") || ["", ""];
+              setSelectedKeys([`${range[0] || ""},${value}`]);
+            }}
+          />
+          <Button
+            type="primary"
+            onClick={() => confirm()}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Áp dụng
+          </Button>
+        </div>
+      ),
+      onFilter: (value, record) => {
+        const [min, max] = value.split(",");
+        return (
+          record.children1 >= (parseInt(min, 10) || 0) &&
+          record.children1 <= (parseInt(max, 10) || Infinity)
+        );
+      },
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status, record) => (
+        <Select
+          value={status}
+          onChange={(value) => handleStatusChange(value, record._id)}
+          options={[
+            { value: "chờ xác nhận", label: "Chờ xác nhận" },
+            { value: "đã xác nhận", label: "Đã xác nhận" },
+            { value: "đã hủy", label: "Đã hủy" },
+            { value: "đã dùng", label: "Đã dùng" },
+          ]}
+        />
+      ),
+    },
+    
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          {record.status === "đã sử dụng" &&
+            (record.review ? (
+              <Tooltip title="Xem đánh giá">
+                <Button type="primary" onClick={() => showReviewModal(record, true)}>
+                  Xem đánh giá
+                </Button>
+              </Tooltip>
+            ) : (
+              <Tooltip title="Đánh giá">
+                <Button type="primary" onClick={() => showReviewModal(record, false)}>
+                  Đánh giá
+                </Button>
+              </Tooltip>
+            ))}
+          <Button type="primary" onClick={() =>{ handleViewDetail(record.roomID.hotelID); console.log(record)} }>
+            Xem dịch vụ
+          </Button>
+        </div>
+      ),
+    },
+    
+  ];
+
+const navigate = useNavigate();
   const handleViewDetail = (id) => {
-    console.log("Chi tiết hóa đơn:", id);
-    // Xử lý logic hiển thị chi tiết hóa đơn
+    if(id){
+      navigate(`/detail/${id}`);
+    }
   };
 
   return (
@@ -273,6 +558,16 @@ console.log("HELLO",filteredData)
         rowKey="_id"
         loading={loading}
         pagination={{ pageSize: 5 }}
+        title={() => <h3>Khách sạn</h3>}
+      />
+
+<Table
+        columns={columns2}
+        dataSource={filteredData2}
+        rowKey="_id"
+        loading={loading}
+        pagination={{ pageSize: 5 }}
+        title={() => <h3>Nhà hàng</h3>}
       />
 
 <Modal

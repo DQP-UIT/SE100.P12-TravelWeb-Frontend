@@ -3,7 +3,7 @@ import { hotelList } from '../../../models/test-data'
 import { FaCheck, FaStar } from 'react-icons/fa6'
 import RoomBookList from '../../components/roombooklist/RoomBookList'
 import RateList from '../../components/ratelist/RateList'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { getHotelDetails } from '../../../viewModel/hotelAction'
@@ -95,9 +95,32 @@ const createHotelDataFromObject = (inputData) => {
   
 
 const Detail = ({data, type}) => {
+const navigate = useNavigate();
 
+  const [adults, setAdults] = useState(0);
+  const [children, setChildren] = useState(0);
+  const [arrivalDate, setArrivalDate] = useState(null);
+  const [arrivalTime, setArrivalTime] = useState(null);
 
-    
+  const handleBooking = () => {
+    const bookingData = {
+      adults,
+      children,
+      arrivalDate: arrivalDate ? arrivalDate.format('YYYY-MM-DD') : null,
+      arrivalTime: arrivalTime ? arrivalTime.format('HH:mm') : null,
+    };
+ 
+    localStorage.setItem('bookingData', JSON.stringify(bookingData));
+    const bookingDetails = {
+      provider: hotelDetails?.hotel?.serviceID?.providerID?.userID,
+      service: hotelDetails?.hotel?.serviceID,
+  };
+  localStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+  navigate('/payment');
+
+    console.log("BOOOOOK",bookingData)
+    alert('Thông tin đặt chỗ đã được lưu!');
+  };
 
     
 
@@ -524,60 +547,56 @@ else if(hotelDetails?.hotel?.serviceID?.type === 'restaurant'){
                 })}
             </div>
         </fieldset>
-        <fieldset id="rooms" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
-        <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold' >Đặt chỗ</legend>
-        <div className="p-5  max-w-md mx-auto">
-      {/* Title */}
-      
+        <fieldset id="rooms" className="my-5 border border-[#359894] shadow-sm shadow-[#359894]">
+      <legend className="border border-gray-300 px-2 py-1 mx-3 font-bold">Đặt chỗ</legend>
+      <div className="p-5 max-w-md mx-auto">
+        {/* Số người lớn và trẻ em */}
+        <div className="flex items-center" style={{ gap: '16px', marginBottom: '16px' }}>
+          <div className="flex items-center" style={{ gap: '4px' }}>
+            <span style={{ marginRight: '4px' }}>Người lớn:</span>
+            <Select defaultValue="0" style={{ width: 80 }} onChange={setAdults}>
+              {[...Array(10).keys()].map(num => (
+                <Option key={num} value={num}>{num}</Option>
+              ))}
+            </Select>
+          </div>
 
-      {/* Subtitle */}
-      
-
-      {/* Số người lớn và trẻ em */}
-      <div className="flex justify-between items-center gap-4 mb-4">
-        <div className="flex items-center gap-2">
-        
-          <span>Người lớn:</span>
+          <div className="flex items-center" style={{ gap: '4px' }}>
+            <span style={{ marginRight: '4px' }}>Trẻ em:</span>
+            <Select defaultValue="0" style={{ width: 100 }} onChange={setChildren}>
+              {[...Array(10).keys()].map(num => (
+                <Option key={num} value={num}>{num}</Option>
+              ))}
+            </Select>
+          </div>
         </div>
-        <Select defaultValue="0" style={{ width: 80 }}>
-          {[...Array(10).keys()].map(num => (
-            <Option key={num} value={num}>{num}</Option>
-          ))}
-        </Select>
 
-        <div className="flex items-center gap-2">
-          
-          <span>Trẻ em:</span>
+        {/* Thời gian đến */}
+        <div className="flex flex-col gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <span>Ngày đến:</span>
+            <DatePicker style={{ flex: 1 }} onChange={setArrivalDate} />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>Giờ đến:</span>
+            <TimePicker style={{ flex: 1 }} format="HH:mm" onChange={setArrivalTime} />
+          </div>
         </div>
-        <Select defaultValue="0" style={{ width: 80 }}>
-          {[...Array(10).keys()].map(num => (
-            <Option key={num} value={num}>{num}</Option>
-          ))}
-        </Select>
+
+        {/* Nút đặt chỗ */}
+        <div className="text-center">
+          <Button
+            type="primary"
+            size="large"
+            className="w-[300px]"
+            style={{ backgroundColor: '#00CCFF' }}
+            onClick={handleBooking}
+          >
+            Đặt chỗ ngay
+          </Button>
+        </div>
       </div>
-
-      {/* Thời gian đến */}
-      <div className="flex flex-col gap-4 mb-4">
-        <div className="flex items-center gap-2">
-        
-          <span>Ngày đến:</span>
-          <DatePicker style={{ flex: 1 }} />
-        </div>
-        <div className="flex items-center gap-2">
-        
-          <span>Giờ đến:</span>
-          <TimePicker style={{ flex: 1 }} format="HH:mm" />
-        </div>
-      </div>
-
-      {/* Nút đặt chỗ */}
-      <div className="text-center">
-        <Button type="primary" size="large" className="w-full" style={{ backgroundColor: '#00CCFF' }}>
-          Đặt chỗ ngay
-        </Button>
-      </div>
-    </div>
-        </fieldset>
+    </fieldset>
         
         <fieldset id="reviews" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'> 
   <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Đánh giá</legend>

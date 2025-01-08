@@ -231,14 +231,22 @@ if (values.attribute.length < 3) {
     {
       title: "Hành động",
       key: "action",
-      render: (text, record) => (
-        <Button
-          type="primary"
-          icon={<EditOutlined />}
-          onClick={() => navigate(`/service/${record?.hotels[0]?._id}`)}
-          data-testid={`${record.name}`} 
-        />
-      ),
+      render: (text, record) => {
+        const id =
+          record?.hotels[0]?._id || 
+          record?.restaurants[0]?._id || 
+          record?.coffees[0]?._id;
+    
+        return (
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => id && navigate(`/service/${id}`)}
+            data-testid={`${record.name}`}
+            disabled={!id} // Nếu không có id thì button bị disable
+          />
+        );
+      },
     },
   ];
   
@@ -281,7 +289,39 @@ if (values.attribute.length < 3) {
   
 
   const [isSaved, setIsSaved] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    form.validateFields()
+      .then((values) => {
+        dispatch(createService({ 
+          providerID: user.services[0].providerID._id, 
+          type: values.serviceType 
+        }));
+        notification.success({
+          message: "Thêm dịch vụ thành công",
+        });
+        setTimeout(() => {
+          setAddSer((prev) => !prev); // Đảo ngược trạng thái sau 3 giây
+        }, 0);
+        setAttributes(user.services)
+        setIsModalVisible(false);
+        form.resetFields();
+      })
+      .catch((error) => {
+        console.error("Validation Failed:", error);
+      });
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    form.resetFields();
+  };
 useEffect(() => {
     if (isSaved) {
         setIsSaved(false); // Reset isSaved state after re-render
@@ -308,26 +348,37 @@ const { Title } = Typography;
   }}
 >
   <Row justify="space-between" align="middle">
-    <h3>Danh sách Dịch vụ</h3>
-    <Button
-      type="primary"
-      icon={<PlusOutlined />}
-      onClick={() => {
-        notification.success({
-        message: "Thêm dịch vụ thành công"
-      
-      });
-      dispatch(createService({providerID: user.services[0].providerID._id}))
-      setTimeout(() => {
-      setAddSer((prev) => !prev); // Đảo ngược trạng thái sau 3 giây
-    }, 0);
-    setAttributes(user.services)
-      }
-      }
-    >
-      Thêm dịch vụ
-    </Button>
-  </Row>
+        <h3>Danh sách Dịch vụ</h3>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={showModal}
+        >
+          Thêm dịch vụ
+        </Button>
+      </Row>
+      <Modal
+        title="Thêm Dịch Vụ"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Xác nhận"
+        cancelText="Hủy"
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="serviceType"
+            label="Loại Dịch Vụ"
+            rules={[{ required: true, message: "Vui lòng chọn loại dịch vụ!" }]}
+          >
+            <Select placeholder="Chọn loại dịch vụ">
+              <Select.Option value="hotel">Khách sạn</Select.Option>
+              <Select.Option value="restaurant">Nhà hàng</Select.Option>
+              <Select.Option value="cafe">Quán cafe</Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
   <Table
   dataSource={attributes && attributes.length > 0 ? [...attributes].reverse() : []} // Check if attributes are not empty
   columns={attributeColumns}

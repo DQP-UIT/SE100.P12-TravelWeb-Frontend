@@ -1378,7 +1378,7 @@ setService(updatedService)
     />
   </div>
 </Container>
-
+{ service?.hotel?.serviceID?.type === "hotel" && (
 <Container>
 <div style={{
         width: '100%',
@@ -1426,6 +1426,7 @@ setService(updatedService)
     />
   </div>
 </Container>
+)}
  <Container>
  
   <div className='w-5/6 mx-auto my-3 items-center'>
