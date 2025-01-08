@@ -7,8 +7,11 @@ import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { getHotelDetails } from '../../../viewModel/hotelAction'
-import { Button, Card, Col, Image, Modal, Rate, Row } from 'antd'
+import { Button, Card, Col, DatePicker, Image, Modal, Rate, Row, Select, TimePicker } from 'antd'
 import GPT from "../../components/GPT/GPT"
+import { CalendarTodayOutlined, SmsFailedOutlined, VerifiedUserOutlined } from '@mui/icons-material'
+import { Option } from 'antd/es/mentions'
+import { AiOutlineClockCircle } from 'react-icons/ai'
 const starRate = (index) => {
     const stars = []
     for (let i = 0; i < index; i++)
@@ -32,8 +35,6 @@ const averageRate = (data) => {
     return result
 
 }
-
-
 const createHotelDataFromObject = (inputData) => {
     try {
       return {
@@ -59,6 +60,12 @@ const createHotelDataFromObject = (inputData) => {
         amenities: inputData.hotel.serviceID.facilities
           ? inputData.hotel.serviceID.facilities.map(facility => facility.name)
           : [], // Nếu không có amenities, trả về mảng rỗng
+          amenities2: inputData.hotel.cuisineTypeIDs
+          ? inputData.hotel.cuisineTypeIDs.map(facility => facility.type)
+          : [],
+          amenities3: inputData.hotel.dishes
+          ? inputData.hotel.dishes.map(facility => facility.name)
+          : [],
         numberRate: [
           { title: 'Tất cả', number: 1000 },
           { title: '5 sao', number: 200 },
@@ -137,6 +144,7 @@ const Detail = ({data, type}) => {
   
   const ReviewList = ({ reviews }) => {
     return (
+      
       <div className="review-list">
         {reviews?.map((review) => (
           <Card
@@ -186,9 +194,186 @@ const Detail = ({data, type}) => {
     }));
   };
   
+  if(hotelDetails?.hotel?.serviceID?.type === 'hotel'){
   return (
     <div className="md:w-full font-['Roboto']">
+    
+    <GPT></GPT>
+      <SearchBar type={type?type:'hotel'}/>
 
+      <div className='md:w-5/6 lg:w-4/6 mx-auto'>
+      <div className="grid grid-cols-5 gap-3 my-4 relative w-full">
+  {/* Ảnh chính - chiều cao gấp đôi */}
+  <div className="col-span-2 row-span-2 relative">
+    <Image
+      src={data.images[0]}
+      className="w-full h-[500px] rounded-xl object-cover"
+      style={{ aspectRatio: '1/1' }}
+      alt="Main"
+    />
+  </div>
+
+  {/* Thư viện ảnh nhỏ */}
+  {data.images.slice(1, 7).map((image, index) => (
+    <div
+      key={index}
+      className="col-span-1 row-span-1 relative overflow-hidden"
+    >
+      <Image
+        src={image}
+        className="w-full h-[250px] rounded-md object-cover"
+        style={{ aspectRatio: '1/1' }}
+        alt={`Thumbnail ${index}`}
+      />
+    </div>
+  ))}
+
+  {/* Modal hiển thị tất cả ảnh */}
+  {isModalOpen && (
+    <Modal
+      title="Tất cả ảnh"
+      visible={isModalOpen}
+      footer={null}
+      onCancel={() => setIsModalOpen(false)}
+    >
+      <div className="grid grid-cols-3 gap-3">
+        {data.images.map((image, index) => (
+          <Image
+            key={index}
+            src={image}
+            className="rounded-md object-cover w-full"
+            style={{ aspectRatio: '16/9' }}
+            alt={`Image ${index}`}
+          />
+        ))}
+      </div>
+    </Modal>
+  )}
+</div>
+
+    <Button 
+        className="mt-4 bg-blue-200 text-white py-2 px-4 rounded-lg"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Xem tất cả ảnh
+      </Button>
+    
+        <div className='w-full bg-[#9BE1DE] grid grid-cols-2 py-3 items-center justify-center rounded-md'>
+            <ul className='grid grid-cols-6 text-center font-bold'>
+            <li>
+    <button onClick={() => document.getElementById('overview').scrollIntoView({ behavior: 'smooth' })}>
+      Tổng quan
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('amenities').scrollIntoView({ behavior: 'smooth' })}>
+      Tiện nghi
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('rooms').scrollIntoView({ behavior: 'smooth' })}>
+      Đặt phòng
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('reviews').scrollIntoView({ behavior: 'smooth' })}>
+      Đánh giá
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('policies').scrollIntoView({ behavior: 'smooth' })}>
+      Chính sách
+    </button>
+  </li>
+                <li>
+  <button
+   
+    onClick={() => handleNavigateToGoogleMap(data)}
+  >
+    Đường đi
+  </button>
+</li>
+
+
+            </ul>
+            <div className='flex justify-end gap-2 items-center px-2'>
+                
+              
+            </div>
+        </div>    
+        <fieldset  id="overview" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tổng quan</legend>
+            <div className='w-5/6 mx-auto my-3'>
+                <p className='font-bold text-xl'>{data.title}</p>
+                <p>{data.location} </p>
+                <hr className='border border-black'></hr>
+                <p className='text-xs'>{data.general} </p>
+            </div>
+        </fieldset>
+        <fieldset id="amenities" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tiện nghi</legend>
+            <div className='w-5/6 mx-auto my-3 grid grid-cols-3'>
+                {data.amenities.map(amenity => {
+                    return (
+                        <div key={amenity} className='flex gap-1 items-center'>
+                            <FaCheck className='fill-blue-500'/>
+                            <p className=''>{amenity}</p>
+                        </div>
+                    )
+                })}
+            </div>
+        </fieldset>
+        <fieldset id="rooms" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Phòng nghỉ</legend>
+            <div className='w-5/6 mx-auto my-3'>
+                <RoomBookList service = {hotelDetails?.hotel?.serviceID} provider = {hotelDetails?.hotel?.serviceID?.providerID?.userID} data={data.room}/>
+            </div>
+        </fieldset>
+        <fieldset id="reviews" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'> 
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Đánh giá</legend>
+  <div className='w-5/6 mx-auto my-3 items-center'>
+  <div style={{ marginBottom: '50px' }} className='flex justify-center border border-black rounded-2xl p-2 bg-[#BDFFFC]'>
+  <div className='grid grid-cols-5 w-4/5 gap-4'>
+    {calculateNumberRate(data.reviews).map((item) => (
+      <div
+        key={item.title}
+        className='flex flex-col items-center gap-1 font-semibold bg-[#90EFEB] justify-center py-2 rounded-lg cursor-pointer'
+      >
+        <p>{item.title}</p>
+        <p>({item.number})</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+    
+    <ReviewList reviews={data.reviews} />
+  </div>
+</fieldset>
+
+{/* <RateList data={data.rate} /> */}
+<fieldset id="policies" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Chính sách của khách sạn</legend>
+  <div className='w-5/6 mx-auto my-3'>
+    <p className='font-semibold'>Trẻ em và giường phụ</p>
+    <p>Giường phụ phụ thuộc vào loại phòng bạn chọn. Vui lòng kiểm tra công suất phòng cụ thể để biết thêm chi tiết.</p>
+    <p>Mọi trẻ em đều được chào đón.</p>
+    <hr className='my-3'/>
+    <p className='font-semibold'>Khác</p>
+    <ul className='list-disc pl-5'>
+      <li>Khi đặt trên 5 phòng, các chính sách khác và phụ phí có thể được áp dụng.</li>
+    </ul>
+  </div>
+</fieldset>
+
+      </div>
+    </div>
+  )
+}
+else if(hotelDetails?.hotel?.serviceID?.type === 'restaurant'){
+  return (
+    <div className="md:w-full font-['Roboto']">
+    
     <GPT></GPT>
       <SearchBar type={type?type:'hotel'}/>
 
@@ -263,7 +448,7 @@ const Detail = ({data, type}) => {
   </li>
   <li>
     <button onClick={() => document.getElementById('rooms').scrollIntoView({ behavior: 'smooth' })}>
-      Phòng nghỉ
+      Đặt chổ
     </button>
   </li>
   <li>
@@ -288,9 +473,7 @@ const Detail = ({data, type}) => {
 
             </ul>
             <div className='flex justify-end gap-2 items-center px-2'>
-                <div>Từ </div>
-                <div className='text-lg text-red-500 font-bold'>550.000đ </div>
-                <button className='bg-[#1EBBB4] rounded-full p-2 font-bold' onClick={() => document.getElementById('rooms').scrollIntoView({ behavior: 'smooth' })}>Xem giá</button>
+               
             </div>
         </div>    
         <fieldset  id="overview" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
@@ -300,6 +483,32 @@ const Detail = ({data, type}) => {
                 <p>{data.location} </p>
                 <hr className='border border-black'></hr>
                 <p className='text-xs'>{data.general} </p>
+            </div>
+        </fieldset>
+        <fieldset id="amenities" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Phong cách</legend>
+            <div className='w-5/6 mx-auto my-3 grid grid-cols-3'>
+                {data.amenities2.map(amenity => {
+                    return (
+                        <div key={amenity} className='flex gap-1 items-center'>
+                            <FaCheck className='fill-blue-500'/>
+                            <p className=''>{amenity}</p>
+                        </div>
+                    )
+                })}
+            </div>
+        </fieldset>
+        <fieldset id="amenities" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Món ăn</legend>
+            <div className='w-5/6 mx-auto my-3 grid grid-cols-3'>
+                {data.amenities3.map(amenity => {
+                    return (
+                        <div key={amenity} className='flex gap-1 items-center'>
+                            <FaCheck className='fill-blue-500'/>
+                            <p className=''>{amenity}</p>
+                        </div>
+                    )
+                })}
             </div>
         </fieldset>
         <fieldset id="amenities" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
@@ -316,11 +525,60 @@ const Detail = ({data, type}) => {
             </div>
         </fieldset>
         <fieldset id="rooms" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
-            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Phòng nghỉ</legend>
-            <div className='w-5/6 mx-auto my-3'>
-                <RoomBookList service = {hotelDetails?.hotel?.serviceID} provider = {hotelDetails?.hotel?.serviceID?.providerID?.userID} data={data.room}/>
-            </div>
+        <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold' >Đặt chỗ</legend>
+        <div className="p-5  max-w-md mx-auto">
+      {/* Title */}
+      
+
+      {/* Subtitle */}
+      
+
+      {/* Số người lớn và trẻ em */}
+      <div className="flex justify-between items-center gap-4 mb-4">
+        <div className="flex items-center gap-2">
+        
+          <span>Người lớn:</span>
+        </div>
+        <Select defaultValue="0" style={{ width: 80 }}>
+          {[...Array(10).keys()].map(num => (
+            <Option key={num} value={num}>{num}</Option>
+          ))}
+        </Select>
+
+        <div className="flex items-center gap-2">
+          
+          <span>Trẻ em:</span>
+        </div>
+        <Select defaultValue="0" style={{ width: 80 }}>
+          {[...Array(10).keys()].map(num => (
+            <Option key={num} value={num}>{num}</Option>
+          ))}
+        </Select>
+      </div>
+
+      {/* Thời gian đến */}
+      <div className="flex flex-col gap-4 mb-4">
+        <div className="flex items-center gap-2">
+        
+          <span>Ngày đến:</span>
+          <DatePicker style={{ flex: 1 }} />
+        </div>
+        <div className="flex items-center gap-2">
+        
+          <span>Giờ đến:</span>
+          <TimePicker style={{ flex: 1 }} format="HH:mm" />
+        </div>
+      </div>
+
+      {/* Nút đặt chỗ */}
+      <div className="text-center">
+        <Button type="primary" size="large" className="w-full" style={{ backgroundColor: '#00CCFF' }}>
+          Đặt chỗ ngay
+        </Button>
+      </div>
+    </div>
         </fieldset>
+        
         <fieldset id="reviews" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'> 
   <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Đánh giá</legend>
   <div className='w-5/6 mx-auto my-3 items-center'>
@@ -345,22 +603,181 @@ const Detail = ({data, type}) => {
 
 {/* <RateList data={data.rate} /> */}
 <fieldset id="policies" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
-  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Chính sách của khách sạn</legend>
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Chính sách của nhà hàng</legend>
   <div className='w-5/6 mx-auto my-3'>
-    <p className='font-semibold'>Trẻ em và giường phụ</p>
-    <p>Giường phụ phụ thuộc vào loại phòng bạn chọn. Vui lòng kiểm tra công suất phòng cụ thể để biết thêm chi tiết.</p>
-    <p>Mọi trẻ em đều được chào đón.</p>
-    <hr className='my-3'/>
-    <p className='font-semibold'>Khác</p>
-    <ul className='list-disc pl-5'>
-      <li>Khi đặt trên 5 phòng, các chính sách khác và phụ phí có thể được áp dụng.</li>
-    </ul>
+   
+    <p>Ăn no mới cho về.</p>
+    
   </div>
 </fieldset>
 
       </div>
     </div>
   )
+}
+else if(hotelDetails?.hotel?.serviceID?.type === 'coffee'){
+  return (
+    <div className="md:w-full font-['Roboto']">
+    
+    <GPT></GPT>
+      <SearchBar type={type?type:'hotel'}/>
+
+      <div className='md:w-5/6 lg:w-4/6 mx-auto'>
+      <div className="grid grid-cols-5 gap-3 my-4 relative w-full">
+  {/* Ảnh chính - chiều cao gấp đôi */}
+  <div className="col-span-2 row-span-2 relative">
+    <Image
+      src={data.images[0]}
+      className="w-full h-[500px] rounded-xl object-cover"
+      style={{ aspectRatio: '1/1' }}
+      alt="Main"
+    />
+  </div>
+
+  {/* Thư viện ảnh nhỏ */}
+  {data.images.slice(1, 7).map((image, index) => (
+    <div
+      key={index}
+      className="col-span-1 row-span-1 relative overflow-hidden"
+    >
+      <Image
+        src={image}
+        className="w-full h-[250px] rounded-md object-cover"
+        style={{ aspectRatio: '1/1' }}
+        alt={`Thumbnail ${index}`}
+      />
+    </div>
+  ))}
+
+  {/* Modal hiển thị tất cả ảnh */}
+  {isModalOpen && (
+    <Modal
+      title="Tất cả ảnh"
+      visible={isModalOpen}
+      footer={null}
+      onCancel={() => setIsModalOpen(false)}
+    >
+      <div className="grid grid-cols-3 gap-3">
+        {data.images.map((image, index) => (
+          <Image
+            key={index}
+            src={image}
+            className="rounded-md object-cover w-full"
+            style={{ aspectRatio: '16/9' }}
+            alt={`Image ${index}`}
+          />
+        ))}
+      </div>
+    </Modal>
+  )}
+</div>
+
+    <Button 
+        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Xem tất cả ảnh
+      </Button>
+    
+        <div className='w-full bg-[#9BE1DE] grid grid-cols-2 py-3 items-center justify-center rounded-md'>
+            <ul className='grid grid-cols-6 text-center font-bold'>
+            <li>
+    <button onClick={() => document.getElementById('overview').scrollIntoView({ behavior: 'smooth' })}>
+      Tổng quan
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('amenities').scrollIntoView({ behavior: 'smooth' })}>
+      Tiện nghi
+    </button>
+  </li>
+ 
+  <li>
+    <button onClick={() => document.getElementById('reviews').scrollIntoView({ behavior: 'smooth' })}>
+      Đánh giá
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('policies').scrollIntoView({ behavior: 'smooth' })}>
+      Chính sách
+    </button>
+  </li>
+                <li>
+  <button
+   
+    onClick={() => handleNavigateToGoogleMap(data)}
+  >
+    Đường đi
+  </button>
+</li>
+
+
+            </ul>
+            <div className='flex justify-end gap-2 items-center px-2'>
+               
+            </div>
+        </div>    
+        <fieldset  id="overview" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tổng quan</legend>
+            <div className='w-5/6 mx-auto my-3'>
+                <p className='font-bold text-xl'>{data.title}</p>
+                <p>{data.location} </p>
+                <hr className='border border-black'></hr>
+                <p className='text-xs'>{data.general} </p>
+            </div>
+        </fieldset>
+        
+        <fieldset id="amenities" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tiện nghi</legend>
+            <div className='w-5/6 mx-auto my-3 grid grid-cols-3'>
+                {data.amenities.map(amenity => {
+                    return (
+                        <div key={amenity} className='flex gap-1 items-center'>
+                            <FaCheck className='fill-blue-500'/>
+                            <p className=''>{amenity}</p>
+                        </div>
+                    )
+                })}
+            </div>
+        </fieldset>
+       
+        
+        <fieldset id="reviews" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'> 
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Đánh giá</legend>
+  <div className='w-5/6 mx-auto my-3 items-center'>
+  <div style={{ marginBottom: '50px' }} className='flex justify-center border border-black rounded-2xl p-2 bg-[#BDFFFC]'>
+  <div className='grid grid-cols-5 w-4/5 gap-4'>
+    {calculateNumberRate(data.reviews).map((item) => (
+      <div
+        key={item.title}
+        className='flex flex-col items-center gap-1 font-semibold bg-[#90EFEB] justify-center py-2 rounded-lg cursor-pointer'
+      >
+        <p>{item.title}</p>
+        <p>({item.number})</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+    
+    <ReviewList reviews={data.reviews} />
+  </div>
+</fieldset>
+
+{/* <RateList data={data.rate} /> */}
+<fieldset id="policies" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Chính sách của quán cà phê</legend>
+  <div className='w-5/6 mx-auto my-3'>
+   
+    <p>Phê thì mới cho về.</p>
+    
+  </div>
+</fieldset>
+
+      </div>
+    </div>
+  )
+}
 }
 
 export default Detail

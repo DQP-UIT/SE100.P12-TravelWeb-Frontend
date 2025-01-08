@@ -9,49 +9,70 @@ import {
   ADD_REVIEW_FAIL,
   } from "../model/constants/serviceConstants";
   
-  export const serviceReducer = (state = { service: {} }, action) => {
+  export const serviceReducer = (state = { service: {}, restaurants: [] }, action) => {
     switch (action.type) {
-      case UPDATE_SERVICE_REQUEST:
+      case 'UPDATE_SERVICE_REQUEST':
         return {
           ...state,
           loading: true,
         };
-      case UPDATE_SERVICE_SUCCESS:
+      case 'UPDATE_SERVICE_SUCCESS':
         return {
           loading: false,
           service: action.payload,
         };
-      case UPDATE_SERVICE_FAIL:
+      case 'UPDATE_SERVICE_FAIL':
         return {
           loading: false,
           error: action.payload,
         };
-      case CLEAR_ERRORS:
+      case 'CLEAR_ERRORS':
         return {
           ...state,
           error: null,
         };
-        case ADD_REVIEW_REQUEST:
-  return {
-    ...state,
-    loading: true,
-  };
-case ADD_REVIEW_SUCCESS:
-  return {
-    ...state,
-    loading: false,
-    success: true,
-    review: action.payload,
-  };
-case ADD_REVIEW_FAIL:
-  return {
-    ...state,
-    loading: false,
-    error: action.payload,
-  };
-
+  
+      case 'ADD_REVIEW_REQUEST':
+        return {
+          ...state,
+          loading: true,
+        };
+      case 'ADD_REVIEW_SUCCESS':
+        return {
+          ...state,
+          loading: false,
+          success: true,
+          review: action.payload,
+        };
+      case 'ADD_REVIEW_FAIL':
+        return {
+          ...state,
+          loading: false,
+          error: action.payload,
+        };
+  
+      // New restaurant actions
+      case 'GET_RESTAURANTS_REQUEST':
+        return {
+          ...state,
+          loading: true,
+        };
+      case 'GET_RESTAURANTS_SUCCESS':
+        return {
+          ...state,
+          loading: false,
+          restaurants: action.payload, // Set the fetched restaurants to state
+        };
+      case 'GET_RESTAURANTS_FAIL':
+        return {
+          ...state,
+          loading: false,
+          error: action.payload,
+        };
+  
       default:
         return state;
     }
   };
+  
   
