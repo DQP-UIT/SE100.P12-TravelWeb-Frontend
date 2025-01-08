@@ -91,7 +91,7 @@ const { coffeeTypes, } = useSelector((state) => state.restaurant);
         },
         {
             title: 'Loại nhà hàng: ',
-            aName: 'restaurants',
+            aName: 'restaurantsrestaurants',
             item: restaurants?.map(({  type, _id }) => ({
                 title: type,
                 id: _id,

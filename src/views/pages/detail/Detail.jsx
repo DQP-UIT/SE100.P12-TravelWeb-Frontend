@@ -1,15 +1,17 @@
-import SearchBar from "../../components/searchbar/SearchBar";
-import { hotelList } from "../../../models/test-data";
-import { FaCheck, FaStar } from "react-icons/fa6";
-import RoomBookList from "../../components/roombooklist/RoomBookList";
-import RateList from "../../components/ratelist/RateList";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { getHotelDetails } from "../../../viewModel/hotelAction";
-import { Button, Card, Col, Image, Modal, Rate, Row } from "antd";
-import GPT from "../../components/GPT/GPT";
-import { jwtDecode } from "jwt-decode";
+import SearchBar from '../../components/searchbar/SearchBar'
+import { hotelList } from '../../../models/test-data'
+import { FaCheck, FaStar } from 'react-icons/fa6'
+import RoomBookList from '../../components/roombooklist/RoomBookList'
+import RateList from '../../components/ratelist/RateList'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { getHotelDetails } from '../../../viewModel/hotelAction'
+import { Button, Card, Col, DatePicker, Image, Modal, Rate, Row, Select, TimePicker } from 'antd'
+import GPT from "../../components/GPT/GPT"
+import { CalendarTodayOutlined, SmsFailedOutlined, VerifiedUserOutlined } from '@mui/icons-material'
+import { Option } from 'antd/es/mentions'
+import { AiOutlineClockCircle } from 'react-icons/ai'
 const starRate = (index) => {
   const stars = [];
   for (let i = 0; i < index; i++) stars[i] = "*";
@@ -23,75 +25,109 @@ const starRate = (index) => {
 };
 
 const averageRate = (data) => {
-  let result = 0;
-  data?.map((item) => {
-    result += item.rate;
-  });
-  result /= data?.length;
-  return result;
-};
+    let result = 0
+    data?.map(item => {
 
+        result += item.rate
+    })
+    result /= data?.length
+    return result
+
+}
 const createHotelDataFromObject = (inputData) => {
-  try {
-    return {
-      reviews: inputData.hotel.serviceID.reviews,
-      images: inputData.hotel.serviceID.images || [], // Nếu không có images, trả về mảng rỗng
-      avatar: inputData.avatar || "", // Nếu không có avatar, trả về chuỗi rỗng
-      title: inputData.hotel.serviceID.serviceName || "", // Nếu không có title, trả về chuỗi rỗng
-      location: inputData.hotel.serviceID.locationID.locationName || "", // Nếu không có location, trả về chuỗi rỗng
-      general: inputData.hotel.serviceID.description || "", // Nếu không có general, trả về chuỗi rỗng
-      room: inputData.rooms
-        ? inputData.rooms.map((room) => ({
-            _id: room._id,
-            name: room.roomType || "", // Nếu không có tên phòng, trả về chuỗi rỗng
-            image: room.pictures ? room.pictures || "" : "", // Lấy hình ảnh đầu tiên nếu có
-            utilites: room.facilities
-              ? room.facilities.map((facility) => facility.name)
-              : [], // Lấy danh sách tiện nghi
-            capacities: room.capacity
-              ? [
-                  room.capacity.roomNumber,
-                  room.capacity.adults,
-                  room.capacity.children,
-                ]
-              : [], // Nếu có capacity, lấy số người lớn và trẻ em
-            price: room.price || 0, // Giá phòng, nếu không có thì mặc định là 0
-            discount: room.discountPrice || 10, // Giảm giá, nếu không có thì mặc định là 0
-            roomAvailability: room.roomsAvailable || [],
-            meter: room.area,
-          }))
-        : [], // Nếu không có rooms, trả về mảng rỗng
-      amenities: inputData.hotel.serviceID.facilities
-        ? inputData.hotel.serviceID.facilities.map((facility) => facility.name)
-        : [], // Nếu không có amenities, trả về mảng rỗng
-      numberRate: [
-        { title: "Tất cả", number: 1000 },
-        { title: "5 sao", number: 200 },
-        { title: "4 sao", number: 200 },
-        { title: "3 sao", number: 200 },
-        { title: "2 sao", number: 200 },
-        { title: "1 sao", number: 200 },
-      ], // Nếu không có numberRate, trả về mảng mặc định
-      rate: [], // Nếu không có rate, trả về mảng rỗng
-    };
-  } catch (error) {
-    console.error("Error creating hotel data:", error);
-    return {
-      images: [],
-      avatar: "",
-      title: "",
-      location: "",
-      general: "",
-      room: [],
-      amenities: [],
-      numberRate: [],
-      rate: [],
-    }; // Trả về dữ liệu mặc định nếu có lỗi
-  }
-};
+    try {
+      return {
+        reviews: inputData.hotel.serviceID.reviews,
+        images: inputData.hotel.serviceID.images || [], // Nếu không có images, trả về mảng rỗng
+        avatar: inputData.avatar || "", // Nếu không có avatar, trả về chuỗi rỗng
+        title: inputData.hotel.serviceID.serviceName || "", // Nếu không có title, trả về chuỗi rỗng
+        location: inputData.hotel.serviceID.locationID.locationName || "", // Nếu không có location, trả về chuỗi rỗng
+        general: inputData.hotel.serviceID.description || "", // Nếu không có general, trả về chuỗi rỗng
+        room: inputData.rooms
+          ? inputData.rooms.map(room => ({
+            _id : room._id,
+              name: room.roomType || "", // Nếu không có tên phòng, trả về chuỗi rỗng
+              image: room.pictures ? room.pictures || "" : "", // Lấy hình ảnh đầu tiên nếu có
+              utilites: room.facilities ? room.facilities.map(facility => facility.name) : [], // Lấy danh sách tiện nghi
+              capacities: room.capacity ? [room.capacity.roomNumber   ,room.capacity.adults, room.capacity.children] : [], // Nếu có capacity, lấy số người lớn và trẻ em
+              price: room.price || 0, // Giá phòng, nếu không có thì mặc định là 0
+              discount: room.discountPrice || 10, // Giảm giá, nếu không có thì mặc định là 0
+              roomAvailability: room.roomsAvailable || [],
+              meter: room.area
+            }))
+          : [], // Nếu không có rooms, trả về mảng rỗng
+        amenities: inputData.hotel.serviceID.facilities
+          ? inputData.hotel.serviceID.facilities.map(facility => facility.name)
+          : [], // Nếu không có amenities, trả về mảng rỗng
+          amenities2: inputData.hotel.cuisineTypeIDs
+          ? inputData.hotel.cuisineTypeIDs.map(facility => facility.type)
+          : [],
+          amenities3: inputData.hotel.dishes
+          ? inputData.hotel.dishes.map(facility => facility.name)
+          : [],
+        numberRate: [
+          { title: 'Tất cả', number: 1000 },
+          { title: '5 sao', number: 200 },
+          { title: '4 sao', number: 200 },
+          { title: '3 sao', number: 200 },
+          { title: '2 sao', number: 200 },
+          { title: '1 sao', number: 200 },
+        ], // Nếu không có numberRate, trả về mảng mặc định
+        rate: [], // Nếu không có rate, trả về mảng rỗng
+      };
+    } catch (error) {
+      console.error("Error creating hotel data:", error);
+      return {
+        images: [],
+        avatar: "",
+        title: "",
+        location: "",
+        general: "",
+        room: [],
+        amenities: [],
+        numberRate: [],
+        rate: [],
+      }; // Trả về dữ liệu mặc định nếu có lỗi
+    }
+  };
+  
+  
 
-const Detail = ({ data, type }) => {
-  const { hotelId } = useParams();
+const Detail = ({data, type}) => {
+const navigate = useNavigate();
+
+  const [adults, setAdults] = useState(0);
+  const [children, setChildren] = useState(0);
+  const [arrivalDate, setArrivalDate] = useState(null);
+  const [arrivalTime, setArrivalTime] = useState(null);
+
+  const handleBooking = () => {
+    const bookingData = {
+      adults,
+      children,
+      arrivalDate: arrivalDate ? arrivalDate.format('YYYY-MM-DD') : null,
+      arrivalTime: arrivalTime ? arrivalTime.format('HH:mm') : null,
+    };
+ 
+    localStorage.setItem('bookingData', JSON.stringify(bookingData));
+    const bookingDetails = {
+      provider: hotelDetails?.hotel?.serviceID?.providerID?.userID,
+      service: hotelDetails?.hotel?.serviceID,
+  };
+  localStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+  navigate('/payment');
+
+    console.log("BOOOOOK",bookingData)
+    alert('Thông tin đặt chỗ đã được lưu!');
+  };
+
+    
+
+
+    const { hotelId } = useParams();
+    
+
+
 
   const dispatch = useDispatch();
 
@@ -138,6 +174,7 @@ const Detail = ({ data, type }) => {
   }
   const ReviewList = ({ reviews }) => {
     return (
+      
       <div className="review-list">
         {reviews?.map((review) => (
           <Card
@@ -196,11 +233,13 @@ const Detail = ({ data, type }) => {
       number: count,
     }));
   };
-
+  
+  if(hotelDetails?.hotel?.serviceID?.type === 'hotel'){
   return (
     <div className="md:w-full font-['Roboto']">
-      <GPT></GPT>
-      <SearchBar type={type ? type : "hotel"} />
+    
+    <GPT></GPT>
+      <SearchBar type={type?type:'hotel'}/>
 
       <div className="md:w-5/6 lg:w-4/6 mx-auto">
         <div className="grid grid-cols-5 gap-3 my-4 relative w-full">
@@ -252,104 +291,64 @@ const Detail = ({ data, type }) => {
           )}
         </div>
 
-        <Button
-          className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"
-          onClick={() => setIsModalOpen(true)}
-        >
-          Xem tất cả ảnh
-        </Button>
+    <Button 
+        className="mt-4 bg-blue-200 text-white py-2 px-4 rounded-lg"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Xem tất cả ảnh
+      </Button>
+    
+        <div className='w-full bg-[#9BE1DE] grid grid-cols-2 py-3 items-center justify-center rounded-md'>
+            <ul className='grid grid-cols-6 text-center font-bold'>
+            <li>
+    <button onClick={() => document.getElementById('overview').scrollIntoView({ behavior: 'smooth' })}>
+      Tổng quan
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('amenities').scrollIntoView({ behavior: 'smooth' })}>
+      Tiện nghi
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('rooms').scrollIntoView({ behavior: 'smooth' })}>
+      Đặt phòng
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('reviews').scrollIntoView({ behavior: 'smooth' })}>
+      Đánh giá
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('policies').scrollIntoView({ behavior: 'smooth' })}>
+      Chính sách
+    </button>
+  </li>
+                <li>
+  <button
+   
+    onClick={() => handleNavigateToGoogleMap(data)}
+  >
+    Đường đi
+  </button>
+</li>
 
-        <div className="w-full bg-[#9BE1DE] grid grid-cols-2 py-3 items-center justify-center rounded-md">
-          <ul className="grid grid-cols-6 text-center font-bold">
-            <li>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("overview")
-                    .scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                Tổng quan
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("amenities")
-                    .scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                Tiện nghi
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("rooms")
-                    .scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                Phòng nghỉ
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("reviews")
-                    .scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                Đánh giá
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("policies")
-                    .scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                Chính sách
-              </button>
-            </li>
-            <li>
-              <button onClick={() => handleNavigateToGoogleMap(data)}>
-                Đường đi
-              </button>
-            </li>
-          </ul>
-          <div className="flex justify-end gap-2 items-center px-2">
-            <div>Từ </div>
-            <div className="text-lg text-red-500 font-bold">550.000đ </div>
-            <button
-              className="bg-[#1EBBB4] rounded-full p-2 font-bold"
-              onClick={() =>
-                document
-                  .getElementById("rooms")
-                  .scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              Xem giá
-            </button>
-          </div>
-        </div>
-        <fieldset
-          id="overview"
-          className="my-5 border border-[#359894] shadow-sm shadow-[#359894]"
-        >
-          <legend className="border border-gray-300 px-2 py-1 mx-3 font-bold">
-            Tổng quan
-          </legend>
-          <div className="w-5/6 mx-auto my-3">
-            <p className="font-bold text-xl">{data.title}</p>
-            <p>{data.location} </p>
-            <hr className="border border-black"></hr>
-            <p className="text-xs">{data.general} </p>
-          </div>
+
+            </ul>
+            <div className='flex justify-end gap-2 items-center px-2'>
+                
+              
+            </div>
+        </div>    
+        <fieldset  id="overview" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tổng quan</legend>
+            <div className='w-5/6 mx-auto my-3'>
+                <p className='font-bold text-xl'>{data.title}</p>
+                <p>{data.location} </p>
+                <hr className='border border-black'></hr>
+                <p className='text-xs'>{data.general} </p>
+            </div>
         </fieldset>
         <fieldset
           id="amenities"
@@ -440,7 +439,412 @@ const Detail = ({ data, type }) => {
         </fieldset>
       </div>
     </div>
-  );
-};
+  )
+}
+else if(hotelDetails?.hotel?.serviceID?.type === 'restaurant'){
+  return (
+    <div className="md:w-full font-['Roboto']">
+    
+    <GPT></GPT>
+      <SearchBar type={type?type:'hotel'}/>
+
+      <div className='md:w-5/6 lg:w-4/6 mx-auto'>
+      <div className="grid grid-cols-5 gap-3 my-4 relative w-full">
+  {/* Ảnh chính - chiều cao gấp đôi */}
+  <div className="col-span-2 row-span-2 relative">
+    <Image
+      src={data.images[0]}
+      className="w-full h-[500px] rounded-xl object-cover"
+      style={{ aspectRatio: '1/1' }}
+      alt="Main"
+    />
+  </div>
+
+  {/* Thư viện ảnh nhỏ */}
+  {data.images.slice(1, 7).map((image, index) => (
+    <div
+      key={index}
+      className="col-span-1 row-span-1 relative overflow-hidden"
+    >
+      <Image
+        src={image}
+        className="w-full h-[250px] rounded-md object-cover"
+        style={{ aspectRatio: '1/1' }}
+        alt={`Thumbnail ${index}`}
+      />
+    </div>
+  ))}
+
+  {/* Modal hiển thị tất cả ảnh */}
+  {isModalOpen && (
+    <Modal
+      title="Tất cả ảnh"
+      visible={isModalOpen}
+      footer={null}
+      onCancel={() => setIsModalOpen(false)}
+    >
+      <div className="grid grid-cols-3 gap-3">
+        {data.images.map((image, index) => (
+          <Image
+            key={index}
+            src={image}
+            className="rounded-md object-cover w-full"
+            style={{ aspectRatio: '16/9' }}
+            alt={`Image ${index}`}
+          />
+        ))}
+      </div>
+    </Modal>
+  )}
+</div>
+
+    <Button 
+        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Xem tất cả ảnh
+      </Button>
+    
+        <div className='w-full bg-[#9BE1DE] grid grid-cols-2 py-3 items-center justify-center rounded-md'>
+            <ul className='grid grid-cols-6 text-center font-bold'>
+            <li>
+    <button onClick={() => document.getElementById('overview').scrollIntoView({ behavior: 'smooth' })}>
+      Tổng quan
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('amenities').scrollIntoView({ behavior: 'smooth' })}>
+      Tiện nghi
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('rooms').scrollIntoView({ behavior: 'smooth' })}>
+      Đặt chổ
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('reviews').scrollIntoView({ behavior: 'smooth' })}>
+      Đánh giá
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('policies').scrollIntoView({ behavior: 'smooth' })}>
+      Chính sách
+    </button>
+  </li>
+                <li>
+  <button
+   
+    onClick={() => handleNavigateToGoogleMap(data)}
+  >
+    Đường đi
+  </button>
+</li>
+
+
+            </ul>
+            <div className='flex justify-end gap-2 items-center px-2'>
+               
+            </div>
+        </div>    
+        <fieldset  id="overview" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tổng quan</legend>
+            <div className='w-5/6 mx-auto my-3'>
+                <p className='font-bold text-xl'>{data.title}</p>
+                <p>{data.location} </p>
+                <hr className='border border-black'></hr>
+                <p className='text-xs'>{data.general} </p>
+            </div>
+        </fieldset>
+        <fieldset id="amenities" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Phong cách</legend>
+            <div className='w-5/6 mx-auto my-3 grid grid-cols-3'>
+                {data.amenities2.map(amenity => {
+                    return (
+                        <div key={amenity} className='flex gap-1 items-center'>
+                            <FaCheck className='fill-blue-500'/>
+                            <p className=''>{amenity}</p>
+                        </div>
+                    )
+                })}
+            </div>
+        </fieldset>
+        <fieldset id="amenities" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Món ăn</legend>
+            <div className='w-5/6 mx-auto my-3 grid grid-cols-3'>
+                {data.amenities3.map(amenity => {
+                    return (
+                        <div key={amenity} className='flex gap-1 items-center'>
+                            <FaCheck className='fill-blue-500'/>
+                            <p className=''>{amenity}</p>
+                        </div>
+                    )
+                })}
+            </div>
+        </fieldset>
+        <fieldset id="amenities" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tiện nghi</legend>
+            <div className='w-5/6 mx-auto my-3 grid grid-cols-3'>
+                {data.amenities.map(amenity => {
+                    return (
+                        <div key={amenity} className='flex gap-1 items-center'>
+                            <FaCheck className='fill-blue-500'/>
+                            <p className=''>{amenity}</p>
+                        </div>
+                    )
+                })}
+            </div>
+        </fieldset>
+        <fieldset id="rooms" className="my-5 border border-[#359894] shadow-sm shadow-[#359894]">
+      <legend className="border border-gray-300 px-2 py-1 mx-3 font-bold">Đặt chỗ</legend>
+      <div className="p-5 max-w-md mx-auto">
+        {/* Số người lớn và trẻ em */}
+        <div className="flex items-center" style={{ gap: '16px', marginBottom: '16px' }}>
+          <div className="flex items-center" style={{ gap: '4px' }}>
+            <span style={{ marginRight: '4px' }}>Người lớn:</span>
+            <Select defaultValue="0" style={{ width: 80 }} onChange={setAdults}>
+              {[...Array(10).keys()].map(num => (
+                <Option key={num} value={num}>{num}</Option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="flex items-center" style={{ gap: '4px' }}>
+            <span style={{ marginRight: '4px' }}>Trẻ em:</span>
+            <Select defaultValue="0" style={{ width: 100 }} onChange={setChildren}>
+              {[...Array(10).keys()].map(num => (
+                <Option key={num} value={num}>{num}</Option>
+              ))}
+            </Select>
+          </div>
+        </div>
+
+        {/* Thời gian đến */}
+        <div className="flex flex-col gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <span>Ngày đến:</span>
+            <DatePicker style={{ flex: 1 }} onChange={setArrivalDate} />
+          </div>
+          <div className="flex items-center gap-2">
+            <span>Giờ đến:</span>
+            <TimePicker style={{ flex: 1 }} format="HH:mm" onChange={setArrivalTime} />
+          </div>
+        </div>
+
+        {/* Nút đặt chỗ */}
+        <div className="text-center">
+          <Button
+            type="primary"
+            size="large"
+            className="w-[300px]"
+            style={{ backgroundColor: '#00CCFF' }}
+            onClick={handleBooking}
+          >
+            Đặt chỗ ngay
+          </Button>
+        </div>
+      </div>
+    </fieldset>
+        
+        <fieldset id="reviews" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'> 
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Đánh giá</legend>
+  <div className='w-5/6 mx-auto my-3 items-center'>
+  <div style={{ marginBottom: '50px' }} className='flex justify-center border border-black rounded-2xl p-2 bg-[#BDFFFC]'>
+  <div className='grid grid-cols-5 w-4/5 gap-4'>
+    {calculateNumberRate(data.reviews).map((item) => (
+      <div
+        key={item.title}
+        className='flex flex-col items-center gap-1 font-semibold bg-[#90EFEB] justify-center py-2 rounded-lg cursor-pointer'
+      >
+        <p>{item.title}</p>
+        <p>({item.number})</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+    
+    <ReviewList reviews={data.reviews} />
+  </div>
+</fieldset>
+
+{/* <RateList data={data.rate} /> */}
+<fieldset id="policies" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Chính sách của nhà hàng</legend>
+  <div className='w-5/6 mx-auto my-3'>
+   
+    <p>Ăn no mới cho về.</p>
+    
+  </div>
+</fieldset>
+
+      </div>
+    </div>
+  )
+}
+else if(hotelDetails?.hotel?.serviceID?.type === 'coffee'){
+  return (
+    <div className="md:w-full font-['Roboto']">
+    
+    <GPT></GPT>
+      <SearchBar type={type?type:'hotel'}/>
+
+      <div className='md:w-5/6 lg:w-4/6 mx-auto'>
+      <div className="grid grid-cols-5 gap-3 my-4 relative w-full">
+  {/* Ảnh chính - chiều cao gấp đôi */}
+  <div className="col-span-2 row-span-2 relative">
+    <Image
+      src={data.images[0]}
+      className="w-full h-[500px] rounded-xl object-cover"
+      style={{ aspectRatio: '1/1' }}
+      alt="Main"
+    />
+  </div>
+
+  {/* Thư viện ảnh nhỏ */}
+  {data.images.slice(1, 7).map((image, index) => (
+    <div
+      key={index}
+      className="col-span-1 row-span-1 relative overflow-hidden"
+    >
+      <Image
+        src={image}
+        className="w-full h-[250px] rounded-md object-cover"
+        style={{ aspectRatio: '1/1' }}
+        alt={`Thumbnail ${index}`}
+      />
+    </div>
+  ))}
+
+  {/* Modal hiển thị tất cả ảnh */}
+  {isModalOpen && (
+    <Modal
+      title="Tất cả ảnh"
+      visible={isModalOpen}
+      footer={null}
+      onCancel={() => setIsModalOpen(false)}
+    >
+      <div className="grid grid-cols-3 gap-3">
+        {data.images.map((image, index) => (
+          <Image
+            key={index}
+            src={image}
+            className="rounded-md object-cover w-full"
+            style={{ aspectRatio: '16/9' }}
+            alt={`Image ${index}`}
+          />
+        ))}
+      </div>
+    </Modal>
+  )}
+</div>
+
+    <Button 
+        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Xem tất cả ảnh
+      </Button>
+    
+        <div className='w-full bg-[#9BE1DE] grid grid-cols-2 py-3 items-center justify-center rounded-md'>
+            <ul className='grid grid-cols-6 text-center font-bold'>
+            <li>
+    <button onClick={() => document.getElementById('overview').scrollIntoView({ behavior: 'smooth' })}>
+      Tổng quan
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('amenities').scrollIntoView({ behavior: 'smooth' })}>
+      Tiện nghi
+    </button>
+  </li>
+ 
+  <li>
+    <button onClick={() => document.getElementById('reviews').scrollIntoView({ behavior: 'smooth' })}>
+      Đánh giá
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('policies').scrollIntoView({ behavior: 'smooth' })}>
+      Chính sách
+    </button>
+  </li>
+                <li>
+  <button
+   
+    onClick={() => handleNavigateToGoogleMap(data)}
+  >
+    Đường đi
+  </button>
+</li>
+
+
+            </ul>
+            <div className='flex justify-end gap-2 items-center px-2'>
+               
+            </div>
+        </div>    
+        <fieldset  id="overview" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tổng quan</legend>
+            <div className='w-5/6 mx-auto my-3'>
+                <p className='font-bold text-xl'>{data.title}</p>
+                <p>{data.location} </p>
+                <hr className='border border-black'></hr>
+                <p className='text-xs'>{data.general} </p>
+            </div>
+        </fieldset>
+        
+        <fieldset id="amenities" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tiện nghi</legend>
+            <div className='w-5/6 mx-auto my-3 grid grid-cols-3'>
+                {data.amenities.map(amenity => {
+                    return (
+                        <div key={amenity} className='flex gap-1 items-center'>
+                            <FaCheck className='fill-blue-500'/>
+                            <p className=''>{amenity}</p>
+                        </div>
+                    )
+                })}
+            </div>
+        </fieldset>
+       
+        
+        <fieldset id="reviews" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'> 
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Đánh giá</legend>
+  <div className='w-5/6 mx-auto my-3 items-center'>
+  <div style={{ marginBottom: '50px' }} className='flex justify-center border border-black rounded-2xl p-2 bg-[#BDFFFC]'>
+  <div className='grid grid-cols-5 w-4/5 gap-4'>
+    {calculateNumberRate(data.reviews).map((item) => (
+      <div
+        key={item.title}
+        className='flex flex-col items-center gap-1 font-semibold bg-[#90EFEB] justify-center py-2 rounded-lg cursor-pointer'
+      >
+        <p>{item.title}</p>
+        <p>({item.number})</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+    
+    <ReviewList reviews={data.reviews} />
+  </div>
+</fieldset>
+
+{/* <RateList data={data.rate} /> */}
+<fieldset id="policies" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Chính sách của quán cà phê</legend>
+  <div className='w-5/6 mx-auto my-3'>
+   
+    <p>Phê thì mới cho về.</p>
+    
+  </div>
+</fieldset>
+
+      </div>
+    </div>
+  )
+}
+}
 
 export default Detail;
