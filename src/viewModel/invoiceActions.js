@@ -75,5 +75,33 @@ export const getAllOrders = () => async (dispatch) => {
       });
     }
   };
+
+
+  // Update invoice status
+export const updateInvoiceStatus = (invoiceID, status) => async (dispatch) => {
+  try {
+    dispatch({ type: INVOICE_REQUEST });
+console.log(invoiceID,status)
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    // Call API to update the status of the invoice
+    const { data } = await axios.put(`${URL}/api/invoices/invoices/${invoiceID}/status`, { status }, config);
+
+    dispatch({
+      type: INVOICE_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: INVOICE_FAIL,
+      payload: error.response?.data?.message || "Server Error",
+    });
+  }
+};
+
   
   

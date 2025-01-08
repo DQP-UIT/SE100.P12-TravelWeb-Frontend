@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Table, Select, Typography, Button, Input, Tag, Image, Tooltip, message } from "antd";
+import { Table, Select, Typography, Button, Input, Tag, Image, Tooltip, message, notification, Rate, Form, Modal } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllOrders } from "../../../viewModel/invoiceActions";
+import { getAllOrders, updateInvoiceStatus } from "../../../viewModel/invoiceActions";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
 import { jwtDecode } from "jwt-decode";
 
 const InvoiceTable = () => {
   const token = localStorage.getItem("token");
-
+ const [form] = Form.useForm();
   let decodedToken = {};
   if (token) {
     try {
@@ -25,6 +25,7 @@ const InvoiceTable = () => {
 
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [oke, setOke] = useState(true);
   const [searchedColumn, setSearchedColumn] = useState(null);
   const [localInvoice, setLocalInvoice] = useState([]); // State quản lý dữ liệu hóa đơn
 console.log("HELLO",filteredData)
@@ -39,7 +40,7 @@ console.log("HELLO",filteredData)
       setFilteredData(userInvoices);
       setLocalInvoice(userInvoices); // Đồng bộ hóa dữ liệu vào localInvoice
     }
-  }, [dispatch]);
+  }, [dispatch,oke]);
 
   console.log(invoice)
   useEffect(() => {
@@ -53,27 +54,42 @@ console.log("HELLO",filteredData)
   }, [invoice, decodedToken.userId]);
 
   const handleStatusChange = (value, recordId) => {
-    const updatedInvoices = localInvoice.map((item) =>
-      item._id === recordId ? { ...item, status: value } : item
-    );
-    setLocalInvoice(updatedInvoices);
-    setFilteredData(updatedInvoices);
-    message.success("Cập nhật trạng thái thành công!");
+    dispatch(updateInvoiceStatus(recordId, value))
+      .then(() => {
+        setOke(!oke)
+        notification.success({
+          message: "Thành công",
+          description: "Cập nhật trạng thái thành công!",
+        });
+      })
+      .catch(() => {
+        notification.error({
+          message: "Lỗi",
+          description: "Cập nhật trạng thái thất bại. Vui lòng thử lại.",
+        });
+      });
   };
-
+  
+  
+  
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
   };
 
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
   };
-
+  const [reviewMode, setReviewMode] = useState(false); // Phân biệt modal là để xem hay đánh giá
   const { Title } = Typography;
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
@@ -129,7 +145,11 @@ console.log("HELLO",filteredData)
         text
       ),
   });
-
+  const showReviewModal = (record, isViewMode = false) => {
+    setSelectedRecord(record);
+    setReviewMode(isViewMode);
+    setIsModalOpen(true);
+  };
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -219,12 +239,23 @@ console.log("HELLO",filteredData)
       title: "Hành động",
       key: "action",
       render: (_, record) => (
-        <Tooltip title="Xem chi tiết">
-          <Button type="link" onClick={() => handleViewDetail(record._id)}>
-            Xem
-          </Button>
-        </Tooltip>
-      ),
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                {record.status === "đã sử dụng" &&
+                  (record.review ? (
+                    <Tooltip title="Xem đánh giá">
+                      <Button type="primary" onClick={() => showReviewModal(record, true)}>
+                        Xem đánh giá
+                      </Button>
+                    </Tooltip>
+                  ) : (
+                      <div></div>
+                  ))}
+                <Button type="primary" onClick={() =>{ handleViewDetail(record.roomID.hotelID); console.log(record)} }>
+                  Xem dịch vụ
+                </Button>
+              </div>
+            ),
+          
     },
   ];
 
@@ -243,6 +274,41 @@ console.log("HELLO",filteredData)
         loading={loading}
         pagination={{ pageSize: 5 }}
       />
+
+<Modal
+  title={reviewMode ? "Thông tin đánh giá" : "Đánh giá dịch vụ"}
+  open={isModalOpen}
+  onCancel={handleCancel}
+  footer={
+    reviewMode
+      ? [
+          <Button key="cancel" onClick={handleCancel}>
+            Thoát
+          </Button>,
+         
+        ]  // Không hiển thị footer khi reviewMode là true
+      : [
+          <Button key="cancel" onClick={handleCancel}>
+            Hủy
+          </Button>,
+          <Button key="submit" type="primary" onClick={() => form.submit()}>
+            Gửi
+          </Button>,
+        ]
+  }
+>
+  {reviewMode ? (
+    <div>
+      <Typography.Text>Số sao: </Typography.Text>
+      <Rate disabled value={selectedRecord?.review?.stars} />
+      <Typography.Paragraph>
+        Nhận xét: {selectedRecord?.review?.positiveComment || "Không có"}
+      </Typography.Paragraph>
+    </div>
+  ) : (
+    <div></div>
+  )}
+</Modal>
     </div>
   );
 };

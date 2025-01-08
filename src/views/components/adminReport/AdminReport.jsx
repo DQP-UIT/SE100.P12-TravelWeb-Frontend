@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Table, Select, Row, Col, Typography } from 'antd';
+import { Table, Select, Row, Col, Typography, Button, Space } from 'antd';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
+import * as XLSX from 'xlsx'; // Import xlsx library
+import { FileExcelOutlined } from '@ant-design/icons'; // Import Excel icon
 
 const { Title } = Typography;
 
@@ -21,59 +23,53 @@ const RevenueStatistics = () => {
     { value: '10', label: 'Tháng 10' },
     { value: '11', label: 'Tháng 11' },
     { value: '12', label: 'Tháng 12' },
-];
+  ];
 
-const annualData = [
+  const annualData = [
     30000000, 28000000, 35000000, 32000000, 37000000, 39000000,
     40000000, 38000000, 41000000, 42000000, 43000000, 45000000,
-];
+  ];
 
-const roomData = {};
+  const roomData = {};
 
-// Hàm tạo dữ liệu ngẫu nhiên cho các phòng
-const generateRoomData = (month) => {
+  const generateRoomData = (month) => {
     const services = ['Dịch vụ A', 'Dịch vụ B', 'Dịch vụ C', 'Dịch vụ D', 'Dịch vụ E'];
     const rooms = Array.from({ length: 10 }, (_, i) => `Phòng ${101 + i}`);
     
     return rooms.map((room, index) => {
-        const rentals = Math.floor(Math.random() * 30) + 1;
-        const revenue = rentals * (Math.floor(Math.random() * 500000) + 1000000);
-        return {
-            key: `${month}-${index + 1}`,
-            room,
-            service: services[Math.floor(Math.random() * services.length)],
-            rentals,
-            revenue,
-        };
+      const rentals = Math.floor(Math.random() * 30) + 1;
+      const revenue = rentals * (Math.floor(Math.random() * 500000) + 1000000);
+      return {
+        key: `${month}-${index + 1}`,
+        room,
+        service: services[Math.floor(Math.random() * services.length)],
+        rentals,
+        revenue,
+      };
     });
-};
+  };
 
-// Tạo dữ liệu cho các tháng từ 1 đến 12
-for (let i = 1; i <= 12; i++) {
+  for (let i = 1; i <= 12; i++) {
     roomData[i] = generateRoomData(i);
-}
+  }
 
-const chartData = {};
+  const chartData = {};
 
-// Tạo dữ liệu biểu đồ dựa trên roomData
-Object.keys(roomData).forEach((month) => {
+  Object.keys(roomData).forEach((month) => {
     const labels = roomData[month].map((item) => item.room);
     const revenues = roomData[month].map((item) => item.revenue);
 
     chartData[month] = {
-        labels,
-        datasets: [
-            {
-                label: 'Doanh thu',
-                data: revenues,
-                backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
-            },
-        ],
+      labels,
+      datasets: [
+        {
+          label: 'Doanh thu',
+          data: revenues,
+          backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+        },
+      ],
     };
-});
-
-console.log(roomData);
-
+  });
 
   const roomColumns = [
     {
@@ -110,6 +106,64 @@ console.log(roomData);
     ],
   };
 
+  const exportToExcel = () => {
+    // Prepare data for the Excel file
+    const monthData = roomData[selectedMonth].map(item => ({
+      'Phòng': item.room,
+      'Dịch vụ': item.service,
+      'Lượt thuê': item.rentals,
+      'Doanh thu': item.revenue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
+    }));
+  
+    // Create a worksheet from the data
+    const ws = XLSX.utils.json_to_sheet(monthData);
+  
+    // Add title and extra info at the top
+    const titleInfo = [
+      ['Doanh thu tháng 1 của nhà cung cấp : Công ty ABC'],  // Replace 'Công ty ABC' with actual supplier name
+      ['Ngày xuất', new Date().toLocaleDateString()],
+    ];
+  
+    const wsTitle = XLSX.utils.aoa_to_sheet(titleInfo, { origin: 'A1' });
+  
+    // Styling for the title row
+    wsTitle['A1'].s = { font: { bold: true, sz: 14 }, alignment: { horizontal: 'center' }, fill: { fgColor: { rgb: 'FFFF00' } } };
+    wsTitle['A2'].s = { font: { italic: true }, alignment: { horizontal: 'center' } };
+  
+    // Set columns widths for better readability
+    const columnsWidth = [
+      { wch: 20 }, { wch: 30 }, { wch: 15 }, { wch: 20 }
+    ];
+    ws['!cols'] = columnsWidth;
+  
+    // Apply styles to the header row of the table
+    const headerStyle = {
+      font: { bold: true },
+      alignment: { horizontal: 'center' },
+      fill: { fgColor: { rgb: 'FFFF00' } },
+      border: {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      }
+    };
+  
+    // Set headers in the first row of the data sheet
+    const headerRange = { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } };
+    const range = XLSX.utils.decode_range(ws['!ref']);
+   // ws['!merges'] = [headerRange];
+  
+    // Create workbook and append title, data
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, wsTitle, 'Thông tin');
+    XLSX.utils.book_append_sheet(wb, ws, `Doanh thu tháng ${selectedMonth}`);
+  
+    // Write Excel file
+    XLSX.writeFile(wb, `DoanhThu_Thang_${selectedMonth}.xlsx`);
+  };
+  
+
   return (
     <div>
       <Title level={3}>Thống kê doanh thu theo tháng</Title>
@@ -126,6 +180,22 @@ console.log(roomData);
               </Select.Option>
             ))}
           </Select>
+        </Col>
+        <Col span={12}>
+        <Button
+  type="primary"
+  onClick={exportToExcel}
+  icon={<FileExcelOutlined />} // Add Excel icon from Ant Design
+  style={{
+    backgroundColor: '#4CAF50', // Green background
+    borderColor: '#4CAF50', // Border matching the background color
+  }}
+  onMouseEnter={(e) => e.target.style.backgroundColor = '#45a049'} // Darker green on hover
+  onMouseLeave={(e) => e.target.style.backgroundColor = '#4CAF50'} // Revert back on mouse leave
+>
+  Xuất Excel
+</Button>
+
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
@@ -144,7 +214,7 @@ console.log(roomData);
             Biểu đồ doanh thu tháng {selectedMonth}
           </Title>
           <Bar
-          style={{margin: '50px'}}
+            style={{ margin: '50px' }}
             data={chartData[selectedMonth]}
             options={{
               responsive: true,
@@ -157,11 +227,11 @@ console.log(roomData);
           />
         </Col>
         <Col span={12}>
-          <Title level={4} style={{ textAlign: 'center'}}>
+          <Title level={4} style={{ textAlign: 'center' }}>
             Biểu đồ doanh thu cả năm
           </Title>
           <Bar
-           style={{margin: '50px'}}
+            style={{ margin: '50px' }}
             data={annualChartData}
             options={{
               responsive: true,

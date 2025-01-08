@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Input, Table, Button, Select, Image, Form, InputNumber, Modal, notification, Upload, Checkbox, message, Row } from 'antd';
+import { Input, Table, Button, Select, Image, Form, InputNumber, Modal, notification, Upload, Checkbox, message, Row, Card, Col, Rate } from 'antd';
 import { ContainerFilled, DeleteOutlined, EditOutlined, LeftOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
 // import { filtersData } from '../../../models/fake-data';
 // import { product, productData } from '../../../models/fake-data';
@@ -32,7 +32,41 @@ const Service = (selectedRow) => {
   const [errorMessage3, setErrorMessage3] = useState('');
   const dispatch = useDispatch();
 
-
+  const ReviewList = ({ reviews }) => {
+    return (
+      <div className="review-list">
+        {reviews?.map((review) => (
+          <Card
+            key={review._id.$oid}
+            className="review-card"
+            bordered
+            style={{ marginBottom: "16px", borderRadius: "8px" }}
+          >
+            <Row justify="space-between" align="middle" className="review-header">
+              <Col>
+                <p className="font-bold" style={{ marginBottom: 4 }}>
+                  Khách hàng: <span style={{ fontWeight: "normal" }}>{review.userID.fullName}</span>
+                </p>
+                <p style={{ color: "gray", fontSize: "12px", marginBottom: 0 }}>
+                  Ngày: {review.date.slice(0, 10)}
+                </p>
+              </Col>
+              <Col>
+                <Rate disabled defaultValue={review.stars} style={{ color: "#faad14" }} />
+              </Col>
+            </Row>
+  
+            <div className="review-body" style={{ marginTop: "12px" }}>
+              <p style={{ color: "green", marginBottom: 0 }}>
+                <strong></strong> {review.positiveComment || "No positive comments"}
+              </p>
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  };
+  
 
    const { id } = useParams();
       
@@ -1101,7 +1135,20 @@ setProductData(he)
       ),
     },
   ];
-
+  const calculateNumberRate = (reviews) => {
+    const numberRate = [0, 0, 0, 0, 0]; // Mảng lưu số lượng đánh giá từ 1 đến 5 sao
+    reviews?.forEach((review) => {
+      if (review.stars >= 1 && review.stars <= 5) {
+        numberRate[review.stars- 1]++;
+      }
+      console.log(review)
+    });
+    return numberRate.map((count, index) => ({
+      title: `${index + 1} sao`,
+      number: count,
+    }));
+  };
+  
 
             
   return (
@@ -1379,6 +1426,28 @@ setService(updatedService)
     />
   </div>
 </Container>
+ <Container>
+ 
+  <div className='w-5/6 mx-auto my-3 items-center'>
+  <Title>Đánh giá</Title>
+  <div style={{ margin: '50px 0' }} className='flex justify-center border border-black rounded-2xl p-2 bg-[#BDFFFC]'>
+  <div className='grid grid-cols-5 w-4/5 gap-4'>
+    {calculateNumberRate(service?.hotel?.serviceID?.reviews).map((item) => (
+      <div
+        key={item.title}
+        className='flex flex-col items-center gap-1 font-semibold bg-[#90EFEB] justify-center py-2 rounded-lg cursor-pointer'
+      >
+        <p>{item.title}</p>
+        <p>({item.number})</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+    
+    <ReviewList reviews={service?.hotel?.serviceID?.reviews} />
+  </div>
+</Container>
 
 <Modal
         title="Chỉnh địa chỉ"
@@ -1555,8 +1624,13 @@ setService(updatedService)
           })}
       </div>
     </Checkbox.Group>
+
+    
   </Form.Item>
+  
 </Form>
+   
+       
 
 
       </Modal> 

@@ -4,7 +4,7 @@ import { Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../../model/authSlice"; // Đường dẫn phù hợp đến authSlice
-//import { forgotPassword, resetPassword } from "../../redux/Slicer/userSlice"; // Đường dẫn phù hợp đến userSlice
+import { forgotPassword, resetPassword } from "../../../model/userSlice"; // Đường dẫn phù hợp đến userSlice
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
@@ -111,9 +111,9 @@ const LoginPageComponent = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
  const { status, error } = useSelector((state) => state.auth);
-//   const { resetPasswordStatus, resetPasswordError, verificationStatus, verificationError } = useSelector(
-//     (state) => state.user
-//   );
+  const { resetPasswordStatus, resetPasswordError, verificationStatus, verificationError } = useSelector(
+    (state) => state.user2
+  );
 
   const handleLogin = () => {
     if (!account) {
@@ -174,21 +174,21 @@ const LoginPageComponent = () => {
       return;
     }
     try{
-    //   dispatch(forgotPassword(email)) // Gọi action forgotPassword
-    //   .unwrap()
-    //   .then((response) => {
-    //     if(response?.er){
-    //       setErrorMessage("Email người dùng không đúng hoặc tài khoản bị khóa!");
-    //     }
-    //     else{
-    //    // console.log(response.response.data.message)
-    //     message.success("Email xác nhận đã được gửi!");
-    //     setCurrentStep("step2");
-    //     }
-    //   })
-    //   .catch((err) => {
+      dispatch(forgotPassword(email)) // Gọi action forgotPassword
+      .unwrap()
+      .then((response) => {
+        if(response?.er){
+          setErrorMessage("Email người dùng không đúng hoặc tài khoản bị khóa!");
+        }
+        else{
+       // console.log(response.response.data.message)
+        message.success("Email xác nhận đã được gửi!");
+        setCurrentStep("step2");
+        }
+      })
+      .catch((err) => {
         
-    //   });
+      });
     }
     catch(e){
       message.error(e);
@@ -223,20 +223,20 @@ const LoginPageComponent = () => {
         return;
       }
 
-    // dispatch(resetPassword({ email, resetCode: code, newPassword })) // Gọi action resetPassword
-    //   .unwrap()
-    //   .then(() => {
-    //     try{
-    //     message.success("Đổi mật khẩu thành công!");
-    //     setCurrentStep("login");
-    //     }
-    //     catch(e){
-    //       setErrorMessage('Mã xác nhận không chính xác');
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     setErrorMessage('Mã xác nhận không chính xác');
-    //   });
+    dispatch(resetPassword({ email, resetCode: code, newPassword })) // Gọi action resetPassword
+      .unwrap()
+      .then(() => {
+        try{
+        message.success("Đổi mật khẩu thành công!");
+        setCurrentStep("login");
+        }
+        catch(e){
+          setErrorMessage('Mã xác nhận không chính xác');
+        }
+      })
+      .catch((err) => {
+        setErrorMessage('Mã xác nhận không chính xác');
+      });
   };
 
   const renderContent = () => {

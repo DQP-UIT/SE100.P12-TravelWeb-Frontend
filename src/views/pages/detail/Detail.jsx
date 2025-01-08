@@ -7,8 +7,8 @@ import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { getHotelDetails } from '../../../viewModel/hotelAction'
-import { Button, Image, Modal } from 'antd'
-
+import { Button, Card, Col, Image, Modal, Rate, Row } from 'antd'
+import GPT from "../../components/GPT/GPT"
 const starRate = (index) => {
     const stars = []
     for (let i = 0; i < index; i++)
@@ -24,18 +24,20 @@ const starRate = (index) => {
 
 const averageRate = (data) => {
     let result = 0
-    data.map(item => {
+    data?.map(item => {
 
         result += item.rate
     })
-    result /= data.length
+    result /= data?.length
     return result
+
 }
 
 
 const createHotelDataFromObject = (inputData) => {
     try {
       return {
+        reviews: inputData.hotel.serviceID.reviews,
         images: inputData.hotel.serviceID.images || [], // Nếu không có images, trả về mảng rỗng
         avatar: inputData.avatar || "", // Nếu không có avatar, trả về chuỗi rỗng
         title: inputData.hotel.serviceID.serviceName || "", // Nếu không có title, trả về chuỗi rỗng
@@ -45,12 +47,13 @@ const createHotelDataFromObject = (inputData) => {
           ? inputData.rooms.map(room => ({
             _id : room._id,
               name: room.roomType || "", // Nếu không có tên phòng, trả về chuỗi rỗng
-              image: room.pictures ? room.pictures[0] || "" : "", // Lấy hình ảnh đầu tiên nếu có
+              image: room.pictures ? room.pictures || "" : "", // Lấy hình ảnh đầu tiên nếu có
               utilites: room.facilities ? room.facilities.map(facility => facility.name) : [], // Lấy danh sách tiện nghi
               capacities: room.capacity ? [room.capacity.roomNumber   ,room.capacity.adults, room.capacity.children] : [], // Nếu có capacity, lấy số người lớn và trẻ em
               price: room.price || 0, // Giá phòng, nếu không có thì mặc định là 0
               discount: room.discountPrice || 10, // Giảm giá, nếu không có thì mặc định là 0
-              roomAvailability: room.roomsAvailable || []
+              roomAvailability: room.roomsAvailable || [],
+              meter: room.area
             }))
           : [], // Nếu không có rooms, trả về mảng rỗng
         amenities: inputData.hotel.serviceID.facilities
@@ -120,7 +123,7 @@ const Detail = ({data, type}) => {
 
 
    const handleNavigateToGoogleMap = (data) => {
-    console.log
+    
     if (hotelDetails.hotel.serviceID.locationID.latitude && hotelDetails.hotel.serviceID.locationID.longitude) {
       const currentLocation = "My+Location"; // Dùng Google Maps để lấy vị trí hiện tại
       const destination = `${hotelDetails.hotel.serviceID.locationID.latitude},${hotelDetails.hotel.serviceID.locationID.longitude}`;
@@ -132,10 +135,61 @@ const Detail = ({data, type}) => {
     }
   };
   
+  const ReviewList = ({ reviews }) => {
+    return (
+      <div className="review-list">
+        {reviews?.map((review) => (
+          <Card
+            key={review._id.$oid}
+            className="review-card"
+            bordered
+            style={{ marginBottom: "16px", borderRadius: "8px" }}
+          >
+            <Row justify="space-between" align="middle" className="review-header">
+              <Col>
+                <p className="font-bold" style={{ marginBottom: 4 }}>
+                  Khách hàng: <span style={{ fontWeight: "normal" }}>{review.userID.fullName}</span>
+                </p>
+                <p style={{ color: "gray", fontSize: "12px", marginBottom: 0 }}>
+                  Ngày: {review.date.slice(0, 10)}
+                </p>
+              </Col>
+              <Col>
+                <Rate disabled defaultValue={review.stars} style={{ color: "#faad14" }} />
+              </Col>
+            </Row>
+  
+            <div className="review-body" style={{ marginTop: "12px" }}>
+              <p style={{ color: "green", marginBottom: 0 }}>
+                <strong></strong> {review.positiveComment || "No positive comments"}
+              </p>
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  };
+  
+
+
+  const calculateNumberRate = (reviews) => {
+    const numberRate = [0, 0, 0, 0, 0]; // Mảng lưu số lượng đánh giá từ 1 đến 5 sao
+    reviews?.forEach((review) => {
+      if (review.stars >= 1 && review.stars <= 5) {
+        numberRate[review.stars- 1]++;
+      }
+      console.log(review)
+    });
+    return numberRate.map((count, index) => ({
+      title: `${index + 1} sao`,
+      number: count,
+    }));
+  };
+  
   return (
     <div className="md:w-full font-['Roboto']">
 
-
+    <GPT></GPT>
       <SearchBar type={type?type:'hotel'}/>
 
       <div className='md:w-5/6 lg:w-4/6 mx-auto'>
@@ -197,10 +251,31 @@ const Detail = ({data, type}) => {
     
         <div className='w-full bg-[#9BE1DE] grid grid-cols-2 py-3 items-center justify-center rounded-md'>
             <ul className='grid grid-cols-6 text-center font-bold'>
-                <li>Tổng quan</li>
-                <li>Tiện nghi</li>
-                <li>Phòng nghỉ</li>
-                <li>Đánh giá</li>
+            <li>
+    <button onClick={() => document.getElementById('overview').scrollIntoView({ behavior: 'smooth' })}>
+      Tổng quan
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('amenities').scrollIntoView({ behavior: 'smooth' })}>
+      Tiện nghi
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('rooms').scrollIntoView({ behavior: 'smooth' })}>
+      Phòng nghỉ
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('reviews').scrollIntoView({ behavior: 'smooth' })}>
+      Đánh giá
+    </button>
+  </li>
+  <li>
+    <button onClick={() => document.getElementById('policies').scrollIntoView({ behavior: 'smooth' })}>
+      Chính sách
+    </button>
+  </li>
                 <li>
   <button
    
@@ -210,15 +285,15 @@ const Detail = ({data, type}) => {
   </button>
 </li>
 
-                <li>Chính sách</li>
+
             </ul>
             <div className='flex justify-end gap-2 items-center px-2'>
                 <div>Từ </div>
                 <div className='text-lg text-red-500 font-bold'>550.000đ </div>
-                <button className='bg-[#1EBBB4] rounded-full p-2 font-bold'>Xem giá</button>
+                <button className='bg-[#1EBBB4] rounded-full p-2 font-bold' onClick={() => document.getElementById('rooms').scrollIntoView({ behavior: 'smooth' })}>Xem giá</button>
             </div>
         </div>    
-        <fieldset className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+        <fieldset  id="overview" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
             <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tổng quan</legend>
             <div className='w-5/6 mx-auto my-3'>
                 <p className='font-bold text-xl'>{data.title}</p>
@@ -227,7 +302,7 @@ const Detail = ({data, type}) => {
                 <p className='text-xs'>{data.general} </p>
             </div>
         </fieldset>
-        <fieldset className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+        <fieldset id="amenities" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
             <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Tiện nghi</legend>
             <div className='w-5/6 mx-auto my-3 grid grid-cols-3'>
                 {data.amenities.map(amenity => {
@@ -240,32 +315,49 @@ const Detail = ({data, type}) => {
                 })}
             </div>
         </fieldset>
-        <fieldset className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+        <fieldset id="rooms" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
             <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Phòng nghỉ</legend>
             <div className='w-5/6 mx-auto my-3'>
                 <RoomBookList service = {hotelDetails?.hotel?.serviceID} provider = {hotelDetails?.hotel?.serviceID?.providerID?.userID} data={data.room}/>
             </div>
         </fieldset>
-        <fieldset className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
-            <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Đánh giá</legend>
-            <div className='w-5/6 mx-auto my-3 items-center'>
-                <div className='flex border border-black rounded-2xl p-2 bg-[#BDFFFC]'>
-                    <div className='flex flex-col w-1/5 justify-center items-center'>
-                        <p className='font-semibold text-xl'> {averageRate(data.rate)} trên 5</p>
-                        {starRate(5)}
-                    </div>
-                    <div className='grid grid-cols-3 w-4/5 gap-1'>
-                        {data.numberRate.map(item => (
-                            <div key={item} className='w-4/5 mx-auto my-1 flex gap-1 font-semibold bg-[#90EFEB] justify-center py-1 rounded-lg cursor-pointer'>
-                                <p>{item.title}</p>
-                                <p>({item.number})</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <RateList data={data.rate}/>
-            </div>
-        </fieldset>
+        <fieldset id="reviews" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'> 
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Đánh giá</legend>
+  <div className='w-5/6 mx-auto my-3 items-center'>
+  <div style={{ marginBottom: '50px' }} className='flex justify-center border border-black rounded-2xl p-2 bg-[#BDFFFC]'>
+  <div className='grid grid-cols-5 w-4/5 gap-4'>
+    {calculateNumberRate(data.reviews).map((item) => (
+      <div
+        key={item.title}
+        className='flex flex-col items-center gap-1 font-semibold bg-[#90EFEB] justify-center py-2 rounded-lg cursor-pointer'
+      >
+        <p>{item.title}</p>
+        <p>({item.number})</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+    
+    <ReviewList reviews={data.reviews} />
+  </div>
+</fieldset>
+
+{/* <RateList data={data.rate} /> */}
+<fieldset id="policies" className='my-5 border border-[#359894] shadow-sm shadow-[#359894]'>
+  <legend className='border border-gray-300 px-2 py-1 mx-3 font-bold'>Chính sách của khách sạn</legend>
+  <div className='w-5/6 mx-auto my-3'>
+    <p className='font-semibold'>Trẻ em và giường phụ</p>
+    <p>Giường phụ phụ thuộc vào loại phòng bạn chọn. Vui lòng kiểm tra công suất phòng cụ thể để biết thêm chi tiết.</p>
+    <p>Mọi trẻ em đều được chào đón.</p>
+    <hr className='my-3'/>
+    <p className='font-semibold'>Khác</p>
+    <ul className='list-disc pl-5'>
+      <li>Khi đặt trên 5 phòng, các chính sách khác và phụ phí có thể được áp dụng.</li>
+    </ul>
+  </div>
+</fieldset>
+
       </div>
     </div>
   )

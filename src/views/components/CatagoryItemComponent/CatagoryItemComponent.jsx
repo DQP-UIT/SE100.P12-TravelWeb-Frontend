@@ -216,6 +216,19 @@ if (values.attribute.length < 3) {
       
     },
     {
+      title: "Đánh giá", // New field for average stars
+      key: "averageRating",
+      render: (text, record) => {
+        const reviews = record.reviews || [];
+        const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
+        const averageStars = reviews.length ? (totalStars / reviews.length).toFixed(1) : 0;
+        
+        // Check if averageStars is 0, if so, display "Chưa có đánh giá"
+        return averageStars === "0" ? "Chưa có đánh giá" : `${averageStars} ★`;
+      },
+    },
+    
+    {
       title: "Hành động",
       key: "action",
       render: (text, record) => (
@@ -316,20 +329,20 @@ const { Title } = Typography;
     </Button>
   </Row>
   <Table
-  dataSource={[...attributes]?.reverse()} // Đảo ngược thứ tự của attributes
+  dataSource={attributes && attributes.length > 0 ? [...attributes].reverse() : []} // Check if attributes are not empty
   columns={attributeColumns}
   rowKey="id"
   onRow={(record) => ({
     onClick: () => handleAttributeClick(record),
   })}
   rowClassName={(record) =>
-    selectedAttributeId === record.serviceID ? '' : '' // Không cần class
+    selectedAttributeId === record.serviceID ? '' : '' // No class needed
   }
   rowStyle={(record) => ({
-    backgroundColor: selectedAttributeId === record.serviceID ? '#f0f9ff' : 'transparent', // Màu cho hàng khớp
-  
+    backgroundColor: selectedAttributeId === record.serviceID ? '#f0f9ff' : 'transparent', // Color for matching row
   })}
 />
+
 
 </Col>
 

@@ -12,7 +12,7 @@ const SearchBar = ({type}) => {
   const place = useSelector((state) => state.place.selectedPlace);  // Lấy giá trị place từ Redux
   const member = useSelector((state) => state.memberValue);  // Lấy giá trị member từ Redux
   const date = useSelector((state) => state.date.selectedDate);  // Lấy giá trị date từ Redux
-
+  const selectedServiceType = useSelector((state) => state.serviceType.selectedServiceType);
   const handleSearch = () => {
     // Kiểm tra nếu place, member và date đều không rỗng
     if (!place || !member.numRoom || !member.numAldult || date.length === 0) {
@@ -33,7 +33,7 @@ const SearchBar = ({type}) => {
       <div className="w-1/3">
         <SearchInput/>
       </div>
-      {type != 'cafe' && (
+      {selectedServiceType === 'hotel' && (
         <>
           <div className="w-1/6">
             <SearchDate searchType={type}/>
