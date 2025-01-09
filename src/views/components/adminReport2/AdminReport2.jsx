@@ -9,12 +9,17 @@ const { Title } = Typography;
 const { Option } = Select;
 
 const RevenueStatistics2 = () => {
-  const years = [2022, 2023, 2024, 2025]; // Các năm có sẵn trong hệ thống
+  const currentyear = new Date().getFullYear();
+  const years = []; 
   const [userCountData, setUserCountData] = useState(null);
   const [providerCountData, setProviderCountData] = useState(null);
   const [customerCountData, setCustomerCountData] = useState(null);
   const [serviceCountData, setServiceCountData] = useState(null);
   const [revenueData, setRevenueData] = useState(null);
+
+  for(let year = 2022; year <= currentyear; year++){
+    years.push(year)
+  }
   // Tạo dữ liệu giả cho nhiều năm
   const generateData = (year) =>
     Array.from({ length: 12 }, (_, index) => ({

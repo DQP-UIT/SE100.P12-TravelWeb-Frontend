@@ -504,7 +504,7 @@ const InvoiceTable = () => {
                 </Button>
               </Tooltip>
             ))}
-          <Button type="primary" onClick={() =>{ handleViewDetail(record.roomID.hotelID   ); console.log(record)} }>
+          <Button type="primary" onClick={() =>{ handleViewDetail(record.roomID.hotelID); console.log(record)} }>
             Xem dịch vụ
           </Button>
         </div>
