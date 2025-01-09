@@ -8,6 +8,10 @@ export default defineConfig({
     port: 3000,
   },
   build: {
-    outDir: 'dist'
-  }
+    outDir: "dist",
+    // Cấu hình base URL cho ứng dụng khi deploy trên Vercel
+    base: "/", // Nếu triển khai trên root, không thay đổi
+    // Hoặc nếu deploy vào subdirectory, ví dụ: '/myapp/'
+    // base: '/myapp/',
+  },
 });
