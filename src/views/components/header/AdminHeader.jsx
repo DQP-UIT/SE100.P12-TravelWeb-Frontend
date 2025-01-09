@@ -6,7 +6,7 @@ const AdminHeader = ({ user }) => {
       <div className="flex flex-row items-center space-x-8">
         <img
           className="w-[100px] h-[100px] object-fill"
-          src='https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/Logo.svg'
+          src='https://raw.githubusercontent.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/49410f88e6b53c980d6252ed8585653a4dc9fab9/src/assets/Logo.svg'
           alt="Logo"
         />
         <div className="flex items-center space-x-8">

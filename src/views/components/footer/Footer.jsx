@@ -58,7 +58,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="w-full h-fit flex justify-center ">
-        <img src="https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/footer.svg" alt="footer" className="absolute" />
+        <img src="https://drive.google.com/file/d/10sBYyfnJGtOw5TWwU6Plt7VoPzGALSUS/view?usp=sharing" alt="footer" className="absolute" />
       </div>
     </div>
   );

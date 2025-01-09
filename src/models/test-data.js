@@ -24,31 +24,31 @@ export const suggestLocation = [
 export const reviewItems = [
   {
     image:
-      "https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/image_reviewlist.png",
+      "https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/image_reviewlist.png?raw=true",
     title: "TP. Hồ Chí Minh",
     numService: "1000 dịch vụ",
   },
   {
     image:
-      "https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/image_reviewlist.png",
+      "https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/image_reviewlist.png?raw=true",
     title: "TP. Hồ Chí Minh",
     numService: "1000 dịch vụ",
   },
   {
     image:
-      "https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/image_reviewlist.png",
+      "https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/image_reviewlist.png?raw=true",
     title: "TP. Hồ Chí Minh",
     numService: "1000 dịch vụ",
   },
   {
     image:
-      "https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/image_reviewlist.png",
+      "https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/image_reviewlist.png?raw=true",
     title: "TP. Hồ Chí Minh",
     numService: "1000 dịch vụ",
   },
   {
     image:
-      "https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/image_reviewlist.png",
+      "https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/image_reviewlist.png?raw=true",
     title: "TP. Hồ Chí Minh",
     numService: "1000 dịch vụ",
   },
