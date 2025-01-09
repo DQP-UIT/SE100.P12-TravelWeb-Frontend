@@ -1,6 +1,4 @@
 import React from "react";
-import logo from "../../../assets/Logo.svg";
-import cart from "../../../assets/Cart.svg";
 
 const AdminHeader = ({ user }) => {
   return (
@@ -8,7 +6,7 @@ const AdminHeader = ({ user }) => {
       <div className="flex flex-row items-center space-x-8">
         <img
           className="w-[100px] h-[100px] object-fill"
-          src={logo}
+          src='https://github.com/DQP-UIT/SE100.P12-TravelWeb-Frontend/blob/phucfe/src/assets/Logo.svg'
           alt="Logo"
         />
         <div className="flex items-center space-x-8">
