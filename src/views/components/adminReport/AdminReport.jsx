@@ -57,25 +57,12 @@ const RevenueStatistics = () => {
       }
       const data = await response.json();
       console.log("Revenue Data:", data);
-      updateRoomData(data.data);
     } catch (error) {
       console.error("Error fetching revenue data:", error);
     }
   };
 
-  const updateRoomData = (apiData) => {
-    const updatedRoomData = generateRoomData(selectedMonth).map(
-      (room, index) => {
-        const apiRoom = apiData.find((item) => item.roomID === room.room);
-        return {
-          ...room,
-          room: apiRoom ? apiRoom.roomId : room.room,
-          revenue: apiRoom ? apiRoom.revenue : room.revenue,
-        };
-      }
-    );
-    roomData[selectedMonth] = updatedRoomData;
-  };
+
 
   const generateRoomData = (month) => {
     const rooms = Array.from({ length: 10 }, (_, i) => `Phòng ${101 + i}`);
@@ -99,7 +86,7 @@ const RevenueStatistics = () => {
   Object.keys(roomData).forEach((month) => {
     const labels = roomData[month].map((item) => item.room);
     const revenues = roomData[month].map((item) => item.revenue);
-
+    console.log("label", labels);
     chartData[month] = {
       labels,
       datasets: [
