@@ -9,8 +9,10 @@ const { Title } = Typography;
 const { Option } = Select;
 
 const RevenueStatistics2 = () => {
-  const years = [2022, 2023, 2024]; // Các năm có sẵn trong hệ thống
+  const years = [2022, 2023, 2024, 2025]; // Các năm có sẵn trong hệ thống
   const [userCountData, setUserCountData] = useState(null);
+  const [providerCountData, setProviderCountData] = useState(null);
+  const [customerCountData, setCustomerCountData] = useState(null);
   const [serviceCountData, setServiceCountData] = useState(null);
   const [revenueData, setRevenueData] = useState(null);
   // Tạo dữ liệu giả cho nhiều năm
@@ -41,6 +43,24 @@ const RevenueStatistics2 = () => {
       const userCountData = await userResponse.json();
       setUserCountData(userCountData);
 
+      const customerResponse = await fetch(
+        `${URL}/api/users/filter?year=${selectedYear}&role=Customer`
+      );
+      if (!customerResponse.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const customerCountRes = await customerResponse.json();
+      setCustomerCountData(customerCountRes);
+
+      const providerResponse = await fetch(
+        `${URL}/api/users/filter?year=${selectedYear}&role=Provider`
+      );
+      if (!providerResponse.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const providerCountRes= await providerResponse.json();
+      setProviderCountData(providerCountRes);
+
       const serviceResponse = await fetch(
         `${URL}/api/services/count?year=${selectedYear}`
       );
@@ -63,9 +83,9 @@ const RevenueStatistics2 = () => {
       const combinedData = userCountData.data.map((userData, index) => ({
         month: userData.month,
         year: selectedYear,
-        newUsers: userData.count,
-        newCustomers: userData.count, // Assuming newCustomers is the same as newUsers for this example
-        newProviders: userData.count, // Assuming newProviders is the same as newUsers for this example
+        newUsers: userCountData.data[index].count,
+        newCustomers: customerCountData.data[index].count,
+        newProviders: providerCountData.data[index].count, 
         newServices: serviceCountData.data[index].count,
         totalRevenue: revenueData.data[index].totalAmount,
       }));
